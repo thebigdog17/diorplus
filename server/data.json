@@ -1,0 +1,21 @@
+{
+  "users": [
+    {
+      "id": "69026e8f-aaf0-4c3c-8ee7-3857da12b4ab",
+      "username": "dior",
+      "name": "Akinade Prosper",
+      "password": "Iamdior17",
+      "bio": "",
+      "link": "",
+      "role": "",
+      "photoUrl": "/uploads/fc0b2396-faa2-419d-a11b-25b3d2220056.png",
+      "initials": "DI",
+      "followers": [],
+      "following": [],
+      "createdAt": 1772815121313
+    }
+  ],
+  "posts": [],
+  "stories": [],
+  "messages": {}
+}
