@@ -451,7 +451,58 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
 .nr-txt b{color:var(--w);font-weight:700;}
 .nr-time{font-size:11px;color:var(--g2);}
 
-/* SPINNER */
+/* REELS - TIKTOK STYLE */
+#screen-reels{position:fixed;inset:0;background:#000;z-index:10;max-width:480px;margin:0 auto;}
+.reels-container{width:100%;height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
+.reels-container::-webkit-scrollbar{display:none;}
+.reel-item{width:100%;height:100vh;position:relative;scroll-snap-align:start;scroll-snap-stop:always;background:#000;overflow:hidden;flex-shrink:0;}
+.reel-video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.reel-overlay{position:absolute;inset:0;background:linear-gradient(transparent 50%,rgba(0,0,0,.65));}
+/* Right side actions */
+.reel-actions{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:2;}
+.reel-av-wrap{position:relative;margin-bottom:4px;}
+.reel-av{width:44px;height:44px;border-radius:50%;border:2px solid #fff;overflow:hidden;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;}
+.reel-av img{width:100%;height:100%;object-fit:cover;}
+.reel-follow-btn{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:20px;height:20px;background:var(--red);border-radius:50%;border:none;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;}
+.reel-act{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border:none;background:none;color:#fff;}
+.reel-act svg{width:32px;height:32px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5));}
+.reel-act.liked svg{stroke:var(--red);fill:var(--red);}
+.reel-act.saved svg{fill:#fff;}
+.reel-act-count{font-size:12px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.7);}
+/* Bottom info */
+.reel-info{position:absolute;bottom:80px;left:14px;right:80px;z-index:2;}
+.reel-username{font-weight:800;font-size:15px;text-shadow:0 1px 3px rgba(0,0,0,.7);margin-bottom:6px;}
+.reel-caption{font-size:13px;line-height:1.5;text-shadow:0 1px 3px rgba(0,0,0,.7);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.reel-caption.expanded{-webkit-line-clamp:unset;}
+.reel-audio{display:flex;align-items:center;gap:6px;font-size:12px;text-shadow:0 1px 3px rgba(0,0,0,.7);}
+.reel-audio-disc{width:28px;height:28px;border-radius:50%;background:var(--s2);border:2px solid rgba(255,255,255,.4);animation:spin 3s linear infinite;}
+/* Top bar for reels */
+.reels-top{position:absolute;top:0;left:0;right:0;z-index:3;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(rgba(0,0,0,.4),transparent);}
+.reels-top-logo{font-family:'Pacifico',cursive;font-size:20px;color:#fff;}
+.reels-top-btns{display:flex;gap:12px;}
+.reels-top-btn{background:none;border:none;color:#fff;cursor:pointer;font-size:13px;font-weight:700;}
+.reels-top-btn.active{border-bottom:2px solid #fff;padding-bottom:2px;}
+/* Mute button */
+.reel-mute{position:absolute;top:60px;right:14px;background:rgba(0,0,0,.4);border:none;color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;font-size:16px;}
+/* Upload reel sheet */
+#reel-upload{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;display:none;align-items:flex-end;max-width:480px;margin:0 auto;}
+#reel-upload.open{display:flex;}
+.ru-box{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));}
+.ru-hdr{display:flex;align-items:center;margin-bottom:20px;}
+.ru-hdr h3{flex:1;text-align:center;font-size:16px;font-weight:800;}
+.ru-x{background:none;border:none;color:var(--g2);font-size:22px;cursor:pointer;}
+.ru-preview{width:100%;height:200px;background:var(--s2);border-radius:14px;overflow:hidden;margin-bottom:14px;display:flex;align-items:center;justify-content:center;position:relative;}
+.ru-preview video{width:100%;height:100%;object-fit:cover;}
+.ru-preview-ph{font-size:48px;opacity:.4;}
+.ru-inp{width:100%;background:var(--s2);border:none;border-radius:12px;padding:12px 16px;color:var(--w);font-size:14px;outline:none;margin-bottom:12px;}
+.ru-inp::placeholder{color:var(--g2);}
+.ru-btns{display:flex;gap:10px;}
+.ru-btn{flex:1;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;border:none;}
+.ru-btn.sec{background:var(--s2);color:var(--w);}
+.ru-btn.prim{background:var(--grad);color:#fff;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
 .spinner{width:36px;height:36px;border:3px solid var(--s3);border-top-color:var(--sky);border-radius:50%;animation:spin 1s linear infinite;margin:40px auto;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -705,6 +756,25 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
   <div class="ns-body" id="notif-list"></div>
 </div>
 
+<!-- REEL UPLOAD -->
+<div id="reel-upload">
+  <div class="ru-box">
+    <div class="ru-hdr"><button class="ru-x" onclick="closeReelUpload()">✕</button><h3>New Reel</h3><div style="width:24px;"></div></div>
+    <div class="ru-preview" id="ru-preview">
+      <div class="ru-preview-ph" id="ru-ph">🎬</div>
+      <video id="ru-vid" style="display:none;" playsinline muted loop></video>
+    </div>
+    <label style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--s2);border:1px dashed var(--s3);border-radius:12px;padding:13px;cursor:pointer;margin-bottom:12px;color:var(--g1);font-size:14px;font-weight:700;">
+      <input type="file" accept="video/*" style="display:none;" onchange="ruPick(this)"/> 🎥 Choose Video
+    </label>
+    <input class="ru-inp" id="ru-cap" placeholder="Add a caption... #hashtag @mention"/>
+    <div class="ru-btns">
+      <button class="ru-btn sec" onclick="closeReelUpload()">Cancel</button>
+      <button class="ru-btn prim" onclick="uploadReel()">Post Reel 🚀</button>
+    </div>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="hdr" id="main-hdr">
@@ -721,6 +791,7 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
       <div class="stories-bar" id="stories-bar"></div>
       <div id="posts-feed"></div>
     </div>
+    <div class="screen" id="screen-reels" style="padding-bottom:0;display:none;"></div>
     <div class="screen" id="screen-messages">
       <div class="ms-search"><input placeholder="🔍  Search users" id="ms-inp" oninput="searchUsers(this.value)"/></div>
       <div class="ms-sec">Messages</div>
@@ -781,6 +852,7 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
   <div class="tabbar">
     <button class="tab active" id="tab-feed" onclick="switchTab('feed')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="tab-lbl">Home</span></button>
     <button class="tab" id="tab-messages" onclick="switchTab('messages')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="tab-lbl">Messages</span></button>
+    <button class="tab" id="tab-reels" onclick="switchTab('reels')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span class="tab-lbl">Reels</span></button>
     <button class="tab" id="tab-explore" onclick="switchTab('explore')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="tab-lbl">Explore</span></button>
     <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="tab-lbl">Studio</span></button>
     <button class="tab" id="tab-profile" onclick="switchTab('profile')"><div class="tab-pav" id="tab-pav">?</div><span class="tab-lbl">Profile</span></button>
@@ -936,8 +1008,16 @@ function updateProfileUI() {
 
 // ── TABS ─────────────────────────────────────────────────────────────────
 function switchTab(t) {
-  ['feed','messages','explore','studio','profile'].forEach(s => {
-    document.getElementById('screen-'+s).classList.toggle('active', s===t);
+  ['feed','reels','messages','explore','studio','profile'].forEach(s => {
+    const sc = document.getElementById('screen-'+s);
+    const isActive = s===t;
+    if(s==='reels'){
+      sc.style.display = isActive ? 'block' : 'none';
+      if(isActive) initReels();
+      else pauseAllReels();
+    } else {
+      sc.classList.toggle('active', isActive);
+    }
     const el = document.getElementById('tab-'+s); if(el) el.classList.toggle('active', s===t);
   });
   document.getElementById('main-hdr').style.display = ['feed','explore','studio'].includes(t) ? 'flex' : 'none';
@@ -1598,8 +1678,176 @@ function renderNotifs() {
       <div class="nr-time">now</div>
     </div>`).join('')||'<div style="padding:40px;text-align:center;color:var(--g2);">No notifications yet</div>';
 }
-function openNotif(){document.getElementById('ns').classList.add('open');document.getElementById('notif-dot').classList.remove('show');}
-function closeNotif(){document.getElementById('ns').classList.remove('open');}
-</script>
+
+// ── REELS ─────────────────────────────────────────────────────────────────
+let reelsData = [];
+let reelsMuted = false;
+let reelsLoaded = false;
+let ruFile = null;
+let reelsObserver = null;
+
+async function initReels() {
+  const container = document.getElementById('screen-reels');
+  if (!reelsLoaded) {
+    container.innerHTML = `
+      <div class="reels-top">
+        <div class="reels-top-logo">DIOR+</div>
+        <div style="display:flex;gap:16px;">
+          <button class="reels-top-btn active">For You</button>
+          <button class="reels-top-btn">Following</button>
+        </div>
+        <button onclick="openReelUpload()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">+</button>
+      </div>
+      <div class="reels-container" id="reels-container"></div>`;
+    await loadReels();
+    reelsLoaded = true;
+  }
+}
+
+async function loadReels() {
+  const posts = await api('/api/posts');
+  if (!Array.isArray(posts)) return;
+  // Show video posts as reels + all posts
+  reelsData = posts.filter(p => p.media?.some(m => m.type === 'video') || p.media?.length > 0 || p.caption);
+  if (!reelsData.length) {
+    document.getElementById('reels-container').innerHTML = `<div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--g2);gap:16px;"><div style="font-size:52px;">🎬</div><div style="font-size:16px;font-weight:700;">No reels yet</div><div style="font-size:13px;">Be the first to post!</div><button onclick="openReelUpload()" style="background:var(--grad);border:none;border-radius:12px;padding:12px 24px;color:#fff;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px;">+ Create Reel</button></div>`;
+    return;
+  }
+  document.getElementById('reels-container').innerHTML = reelsData.map((p,i) => buildReel(p,i)).join('');
+  setupReelsObserver();
+}
+
+function buildReel(p, i) {
+  const u = p.user || {};
+  const liked = (p.likes||[]).includes(ME.id);
+  const saved = (p.saved||[]).includes(ME.id);
+  const isFollowing = (ME.following||[]).includes(p.userId);
+  const m = p.media?.[0];
+  let mediaHtml = '';
+  if (m?.type === 'video') {
+    mediaHtml = `<video class="reel-video" id="rv-${p.id}" src="${imgSrc(m.url)}" playsinline loop ${reelsMuted?'muted':''}></video>`;
+  } else if (m?.type === 'photo') {
+    mediaHtml = `<img class="reel-video" src="${imgSrc(m.url)}" style="object-fit:cover;"/>`;
+  } else {
+    mediaHtml = `<div class="reel-video" style="display:flex;align-items:center;justify-content:center;font-size:100px;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);">${p.emoji||'🎬'}</div>`;
+  }
+  const avInner = u.photoUrl ? `<img src="${imgSrc(u.photoUrl)}"/>` : (u.initials||'?');
+  return `<div class="reel-item" id="reel-${p.id}" data-idx="${i}" data-id="${p.id}">
+    ${mediaHtml}
+    <div class="reel-overlay"></div>
+    <button class="reel-mute" id="mute-${p.id}" onclick="toggleMute()">${reelsMuted?'🔇':'🔊'}</button>
+    <div class="reels-top" style="background:none;padding-top:50px;"></div>
+    <div class="reel-actions">
+      <div class="reel-av-wrap">
+        <div class="reel-av">${avInner}</div>
+        ${!isFollowing && p.userId !== ME.id ? `<button class="reel-follow-btn" onclick="reelFollow('${p.userId}',this)">+</button>` : ''}
+      </div>
+      <button class="reel-act${liked?' liked':''}" id="rl-${p.id}" onclick="reelLike('${p.id}')">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span class="reel-act-count" id="rlc-${p.id}">${fmtNum((p.likes||[]).length)}</span>
+      </button>
+      <button class="reel-act" onclick="openCmts('${p.id}')">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="reel-act-count">${fmtNum((p.comments||[]).length)}</span>
+      </button>
+      <button class="reel-act${saved?' saved':''}" id="rs-${p.id}" onclick="reelSave('${p.id}')">
+        <svg viewBox="0 0 24 24"><polygon points="19 21 12 16 5 21 5 3 19 3"/></svg>
+        <span class="reel-act-count">Save</span>
+      </button>
+      <button class="reel-act" onclick="toast('Link copied 🔗')">
+        <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span class="reel-act-count">Share</span>
+      </button>
+      ${p.userId === ME.id ? `<button class="reel-act" onclick="deletePost('${p.id}');reelsLoaded=false;initReels()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg><span class="reel-act-count">Delete</span></button>` : ''}
+    </div>
+    <div class="reel-info">
+      <div class="reel-username">@${u.username||'?'}</div>
+      <div class="reel-caption" id="rc-${p.id}" onclick="this.classList.toggle('expanded')">${p.caption||''}</div>
+      <div class="reel-audio"><div class="reel-audio-disc">🎵</div><span>Original Audio · @${u.username||'?'}</span></div>
+    </div>
+  </div>`;
+}
+
+function setupReelsObserver() {
+  if (reelsObserver) reelsObserver.disconnect();
+  reelsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const vid = entry.target.querySelector('video');
+      if (!vid) return;
+      if (entry.isIntersecting) {
+        vid.muted = reelsMuted;
+        vid.play().catch(()=>{});
+      } else {
+        vid.pause();
+      }
+    });
+  }, { threshold: 0.7 });
+  document.querySelectorAll('.reel-item').forEach(el => reelsObserver.observe(el));
+}
+
+function pauseAllReels() {
+  document.querySelectorAll('.reel-video').forEach(v => { if(v.tagName==='VIDEO') v.pause(); });
+}
+
+function toggleMute() {
+  reelsMuted = !reelsMuted;
+  document.querySelectorAll('.reel-video').forEach(v => { if(v.tagName==='VIDEO') v.muted = reelsMuted; });
+  document.querySelectorAll('[id^="mute-"]').forEach(b => b.textContent = reelsMuted ? '🔇' : '🔊');
+}
+
+async function reelLike(postId) {
+  const r = await api(`/api/posts/${postId}/like`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id})});
+  if (r.likes !== undefined) {
+    const btn = document.getElementById(`rl-${postId}`);
+    const cnt = document.getElementById(`rlc-${postId}`);
+    if(btn) { btn.classList.toggle('liked', r.liked); if(r.liked){btn.style.animation='heartPop .3s';setTimeout(()=>btn.style.animation='',300);} }
+    if(cnt) cnt.textContent = fmtNum(r.likes.length);
+    updatePostLikes(postId, r.likes);
+  }
+}
+
+async function reelSave(postId) {
+  const r = await api(`/api/posts/${postId}/save`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id})});
+  const btn = document.getElementById(`rs-${postId}`);
+  if(btn) btn.classList.toggle('saved', r.saved);
+  toast(r.saved ? 'Saved 🔖' : 'Removed');
+}
+
+async function reelFollow(userId, btn) {
+  const r = await api(`/api/follow/${userId}`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id})});
+  if(r.following) { btn.style.display='none'; toast('Following ✅'); if(!ME.following)ME.following=[]; ME.following.push(userId); }
+}
+
+// Reel upload
+function openReelUpload() { document.getElementById('reel-upload').classList.add('open'); }
+function closeReelUpload() {
+  document.getElementById('reel-upload').classList.remove('open');
+  document.getElementById('ru-vid').style.display='none';
+  document.getElementById('ru-ph').style.display='block';
+  document.getElementById('ru-cap').value='';
+  ruFile=null;
+}
+function ruPick(inp) {
+  ruFile=inp.files[0]; if(!ruFile) return;
+  readFile(ruFile).then(url=>{
+    document.getElementById('ru-ph').style.display='none';
+    const vid=document.getElementById('ru-vid');
+    vid.src=url; vid.style.display='block'; vid.play();
+  });
+  inp.value='';
+}
+async function uploadReel() {
+  if(!ruFile){toast('Choose a video first!');return;}
+  const cap=document.getElementById('ru-cap').value.trim();
+  const fd=new FormData();
+  fd.append('userId',ME.id); fd.append('caption',cap);
+  fd.append('media',ruFile);
+  await fetch(`${API}/api/posts`,{method:'POST',body:fd});
+  closeReelUpload();
+  reelsLoaded=false;
+  toast('Reel posted! 🎬');
+  initReels();
+}
+
 </body>
 </html>
