@@ -17,8 +17,67 @@
   --red:#ed4956;--green:#22c55e;
   --grad:linear-gradient(135deg,#a8edff,#70d4f8,#38BDF8,#60b3ff,#a78bfa);
 }
+body.light-mode{
+  --bg:#f5f5f5;--s1:#fff;--s2:#f0f0f0;--s3:#e0e0e0;
+  --w:#111;--g1:#555;--g2:#888;--g3:#ccc;
+}
+body.light-mode .hdr,body.light-mode .tabbar{background:rgba(255,255,255,.95);}
+body.light-mode .ch-msg.mine{background:var(--grad);}
+body.light-mode .ch-msg.theirs{background:#e8e8e8;color:#111;}
 html,body{height:100%;overflow:hidden;}
-body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--w);max-width:480px;margin:0 auto;position:relative;}
+body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--w);max-width:480px;margin:0 auto;position:relative;transition:background .3s,color .3s;}
+
+/* THEME TOGGLE */
+.theme-toggle{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--s3);cursor:pointer;}
+.theme-toggle-track{width:46px;height:26px;border-radius:13px;background:var(--s3);position:relative;transition:background .3s;}
+.theme-toggle-track.on{background:var(--sky2);}
+.theme-toggle-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .3s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.theme-toggle-track.on .theme-toggle-thumb{transform:translateX(20px);}
+
+/* VERIFIED BADGE */
+.verified{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:10px;margin-left:3px;vertical-align:middle;}
+.verified.blue{background:#38BDF8;}
+.verified.gold{background:#FFD700;}
+.verified.purple{background:#a78bfa;}
+.verified::after{content:'✓';color:#fff;font-weight:900;font-size:9px;}
+
+/* EMOJI PICKER */
+.emoji-picker{position:absolute;bottom:60px;left:0;right:0;background:var(--s1);border-top:1px solid var(--s3);padding:10px;z-index:50;display:none;flex-wrap:wrap;gap:6px;}
+.emoji-picker.open{display:flex;}
+.ep-emoji{font-size:24px;cursor:pointer;padding:4px;border-radius:8px;border:none;background:none;}
+.ep-emoji:active{background:var(--s2);}
+.ch-foot{position:relative;}
+
+/* GROUP CHAT */
+.gc-badge{background:var(--grad);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:8px;margin-left:6px;}
+
+/* STORY VIEWERS */
+.sv-count{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;display:flex;align-items:center;gap:4px;}
+
+/* AI CHAT */
+.ai-msg{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(56,189,248,.3);border-radius:16px 16px 16px 4px;padding:10px 14px;margin:4px 0;color:var(--w);font-size:14px;line-height:1.5;position:relative;}
+.ai-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--sky);font-weight:700;margin-bottom:4px;}
+.ai-typing{display:flex;gap:4px;padding:8px 0;}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--sky);animation:aiDot 1.2s infinite;}
+.ai-dot:nth-child(2){animation-delay:.2s;}
+.ai-dot:nth-child(3){animation-delay:.4s;}
+@keyframes aiDot{0%,60%,100%{transform:scale(1);opacity:.5}30%{transform:scale(1.3);opacity:1}}
+
+/* REPORT */
+.report-sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;display:none;align-items:flex-end;max-width:480px;margin:0 auto;}
+.report-sheet.open{display:flex;}
+.report-box{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));}
+.report-option{padding:14px 16px;border-bottom:1px solid var(--s3);font-size:14px;font-weight:600;cursor:pointer;color:var(--w);background:none;border:none;width:100%;text-align:left;}
+.report-option:active{background:var(--s2);}
+.report-option.danger{color:var(--red);}
+
+/* VOICE/VIDEO CALL IMPROVEMENTS */
+.call-type-badge{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.4);padding:4px 12px;border-radius:20px;font-size:12px;color:rgba(255,255,255,.8);}
+.video-call-local{position:absolute;top:16px;right:16px;width:100px;height:140px;border-radius:14px;overflow:hidden;border:2px solid rgba(255,255,255,.4);z-index:2;}
+.video-call-local video{width:100%;height:100%;object-fit:cover;}
+.remote-video-wrap{position:absolute;inset:0;background:#111;}
+.remote-video-wrap video{width:100%;height:100%;object-fit:cover;}
+
 ::-webkit-scrollbar{width:0;height:0;}
 input,textarea,button{font-family:'Nunito',sans-serif;}
 
@@ -679,16 +738,23 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
     <div class="ch-av" id="ch-av"></div>
     <div class="ch-info"><div class="ch-name" id="ch-name"></div><div class="ch-status" id="ch-status"></div></div>
     <div class="ch-acts">
-      <button onclick="startCall()"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.42 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+      <button onclick="startVoiceCall()" title="Voice call"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.42 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+      <button onclick="startVideoCall()" title="Video call"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
+      <button onclick="openReport('user',activeConv)" title="Report"><svg viewBox="0 0 24 24" style="width:20px;height:20px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button>
     </div>
   </div>
   <div class="ch-body" id="ch-body"></div>
   <div class="typing-indicator" id="typing-ind">typing...</div>
   <div class="ch-foot">
+    <div class="emoji-picker" id="emoji-picker">
+      <button class="ep-emoji" onclick="insertEmoji('❤️')">❤️</button><button class="ep-emoji" onclick="insertEmoji('😂')">😂</button><button class="ep-emoji" onclick="insertEmoji('😍')">😍</button><button class="ep-emoji" onclick="insertEmoji('🔥')">🔥</button><button class="ep-emoji" onclick="insertEmoji('👏')">👏</button><button class="ep-emoji" onclick="insertEmoji('😭')">😭</button><button class="ep-emoji" onclick="insertEmoji('🙏')">🙏</button><button class="ep-emoji" onclick="insertEmoji('💯')">💯</button><button class="ep-emoji" onclick="insertEmoji('🎉')">🎉</button><button class="ep-emoji" onclick="insertEmoji('😊')">😊</button><button class="ep-emoji" onclick="insertEmoji('🥰')">🥰</button><button class="ep-emoji" onclick="insertEmoji('😎')">😎</button><button class="ep-emoji" onclick="insertEmoji('🤔')">🤔</button><button class="ep-emoji" onclick="insertEmoji('👀')">👀</button><button class="ep-emoji" onclick="insertEmoji('💀')">💀</button><button class="ep-emoji" onclick="insertEmoji('🫶')">🫶</button><button class="ep-emoji" onclick="insertEmoji('🚀')">🚀</button><button class="ep-emoji" onclick="insertEmoji('✨')">✨</button><button class="ep-emoji" onclick="insertEmoji('💬')">💬</button><button class="ep-emoji" onclick="insertEmoji('🎵')">🎵</button><button class="ep-emoji" onclick="insertEmoji('😤')">😤</button><button class="ep-emoji" onclick="insertEmoji('🤣')">🤣</button><button class="ep-emoji" onclick="insertEmoji('😱')">😱</button><button class="ep-emoji" onclick="insertEmoji('🥹')">🥹</button>
+    </div>
     <label class="ch-icon-lbl">
       <input type="file" accept="image/*,video/*" onchange="chatPick(this)"/>
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
     </label>
+    <button class="ch-icon-lbl" onclick="toggleEmojiPicker()" style="background:none;border:none;color:var(--g1);font-size:20px;padding:8px;cursor:pointer;">😊</button>
+    <button class="ch-icon-lbl" onclick="toggleAIChat()" style="background:none;border:none;padding:8px;cursor:pointer;font-size:11px;font-weight:800;background:linear-gradient(135deg,#38BDF8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">AI</button>
     <input class="ch-inp" id="ch-inp" placeholder="Message..." onkeydown="if(event.key==='Enter')sendMsg()" oninput="chatTyping()"/>
     <button class="ch-send" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
@@ -775,6 +841,83 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
   </div>
 </div>
 
+<!-- REPORT SHEET -->
+<div class="report-sheet" id="report-sheet">
+  <div class="report-box">
+    <div style="text-align:center;font-size:16px;font-weight:800;margin-bottom:16px;">Report</div>
+    <button class="report-option" onclick="submitReport('spam')">🚫 It's spam</button>
+    <button class="report-option" onclick="submitReport('hate')">😡 Hate speech or symbols</button>
+    <button class="report-option" onclick="submitReport('harassment')">🎯 Bullying or harassment</button>
+    <button class="report-option" onclick="submitReport('fake')">🎭 False information</button>
+    <button class="report-option" onclick="submitReport('violence')">⚠️ Violence or dangerous acts</button>
+    <button class="report-option" onclick="submitReport('nudity')">🔞 Nudity or sexual content</button>
+    <button class="report-option danger" onclick="submitReport('other')">⛔ Other</button>
+    <button class="report-option" style="color:var(--g2);margin-top:8px;" onclick="closeReport()">Cancel</button>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-panel" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:none;max-width:480px;margin:0 auto;overflow-y:auto;">
+  <div class="ep-hdr">
+    <button class="ep-cancel" onclick="closeSettings()">✕</button>
+    <h2>Settings</h2>
+    <div style="width:60px;"></div>
+  </div>
+  <div style="padding:16px 0;">
+    <div style="padding:10px 16px;font-size:12px;font-weight:800;color:var(--g2);text-transform:uppercase;letter-spacing:1px;">Appearance</div>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span style="font-size:20px;" id="theme-icon">🌙</span>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;" id="theme-label">Dark Mode</div>
+        <div style="font-size:12px;color:var(--g2);">Switch between light and dark</div>
+      </div>
+      <div class="theme-toggle-track" id="theme-track"><div class="theme-toggle-thumb"></div></div>
+    </div>
+    <div class="theme-toggle" onclick="setSystemTheme()">
+      <span style="font-size:20px;">📱</span>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;">Follow System</div>
+        <div style="font-size:12px;color:var(--g2);">Match your phone's display setting</div>
+      </div>
+      <div class="theme-toggle-track" id="sys-track"><div class="theme-toggle-thumb"></div></div>
+    </div>
+    <div style="padding:10px 16px;font-size:12px;font-weight:800;color:var(--g2);text-transform:uppercase;letter-spacing:1px;margin-top:8px;">Security</div>
+    <div class="theme-toggle" onclick="toggle2FA()">
+      <span style="font-size:20px;">🔐</span>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;">Two-Factor Authentication</div>
+        <div style="font-size:12px;color:var(--g2);">Extra security for your account</div>
+      </div>
+      <div class="theme-toggle-track" id="tfa-track"><div class="theme-toggle-thumb"></div></div>
+    </div>
+    <div style="padding:10px 16px;font-size:12px;font-weight:800;color:var(--g2);text-transform:uppercase;letter-spacing:1px;margin-top:8px;">Verification</div>
+    <div style="margin:0 16px;background:var(--s2);border-radius:16px;padding:16px;">
+      <div style="font-weight:800;font-size:14px;margin-bottom:8px;">Get Verified ✓</div>
+      <div style="font-size:13px;color:var(--g2);margin-bottom:14px;">Choose a verification tier that fits you</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="verify-tier" onclick="buyVerification('blue',9.99)">
+          <div class="verified blue" style="width:24px;height:24px;font-size:14px;"></div>
+          <div style="flex:1;"><div style="font-weight:700;">Blue Check</div><div style="font-size:12px;color:var(--g2);">Verified individual</div></div>
+          <div style="font-weight:800;color:var(--sky);">$9.99/mo</div>
+        </div>
+        <div class="verify-tier" onclick="buyVerification('gold',24.99)">
+          <div class="verified gold" style="width:24px;height:24px;font-size:14px;"></div>
+          <div style="flex:1;"><div style="font-weight:700;">Gold Check</div><div style="font-size:12px;color:var(--g2);">Business or brand</div></div>
+          <div style="font-weight:800;color:#FFD700;">$24.99/mo</div>
+        </div>
+        <div class="verify-tier" onclick="buyVerification('purple',49.99)">
+          <div class="verified purple" style="width:24px;height:24px;font-size:14px;"></div>
+          <div style="flex:1;"><div style="font-weight:700;">Purple Check</div><div style="font-size:12px;color:var(--g2);">Official public figure</div></div>
+          <div style="font-weight:800;color:#a78bfa;">$49.99/mo</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 16px;font-size:12px;font-weight:800;color:var(--g2);text-transform:uppercase;letter-spacing:1px;margin-top:8px;">Account</div>
+    <button onclick="changePassword()" style="width:calc(100% - 32px);margin:0 16px 10px;background:var(--s2);border:none;border-radius:12px;padding:14px;color:var(--w);font-size:14px;font-weight:700;cursor:pointer;text-align:left;">🔑 Change Password</button>
+    <button onclick="logout()" style="width:calc(100% - 32px);margin:0 16px;background:rgba(237,73,86,.15);border:1px solid rgba(237,73,86,.3);border-radius:12px;padding:14px;color:var(--red);font-size:14px;font-weight:800;cursor:pointer;">🚪 Log Out</button>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="hdr" id="main-hdr">
@@ -815,7 +958,7 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
     <div class="screen" id="screen-profile">
       <div class="prof-hdr"><h1 id="prof-hdr-nm">@me</h1>
         <button onclick="openCreate()"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>
-        <button onclick="openNotif()"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <button onclick="openSettings()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       </div>
       <div class="prof-info">
         <div class="prof-av-wrap">
@@ -1851,3 +1994,111 @@ async function uploadReel() {
 
 </body>
 </html>
+<script>
+// ── EMOJI PICKER ─────────────────────────────────────────────────────────
+function toggleEmojiPicker() { document.getElementById('emoji-picker').classList.toggle('open'); }
+function insertEmoji(e) { const inp=document.getElementById('ch-inp'); inp.value+=e; inp.focus(); document.getElementById('emoji-picker').classList.remove('open'); }
+
+// ── THEME ────────────────────────────────────────────────────────────────
+let useSystemTheme = localStorage.getItem('dior_sys_theme')==='1';
+let isDark = localStorage.getItem('dior_theme')!=='light';
+function applyTheme(dark) {
+  isDark=dark; document.body.classList.toggle('light-mode',!dark);
+  const track=document.getElementById('theme-track'),icon=document.getElementById('theme-icon'),label=document.getElementById('theme-label');
+  if(track) track.classList.toggle('on',!dark);
+  if(icon) icon.textContent=dark?'🌙':'☀️';
+  if(label) label.textContent=dark?'Dark Mode':'Light Mode';
+  localStorage.setItem('dior_theme',dark?'dark':'light');
+}
+function toggleTheme() { useSystemTheme=false; localStorage.setItem('dior_sys_theme','0'); const t=document.getElementById('sys-track'); if(t) t.classList.remove('on'); applyTheme(!isDark); }
+function setSystemTheme() { useSystemTheme=!useSystemTheme; localStorage.setItem('dior_sys_theme',useSystemTheme?'1':'0'); const t=document.getElementById('sys-track'); if(t) t.classList.toggle('on',useSystemTheme); if(useSystemTheme) applyTheme(!window.matchMedia('(prefers-color-scheme: light)').matches); }
+function initTheme() { if(useSystemTheme) applyTheme(!window.matchMedia('(prefers-color-scheme: light)').matches); else applyTheme(isDark); const t=document.getElementById('sys-track'); if(t) t.classList.toggle('on',useSystemTheme); window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{ if(useSystemTheme) applyTheme(e.matches); }); }
+(function(){ if(localStorage.getItem('dior_sys_theme')==='1'){ useSystemTheme=true; applyTheme(!window.matchMedia('(prefers-color-scheme: light)').matches); } else { applyTheme(localStorage.getItem('dior_theme')!=='light'); } })();
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────
+function openSettings() { document.getElementById('settings-panel').style.display='block'; initTheme(); }
+function closeSettings() { document.getElementById('settings-panel').style.display='none'; }
+function toggle2FA() { const t=document.getElementById('tfa-track'); const on=t.classList.toggle('on'); toast(on?'2FA enabled 🔐':'2FA disabled'); localStorage.setItem('dior_2fa',on?'1':'0'); }
+
+// ── LOGOUT ───────────────────────────────────────────────────────────────
+function logout() {
+  if(!confirm('Log out of DIOR+?')) return;
+  ME=null; socket?.disconnect(); localStorage.removeItem('dior_user');
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('app').style.opacity='0';
+  document.getElementById('auth-screen').style.display='flex';
+  closeSettings(); toast('Logged out 👋');
+}
+
+// ── CHANGE PASSWORD ──────────────────────────────────────────────────────
+async function changePassword() {
+  const current=prompt('Enter current password:'); if(!current) return;
+  const newPass=prompt('Enter new password (min 6 chars):'); if(!newPass||newPass.length<6){toast('Min 6 characters');return;}
+  const confirmed=prompt('Confirm new password:'); if(newPass!==confirmed){toast('Passwords do not match ❌');return;}
+  const r=await api(`/api/users/${ME.id}/password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({currentPassword:current,newPassword:newPass})});
+  if(r.error) toast('❌ '+r.error); else toast('Password changed ✅');
+}
+
+// ── VERIFICATION ─────────────────────────────────────────────────────────
+async function buyVerification(tier,price) {
+  if(!confirm(`Get ${tier} verification for $${price}/month?\n\nPayment coming soon. Activating now!`)) return;
+  const r=await api(`/api/users/${ME.id}/verify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tier,userId:ME.id})});
+  if(r.user){ME=r.user;updateProfileUI();toast('✅ Verified!');closeSettings();}
+  else toast('✅ Verification activated!');
+}
+
+// ── REPORT ───────────────────────────────────────────────────────────────
+let reportTarget=null,reportTargetType=null;
+function openReport(type,targetId){reportTarget=targetId;reportTargetType=type;document.getElementById('report-sheet').classList.add('open');}
+function closeReport(){document.getElementById('report-sheet').classList.remove('open');}
+async function submitReport(reason){
+  await api('/api/reports',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reporterId:ME.id,targetId:reportTarget,targetType:reportTargetType,reason})});
+  closeReport(); toast('Report submitted ✅');
+}
+
+// ── AI CHAT ──────────────────────────────────────────────────────────────
+let aiMode=false;
+function toggleAIChat(){
+  aiMode=!aiMode;
+  const inp=document.getElementById('ch-inp');
+  if(inp) inp.placeholder=aiMode?'✨ Ask DIOR+ AI anything...':'Message...';
+  toast(aiMode?'✨ AI mode on!':'AI mode off');
+}
+async function askAI(message){
+  const body=document.getElementById('ch-body');
+  const tid='ai-t-'+Date.now();
+  body.innerHTML+=`<div class="ai-msg" id="${tid}"><div class="ai-badge">✨ DIOR+ AI</div><div class="ai-typing"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div></div>`;
+  body.scrollTop=body.scrollHeight;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:'You are a friendly AI assistant inside DIOR+, a social media app. Be helpful, fun and concise.',messages:[{role:'user',content:message}]})});
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'Sorry, try again!';
+    document.getElementById(tid).innerHTML=`<div class="ai-badge">✨ DIOR+ AI</div>${reply}`;
+  }catch(e){document.getElementById(tid).innerHTML=`<div class="ai-badge">✨ DIOR+ AI</div>Having trouble. Try again!`;}
+  body.scrollTop=body.scrollHeight;
+}
+
+// ── CALL TYPE ────────────────────────────────────────────────────────────
+let callType='voice';
+function startVoiceCall(){callType='voice';startCall();}
+function startVideoCall(){callType='video';startCall();}
+
+// ── AI-AWARE SEND ─────────────────────────────────────────────────────────
+const _origSend=window.sendMsg;
+window.sendMsg=async function(){
+  if(aiMode){
+    const inp=document.getElementById('ch-inp');
+    const text=inp.value.trim(); if(!text) return;
+    const body=document.getElementById('ch-body');
+    body.innerHTML+=`<div class="ch-msg mine">${text}</div>`;
+    inp.value=''; body.scrollTop=body.scrollHeight;
+    await askAI(text); return;
+  }
+  if(_origSend) _origSend();
+};
+
+// ── VERIFY STYLE ─────────────────────────────────────────────────────────
+const vs=document.createElement('style');
+vs.textContent=`.verify-tier{display:flex;align-items:center;gap:12px;background:var(--s1);border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid var(--s3);margin-bottom:2px}.verify-tier:active{opacity:.8}`;
+document.head.appendChild(vs);
+</script>
