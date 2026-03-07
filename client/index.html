@@ -591,6 +591,7 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
 <div id="auth-screen">
   <div class="auth-logo">DIOR+</div>
   <div class="auth-sub">Connect · Share · Live</div>
+  <div id="server-wake" style="background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);border-radius:12px;padding:10px 14px;font-size:12px;color:var(--sky);text-align:center;margin-bottom:16px;display:none;">⏳ Server is waking up, please wait 30-60 seconds then try again...</div>
   <div class="auth-tabs">
     <div class="auth-tab active" id="at-login" onclick="authTab('login')">Log In</div>
     <div class="auth-tab" id="at-signup" onclick="authTab('signup')">Sign Up</div>
@@ -604,7 +605,7 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
   <div id="auth-signup" style="display:none;">
     <input class="auth-inp" id="su-name" placeholder="Full Name"/>
     <input class="auth-inp" id="su-user" placeholder="Username (no spaces)" autocomplete="username"/>
-    <input class="auth-inp" id="su-pass" placeholder="Password" type="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSignup()"/>
+    <input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSignup()"/>
     <div class="auth-err" id="su-err"></div>
     <button class="auth-btn" onclick="doSignup()">Create Account</button>
   </div>
@@ -1164,18 +1165,37 @@ async function doLogin() {
   const u = document.getElementById('li-user').value.trim();
   const p = document.getElementById('li-pass').value;
   if (!u || !p) return document.getElementById('li-err').textContent = 'Fill all fields';
-  const r = await api('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:u,password:p}) });
-  if (r.error) return document.getElementById('li-err').textContent = r.error;
-  ME = r.user; launchApp();
+  const btn = document.querySelector('#auth-screen .auth-btn');
+  btn.textContent = 'Logging in...'; btn.disabled = true;
+  document.getElementById('li-err').textContent = '';
+  try {
+    const r = await api('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:u,password:p}) });
+    if (r.error) { document.getElementById('li-err').textContent = r.error; btn.textContent='Log In'; btn.disabled=false; return; }
+    if (!r.user) { document.getElementById('li-err').textContent = 'Server is waking up, try again in 10 seconds'; document.getElementById('server-wake').style.display='block'; btn.textContent='Log In'; btn.disabled=false; return; }
+    ME = r.user; launchApp();
+  } catch(e) {
+    document.getElementById('li-err').textContent = 'Connection failed. Try again.';
+    btn.textContent='Log In'; btn.disabled=false;
+  }
 }
 async function doSignup() {
   const n = document.getElementById('su-name').value.trim();
   const u = document.getElementById('su-user').value.trim().replace(/\s/g,'');
   const p = document.getElementById('su-pass').value;
   if (!n||!u||!p) return document.getElementById('su-err').textContent = 'Fill all fields';
-  const r = await api('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:n,username:u,password:p}) });
-  if (r.error) return document.getElementById('su-err').textContent = r.error;
-  ME = r.user; launchApp();
+  if (p.length < 6) return document.getElementById('su-err').textContent = 'Password must be 6+ characters';
+  const btn = document.querySelectorAll('#auth-screen .auth-btn')[1];
+  btn.textContent = 'Creating...'; btn.disabled = true;
+  document.getElementById('su-err').textContent = '';
+  try {
+    const r = await api('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:n,username:u,password:p}) });
+    if (r.error) { document.getElementById('su-err').textContent = r.error; btn.textContent='Create Account'; btn.disabled=false; return; }
+    if (!r.user) { document.getElementById('su-err').textContent = 'Server is waking up, try again in 10 seconds'; btn.textContent='Create Account'; btn.disabled=false; return; }
+    ME = r.user; launchApp();
+  } catch(e) {
+    document.getElementById('su-err').textContent = 'Connection failed. Try again.';
+    btn.textContent='Create Account'; btn.disabled=false;
+  }
 }
 
 function launchApp() {
@@ -2185,8 +2205,8 @@ function startVoiceCall(){callType='voice';startCall();}
 function startVideoCall(){callType='video';startCall();}
 
 // ── AI-AWARE SEND ─────────────────────────────────────────────────────────
-const _origSend=window.sendMsg;
-window.sendMsg=async function(){
+
+
   if(aiMode){
     const inp=document.getElementById('ch-inp');
     const text=inp.value.trim(); if(!text) return;
@@ -2195,7 +2215,7 @@ window.sendMsg=async function(){
     inp.value=''; body.scrollTop=body.scrollHeight;
     await askAI(text); return;
   }
-  if(_origSend) _origSend();
+  
 };
 
 // ── VERIFY STYLE ─────────────────────────────────────────────────────────
