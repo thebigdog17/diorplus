@@ -510,6 +510,17 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
 .nr-txt b{color:var(--w);font-weight:700;}
 .nr-time{font-size:11px;color:var(--g2);}
 
+/* OTP */
+.otp-inp{width:42px;height:50px;border-radius:12px;background:var(--s2);border:2px solid var(--s3);color:var(--w);font-size:22px;font-weight:800;text-align:center;outline:none;}
+.otp-inp:focus{border-color:var(--sky);}
+/* AVATAR OPTIONS */
+.av-opt{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:3px solid transparent;background:var(--s2);}
+.av-opt.sel{border-color:var(--sky);}
+.av-bg-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;}
+.av-bg-opt.sel{border-color:var(--sky);}
+/* STORY VIEWER COUNT */
+.story-viewer-pill{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+
 /* REELS - TIKTOK STYLE */
 #screen-reels{position:fixed;inset:0;background:#000;z-index:10;max-width:480px;margin:0 auto;}
 .reels-container{width:100%;height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
@@ -918,6 +929,89 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
   </div>
 </div>
 
+<!-- GROUP CHAT CREATE -->
+<div id="gc-create" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:none;align-items:flex-end;max-width:480px;margin:0 auto;">
+  <div style="background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;margin-bottom:16px;">
+      <button onclick="closeGroupCreate()" style="background:none;border:none;color:var(--g2);font-size:22px;cursor:pointer;">✕</button>
+      <h3 style="flex:1;text-align:center;font-size:16px;font-weight:800;">New Group Chat</h3>
+      <button onclick="createGroup()" style="background:var(--grad);border:none;border-radius:20px;padding:8px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;">Create</button>
+    </div>
+    <input id="gc-name" placeholder="Group name..." style="width:100%;background:var(--s2);border:none;border-radius:12px;padding:13px 16px;color:var(--w);font-size:14px;outline:none;margin-bottom:14px;"/>
+    <div style="font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;">ADD MEMBERS</div>
+    <div class="ms-search" style="margin:0 0 12px;"><input placeholder="Search users..." id="gc-search" oninput="gcSearchUsers(this.value)"/></div>
+    <div id="gc-selected" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;min-height:10px;"></div>
+    <div id="gc-user-results"></div>
+  </div>
+</div>
+
+<!-- GROUP CHAT VIEW -->
+<div id="gc-chat" style="position:fixed;inset:0;background:var(--bg);z-index:400;display:none;flex-direction:column;max-width:480px;margin:0 auto;">
+  <div class="ch-hdr">
+    <button onclick="closeGCChat()" style="background:none;border:none;color:var(--w);cursor:pointer;padding:8px;"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div style="width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👥</div>
+    <div style="flex:1;margin-left:10px;"><div id="gc-chat-name" style="font-weight:800;font-size:14px;"></div><div id="gc-chat-members" style="font-size:11px;color:var(--g2);"></div></div>
+    <button onclick="openReport('group',currentGC?.id)" style="background:none;border:none;color:var(--g2);cursor:pointer;font-size:18px;">⚠️</button>
+  </div>
+  <div id="gc-body" style="flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;"></div>
+  <div style="padding:10px 14px;border-top:1px solid var(--s3);display:flex;gap:8px;align-items:center;">
+    <button onclick="toggleGCEmoji()" style="background:none;border:none;font-size:20px;cursor:pointer;">😊</button>
+    <input id="gc-inp" placeholder="Message group..." style="flex:1;background:var(--s2);border:none;border-radius:20px;padding:10px 16px;color:var(--w);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')sendGCMsg()"/>
+    <button onclick="sendGCMsg()" style="background:var(--grad);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
+</div>
+
+<!-- CALL LOGS -->
+<div id="call-logs" style="position:fixed;inset:0;background:var(--bg);z-index:400;display:none;flex-direction:column;max-width:480px;margin:0 auto;">
+  <div class="ch-hdr">
+    <button onclick="closeCallLogs()" style="background:none;border:none;color:var(--w);cursor:pointer;padding:8px;"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <h2 style="flex:1;font-size:16px;font-weight:800;">Recent Calls</h2>
+    <button onclick="clearCallLogs()" style="background:none;border:none;color:var(--red);font-size:13px;font-weight:700;cursor:pointer;">Clear</button>
+  </div>
+  <div id="call-log-list" style="flex:1;overflow-y:auto;"></div>
+</div>
+
+<!-- AVATAR BUILDER -->
+<div id="avatar-builder" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:none;flex-direction:column;max-width:480px;margin:0 auto;overflow-y:auto;">
+  <div class="ep-hdr">
+    <button onclick="closeAvatarBuilder()" class="ep-cancel">Cancel</button>
+    <h2>Create Avatar</h2>
+    <button onclick="saveAvatar()" class="ep-done">Save</button>
+  </div>
+  <div style="padding:20px 16px;">
+    <div id="avatar-preview" style="width:120px;height:120px;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:60px;background:var(--s2);border:3px solid var(--sky);"></div>
+    <div style="font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;">CHOOSE SKIN</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;" id="av-skin"></div>
+    <div style="font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;">HAIR STYLE</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;" id="av-hair"></div>
+    <div style="font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;">EYES</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;" id="av-eyes"></div>
+    <div style="font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;">ACCESSORIES</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;" id="av-acc"></div>
+    <div style="font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;">BACKGROUND COLOR</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;" id="av-bg"></div>
+  </div>
+</div>
+
+<!-- OTP MODAL -->
+<div id="otp-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:none;align-items:center;justify-content:center;max-width:480px;margin:0 auto;">
+  <div style="background:var(--s1);border-radius:20px;padding:28px 24px;width:90%;max-width:340px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:12px;">📱</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:8px;">Verify Your Account</div>
+    <div style="font-size:13px;color:var(--g2);margin-bottom:20px;" id="otp-msg">Enter the 6-digit code sent to your email/phone</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;">
+      <input class="otp-inp" maxlength="1" oninput="otpNext(this,0)" id="otp0"/>
+      <input class="otp-inp" maxlength="1" oninput="otpNext(this,1)" id="otp1"/>
+      <input class="otp-inp" maxlength="1" oninput="otpNext(this,2)" id="otp2"/>
+      <input class="otp-inp" maxlength="1" oninput="otpNext(this,3)" id="otp3"/>
+      <input class="otp-inp" maxlength="1" oninput="otpNext(this,4)" id="otp4"/>
+      <input class="otp-inp" maxlength="1" oninput="otpNext(this,5)" id="otp5"/>
+    </div>
+    <button onclick="verifyOTP()" style="width:100%;background:var(--grad);border:none;border-radius:12px;padding:14px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:10px;">Verify ✓</button>
+    <button onclick="resendOTP()" style="background:none;border:none;color:var(--sky);font-size:13px;cursor:pointer;">Resend code</button>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="hdr" id="main-hdr">
@@ -936,9 +1030,16 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
     </div>
     <div class="screen" id="screen-reels" style="padding-bottom:0;display:none;"></div>
     <div class="screen" id="screen-messages">
+      <div style="display:flex;align-items:center;padding:12px 16px 0;gap:10px;">
+        <div style="font-size:18px;font-weight:800;flex:1;">Messages</div>
+        <button onclick="openGroupCreate()" style="background:var(--grad);border:none;border-radius:20px;padding:7px 14px;color:#fff;font-size:12px;font-weight:800;cursor:pointer;">+ Group</button>
+        <button onclick="openCallLogs()" style="background:var(--s2);border:none;border-radius:20px;padding:7px 14px;color:var(--w);font-size:12px;font-weight:700;cursor:pointer;">📋 Calls</button>
+      </div>
       <div class="ms-search"><input placeholder="🔍  Search users" id="ms-inp" oninput="searchUsers(this.value)"/></div>
-      <div class="ms-sec">Messages</div>
+      <div class="ms-sec">Direct Messages</div>
       <div id="msg-list"></div>
+      <div class="ms-sec" id="gc-sec" style="display:none;">Group Chats</div>
+      <div id="gc-list"></div>
     </div>
     <div class="screen" id="screen-explore">
       <div class="ex-search"><div class="ex-sw"><span class="ex-search-ico">🔍</span><input class="ex-inp" id="ex-inp" placeholder="Search people..." oninput="exploreSearch(this.value)"/></div></div>
@@ -981,7 +1082,7 @@ input,textarea,button{font-family:'Nunito',sans-serif;}
       </div>
       <div class="prof-btns">
         <button class="prof-btn" onclick="openEP()">Edit Profile</button>
-        <button class="prof-btn" onclick="openStoryCreate()">Add Story</button>
+        <button class="prof-btn" onclick="openAvatarBuilder()">🎨 Avatar</button>
         <button class="prof-btn" onclick="startLive()">🔴 Go Live</button>
       </div>
       <div class="prof-tabs">
@@ -2101,4 +2202,209 @@ window.sendMsg=async function(){
 const vs=document.createElement('style');
 vs.textContent=`.verify-tier{display:flex;align-items:center;gap:12px;background:var(--s1);border-radius:12px;padding:12px 14px;cursor:pointer;border:1px solid var(--s3);margin-bottom:2px}.verify-tier:active{opacity:.8}`;
 document.head.appendChild(vs);
+</script>
+<script>
+// ── GROUP CHAT ────────────────────────────────────────────────────────────
+let gcSelected = [], currentGC = null, gcMsgs = [];
+function openGroupCreate() {
+  gcSelected = [];
+  document.getElementById('gc-selected').innerHTML = '';
+  document.getElementById('gc-user-results').innerHTML = '';
+  document.getElementById('gc-name').value = '';
+  document.getElementById('gc-create').style.display = 'flex';
+}
+function closeGroupCreate() { document.getElementById('gc-create').style.display = 'none'; }
+async function gcSearchUsers(q) {
+  if (!q) { document.getElementById('gc-user-results').innerHTML = ''; return; }
+  const users = await api(`/api/users/search?q=${encodeURIComponent(q)}`);
+  if (!Array.isArray(users)) return;
+  document.getElementById('gc-user-results').innerHTML = users.filter(u => u.id !== ME.id).map(u => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--s3);cursor:pointer;" onclick="gcToggleUser('${u.id}','${u.name}','${u.username}')">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;overflow:hidden;">${u.photoUrl?`<img src="${imgSrc(u.photoUrl)}" style="width:100%;height:100%;object-fit:cover;"/>`:u.initials||'?'}</div>
+      <div><div style="font-weight:700;font-size:14px;">${u.name}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
+      <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid var(--s3);display:flex;align-items:center;justify-content:center;" id="gc-chk-${u.id}">${gcSelected.find(x=>x.id===u.id)?'✓':''}</div>
+    </div>`).join('');
+}
+function gcToggleUser(id, name, username) {
+  const idx = gcSelected.findIndex(x => x.id === id);
+  if (idx >= 0) gcSelected.splice(idx, 1); else gcSelected.push({id, name, username});
+  document.getElementById('gc-selected').innerHTML = gcSelected.map(u => `<div style="background:var(--sky);color:#000;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;">@${u.username} ✕</div>`).join('');
+  const chk = document.getElementById('gc-chk-'+id); if(chk) chk.textContent = gcSelected.find(x=>x.id===id)?'✓':'';
+}
+async function createGroup() {
+  const name = document.getElementById('gc-name').value.trim();
+  if (!name) { toast('Add a group name'); return; }
+  if (gcSelected.length < 1) { toast('Add at least 1 member'); return; }
+  const members = [...gcSelected.map(u => u.id), ME.id];
+  const r = await api('/api/groups', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, members, createdBy: ME.id})});
+  closeGroupCreate();
+  if (r.group) { toast('Group created! 🎉'); openGCChat(r.group); loadGroupChats(); }
+}
+async function loadGroupChats() {
+  const groups = await api(`/api/groups?userId=${ME.id}`);
+  if (!Array.isArray(groups) || !groups.length) { document.getElementById('gc-sec').style.display='none'; return; }
+  document.getElementById('gc-sec').style.display = 'block';
+  document.getElementById('gc-list').innerHTML = groups.map(g => `
+    <div class="ms-item" onclick='openGCChat(${JSON.stringify(g)})'>
+      <div style="width:48px;height:48px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">👥</div>
+      <div class="ms-info"><div class="ms-name">${g.name} <span class="gc-badge">GROUP</span></div><div class="ms-last">${g.members?.length} members</div></div>
+    </div>`).join('');
+}
+function openGCChat(group) {
+  currentGC = group;
+  document.getElementById('gc-chat-name').textContent = group.name;
+  document.getElementById('gc-chat-members').textContent = `${group.members?.length || 0} members`;
+  document.getElementById('gc-body').innerHTML = '';
+  document.getElementById('gc-chat').style.display = 'flex';
+  loadGCMessages();
+  socket?.emit('join_group', { groupId: group.id, userId: ME.id });
+}
+function closeGCChat() { document.getElementById('gc-chat').style.display = 'none'; currentGC = null; }
+async function loadGCMessages() {
+  if (!currentGC) return;
+  const msgs = await api(`/api/groups/${currentGC.id}/messages`);
+  if (!Array.isArray(msgs)) return;
+  const body = document.getElementById('gc-body');
+  body.innerHTML = msgs.map(m => renderGCMsg(m)).join('');
+  body.scrollTop = body.scrollHeight;
+}
+function renderGCMsg(m) {
+  const mine = m.fromId === ME.id;
+  return `<div style="display:flex;flex-direction:column;align-items:${mine?'flex-end':'flex-start'};gap:2px;">
+    ${!mine?`<div style="font-size:11px;color:var(--sky);font-weight:700;padding:0 10px;">@${m.fromUsername||'?'}</div>`:''}
+    <div class="ch-msg ${mine?'mine':'theirs'}">${m.text}</div>
+    <div style="font-size:10px;color:var(--g2);padding:0 10px;">${timeAgo(m.createdAt)}</div>
+  </div>`;
+}
+async function sendGCMsg() {
+  const inp = document.getElementById('gc-inp');
+  const text = inp.value.trim(); if (!text || !currentGC) return;
+  inp.value = '';
+  const r = await api(`/api/groups/${currentGC.id}/messages`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:ME.id,text,fromUsername:ME.username})});
+  if (r.id) {
+    const body = document.getElementById('gc-body');
+    body.innerHTML += renderGCMsg({...r, fromId: ME.id});
+    body.scrollTop = body.scrollHeight;
+  }
+}
+function toggleGCEmoji() {
+  const emojis = ['❤️','😂','😍','🔥','👏','😭','🙏','💯','🎉','😊','🥰','😎','🤔','👀','💀'];
+  const existing = document.getElementById('gc-emoji-tray');
+  if (existing) { existing.remove(); return; }
+  const tray = document.createElement('div');
+  tray.id = 'gc-emoji-tray';
+  tray.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:var(--s1);border-top:1px solid var(--s3);';
+  tray.innerHTML = emojis.map(e => `<button style="background:none;border:none;font-size:22px;cursor:pointer;" onclick="insertGCEmoji('${e}')">${e}</button>`).join('');
+  document.getElementById('gc-chat').insertBefore(tray, document.getElementById('gc-chat').lastElementChild);
+}
+function insertGCEmoji(e) { document.getElementById('gc-inp').value += e; document.getElementById('gc-emoji-tray')?.remove(); }
+
+// ── CALL LOGS ────────────────────────────────────────────────────────────
+let callLogs = JSON.parse(localStorage.getItem('dior_call_logs') || '[]');
+function logCall(userId, name, type, duration, status) {
+  callLogs.unshift({ userId, name, type, duration, status, time: Date.now() });
+  if (callLogs.length > 50) callLogs = callLogs.slice(0, 50);
+  localStorage.setItem('dior_call_logs', JSON.stringify(callLogs));
+}
+function openCallLogs() {
+  document.getElementById('call-log-list').innerHTML = callLogs.length ? callLogs.map(c => `
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--s3);">
+      <div style="font-size:24px;">${c.type==='video'?'📹':'📞'}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;">${c.name||'Unknown'}</div>
+        <div style="font-size:12px;color:${c.status==='missed'?'var(--red)':c.status==='incoming'?'var(--green)':'var(--g2)'};">${c.status==='missed'?'Missed':c.status==='incoming'?'Incoming':'Outgoing'} · ${c.duration||'0:00'}</div>
+      </div>
+      <div style="font-size:11px;color:var(--g2);">${timeAgo(c.time)}</div>
+      <button onclick="startVoiceCall()" style="background:var(--s2);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;">📞</button>
+    </div>`).join('') : '<div style="padding:60px;text-align:center;color:var(--g2);font-size:14px;">No recent calls</div>';
+  document.getElementById('call-logs').style.display = 'flex';
+}
+function closeCallLogs() { document.getElementById('call-logs').style.display = 'none'; }
+function clearCallLogs() { if(!confirm('Clear all call logs?')) return; callLogs=[]; localStorage.setItem('dior_call_logs','[]'); openCallLogs(); }
+
+// ── AVATAR BUILDER ───────────────────────────────────────────────────────
+const avatarOptions = {
+  skin: ['👤','🟤','🟡','🟠','⬛'],
+  hair: ['👱','🧑','👩','🧔','👲','🧕'],
+  eyes: ['😊','😎','🤓','😏','🥸'],
+  acc: ['none','🎩','👑','🎓','🎤','💎'],
+  bg: ['#1a1a2e','#16213e','#0f3460','#533483','#e94560','#2d6a4f']
+};
+let avatarState = { skin:'👤', hair:'🧑', eyes:'😊', acc:'none', bg:'#1a1a2e' };
+function openAvatarBuilder() {
+  renderAvatarOptions();
+  updateAvatarPreview();
+  document.getElementById('avatar-builder').style.display = 'flex';
+}
+function closeAvatarBuilder() { document.getElementById('avatar-builder').style.display = 'none'; }
+function renderAvatarOptions() {
+  ['skin','hair','eyes','acc'].forEach(cat => {
+    document.getElementById('av-'+cat).innerHTML = avatarOptions[cat].map(o =>
+      `<div class="av-opt${avatarState[cat]===o?' sel':''}" onclick="setAv('${cat}','${o}')">${o==='none'?'❌':o}</div>`).join('');
+  });
+  document.getElementById('av-bg').innerHTML = avatarOptions.bg.map(c =>
+    `<div class="av-bg-opt${avatarState.bg===c?' sel':''}" style="background:${c};" onclick="setAv('bg','${c}')"></div>`).join('');
+}
+function setAv(cat, val) { avatarState[cat]=val; renderAvatarOptions(); updateAvatarPreview(); }
+function updateAvatarPreview() {
+  const p = document.getElementById('avatar-preview');
+  p.style.background = avatarState.bg;
+  p.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;font-size:28px;line-height:1.2;">
+    <span>${avatarState.hair}</span><span>${avatarState.skin}</span>
+    <span style="font-size:16px;">${avatarState.eyes}${avatarState.acc!=='none'?avatarState.acc:''}</span>
+  </div>`;
+}
+async function saveAvatar() {
+  const avatarData = JSON.stringify(avatarState);
+  await api(`/api/users/${ME.id}/update`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avatar: avatarData})});
+  ME.avatar = avatarData;
+  toast('Avatar saved! 🎨');
+  closeAvatarBuilder();
+  updateProfileUI();
+}
+
+// ── OTP ──────────────────────────────────────────────────────────────────
+let otpCode = '', otpPendingUser = null;
+function generateOTP() { return Math.floor(100000 + Math.random() * 900000).toString(); }
+function showOTPModal(msg, pendingUser) {
+  otpPendingUser = pendingUser;
+  otpCode = generateOTP();
+  document.getElementById('otp-msg').textContent = msg || `Code: ${otpCode} (demo — in production sent via email/SMS)`;
+  [0,1,2,3,4,5].forEach(i => document.getElementById('otp'+i).value = '');
+  document.getElementById('otp-modal').style.display = 'flex';
+  document.getElementById('otp0').focus();
+  // Pre-fill in demo mode so user can see it
+  setTimeout(() => toast(`Demo OTP: ${otpCode}`, 5000), 500);
+}
+function otpNext(inp, idx) {
+  if (inp.value.length === 1 && idx < 5) document.getElementById('otp'+(idx+1)).focus();
+}
+function verifyOTP() {
+  const entered = [0,1,2,3,4,5].map(i => document.getElementById('otp'+i).value).join('');
+  if (entered === otpCode) {
+    document.getElementById('otp-modal').style.display = 'none';
+    if (otpPendingUser) finishRegistration(otpPendingUser);
+  } else { toast('Incorrect code ❌'); }
+}
+function resendOTP() {
+  otpCode = generateOTP();
+  toast(`New code: ${otpCode} (demo)`, 5000);
+}
+
+// ── STORY VIEWER COUNTS ──────────────────────────────────────────────────
+// Injected into story viewer display — seenBy count shown on story
+function getStoryViewerCount(story) {
+  return (story.seenBy || []).length;
+}
+
+// ── SOCKET EVENTS FOR GROUP CHAT ─────────────────────────────────────────
+if (typeof socket !== 'undefined' && socket) {
+  socket.on('gc_message', (msg) => {
+    if (currentGC && msg.groupId === currentGC.id) {
+      const body = document.getElementById('gc-body');
+      body.innerHTML += renderGCMsg(msg);
+      body.scrollTop = body.scrollHeight;
+    }
+  });
+}
 </script>
