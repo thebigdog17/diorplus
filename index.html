@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .auth-btn:disabled{opacity:.6;}
 .pw-wrap{position:relative;width:100%;margin-bottom:10px;}
 .pw-wrap .auth-inp{margin-bottom:0;padding-right:48px;}
-.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g2);font-size:18px;cursor:pointer;padding:4px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g2);cursor:pointer;padding:4px 8px;font-size:13px;font-weight:700;letter-spacing:.5px;}
 .auth-link{color:var(--sky);font-size:13px;text-align:center;cursor:pointer;margin-top:12px;background:none;border:none;width:100%;}
 
 /* \u2500\u2500 SPLASH \u2500\u2500 */
@@ -323,14 +323,14 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 <!-- \u2500\u2500 AUTH \u2500\u2500 -->
 <div id="auth">
   <div class="auth-logo">DIOR+</div>
-  <div class="auth-sub">Connect \u00b7 Share \u00b7 Live</div>
+  <div class="auth-sub">Connect · Share · Live</div>
   <div class="auth-tabs">
     <div class="auth-tab on" id="at-li" onclick="authTab('li')">Log In</div>
     <div class="auth-tab" id="at-su" onclick="authTab('su')">Sign Up</div>
   </div>
   <div id="auth-li" style="width:100%;">
     <input class="auth-inp" id="li-user" placeholder="Username or Email"/>
-    <div class="pw-wrap"><input class="auth-inp" id="li-pass" placeholder="Password" type="password"/><button class="pw-eye" onclick="togglePw('li-pass',this)">👁</button></div>
+    <div class="pw-wrap"><input class="auth-inp" id="li-pass" placeholder="Password" type="password"/><button id="eye-li-pass" class="pw-eye" onclick="togglePw('li-pass')" style="font-size:13px;font-weight:700;color:var(--g2);">Show</button></div>
     <div class="auth-err" id="li-err"></div>
     <button class="auth-btn" id="li-btn" onclick="doLogin()">Log In</button>
     <button class="auth-link" onclick="openForgotPw()">Forgot password?</button>
@@ -340,7 +340,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <input class="auth-inp" id="su-user" placeholder="Username (no spaces)"/>
     <input class="auth-inp" id="su-email" placeholder="Email address"/>
     <input class="auth-inp" id="su-phone" placeholder="Phone number (optional)"/>
-    <div class="pw-wrap"><input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password"/><button class="pw-eye" onclick="togglePw('su-pass',this)">👁</button></div>
+    <div class="pw-wrap"><input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password"/><button id="eye-su-pass" class="pw-eye" onclick="togglePw('su-pass')" style="font-size:13px;font-weight:700;color:var(--g2);">Show</button></div>
     <div class="auth-err" id="su-err"></div>
     <button class="auth-btn" id="su-btn" onclick="doSignup()">Create Account</button>
   </div>
@@ -611,9 +611,11 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 <div class="overlay" id="pw-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closePW()">Cancel</button><h2>Change Password</h2><button class="ov-done" onclick="savePassword()">Save</button></div>
   <div style="flex:1;overflow-y:auto;padding:16px;">
-    <input class="auth-inp" id="pw-old" placeholder="Current Password" type="password"/>
-    <input class="auth-inp" id="pw-new" placeholder="New Password" type="password"/>
-    <input class="auth-inp" id="pw-new2" placeholder="Confirm New Password" type="password"/>
+    <div class="pw-wrap"><input class="auth-inp" id="pw-old" placeholder="Current Password" type="password" style="margin-bottom:0;"/><button id="eye-pw-old" class="pw-eye" onclick="togglePw('pw-old')" style="font-size:13px;font-weight:700;color:var(--g2);">Show</button></div>
+    <div style="height:10px;"></div>
+    <div class="pw-wrap"><input class="auth-inp" id="pw-new" placeholder="New Password" type="password" style="margin-bottom:0;"/><button id="eye-pw-new" class="pw-eye" onclick="togglePw('pw-new')" style="font-size:13px;font-weight:700;color:var(--g2);">Show</button></div>
+    <div style="height:10px;"></div>
+    <div class="pw-wrap"><input class="auth-inp" id="pw-new2" placeholder="Confirm New Password" type="password" style="margin-bottom:0;"/><button id="eye-pw-new2" class="pw-eye" onclick="togglePw('pw-new2')" style="font-size:13px;font-weight:700;color:var(--g2);">Show</button></div>
     <div class="auth-err" id="pw-err"></div>
   </div>
 </div>
@@ -637,7 +639,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
         <input class="otp-inp" maxlength="1" id="fp-otp4" oninput="fpOtpNext(4)"/>
         <input class="otp-inp" maxlength="1" id="fp-otp5" oninput="fpOtpNext(5)"/>
       </div>
-      <div class="pw-wrap"><input class="auth-inp" id="fp-newpw" placeholder="New Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('fp-newpw',this)">&#x1F441;</button></div>
+      <div class="pw-wrap"><input class="auth-inp" id="fp-newpw" placeholder="New Password" type="password" style="margin-bottom:0;"/><button id="eye-fp-newpw" class="pw-eye" onclick="togglePw('fp-newpw')" style="font-size:13px;font-weight:700;color:var(--g2);">Show</button></div>
       <div style="height:10px;"></div>
       <button class="auth-btn" onclick="confirmReset()">Reset Password</button>
     </div>
@@ -819,8 +821,7 @@ let aiMode = false;
 let typingTimer = null;
 let notifications = [];
 let callLogs = JSON.parse(localStorage.getItem('dp_call_logs')||'[]');
-let chatSettings=JSON.parse(localStorage.getItem("dp_chat_settings")||"{}"); let streaks=JSON.parse(localStorage.getItem("dp_streaks")||"{}"); let myCoins=parseInt(localStorage.getItem("dp_coins")||"1000"); let selectedGift=null,fpResetCode="",fpTargetUser=null,liveCoinsEarned=0;
-const CREATOR_USERNAME="dior"; const THEMES={grad:"linear-gradient(135deg,#38bdf8,#f472b6)",ocean:"linear-gradient(135deg,#4ade80,#22d3ee)",sunset:"linear-gradient(135deg,#f472b6,#fbbf24)",purple:"linear-gradient(135deg,#a855f7,#6366f1)",fire:"linear-gradient(135deg,#fb923c,#f87171)",gold:"linear-gradient(135deg,#fbbf24,#4ade80)",white:"#fff",dark:"#2a2a3d"}; const GIFTS=[{ico:"🌹",name:"Rose",coins:10},{ico:"🍭",name:"Candy",coins:20},{ico:"💐",name:"Bouquet",coins:50},{ico:"🎂",name:"Cake",coins:100},{ico:"💎",name:"Diamond",coins:200},{ico:"🏆",name:"Trophy",coins:500},{ico:"🚀",name:"Rocket",coins:1000},{ico:"👑",name:"Crown",coins:2000}];
+
 let localStream = null, peerConn = null;
 let callType = 'voice', callInterval = null, callSecs = 0;
 let gcSelected = [];
@@ -849,7 +850,8 @@ function timeAgo(ts){
   if(s<3600) return Math.floor(s/60)+'m';
   if(s<86400) return Math.floor(s/3600)+'h';
   return Math.floor(s/86400)+'d';
-// ── CONSTANTS
+}
+
 const CREATOR_USERNAME = 'dior'; // set this to your username for auto creator badge
 const THEMES = {grad:"linear-gradient(135deg,#38bdf8,#f472b6)",ocean:"linear-gradient(135deg,#4ade80,#22d3ee)",sunset:"linear-gradient(135deg,#f472b6,#fbbf24)",purple:"linear-gradient(135deg,#a855f7,#6366f1)",fire:"linear-gradient(135deg,#fb923c,#f87171)",gold:"linear-gradient(135deg,#fbbf24,#4ade80)",white:"#fff",dark:"#2a2a3d"};
 const GIFTS = [{ico:"🌹",name:"Rose",coins:10},{ico:"🍭",name:"Candy",coins:20},{ico:"💐",name:"Bouquet",coins:50},{ico:"🎂",name:"Cake",coins:100},{ico:"💎",name:"Diamond",coins:200},{ico:"🏆",name:"Trophy",coins:500},{ico:"🚀",name:"Rocket",coins:1000},{ico:"👑",name:"Crown",coins:2000}];
@@ -868,7 +870,20 @@ function badge(user){
 }
 
 // PASSWORD EYE TOGGLE
-function togglePw(id, btn){ const inp=$(id); if(inp.type==="password"){ inp.type="text"; btn.textContent="🙈"; } else { inp.type="password"; btn.textContent="👁"; } }
+function togglePw(inputId){
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById('eye-'+inputId);
+  if(!inp || !btn) return;
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    btn.textContent = 'Hide';
+    btn.style.color = 'var(--sky)';
+  } else {
+    inp.type = 'password';
+    btn.textContent = 'Show';
+    btn.style.color = 'var(--g2)';
+  }
+}
 
 // STREAK HELPERS
 function getStreak(uid){ return streaks[uid]||{count:0,lastDate:null}; }
@@ -1105,7 +1120,7 @@ function prependPost(post, prepend=true){
       <div class="post-av" onclick="openUserProfile('${post.userId}')">${avatarEl(post.user,38)}</div>
       <div class="post-info">
         <div class="post-name">${post.user?.name||'?'} ${badge(post.user?.verifyTier)}</div>
-        <div class="post-time">@${post.user?.username||'?'} \u00b7 ${timeAgo(post.createdAt)}</div>
+        <div class="post-time">@${post.user?.username||'?'} · ${timeAgo(post.createdAt)}</div>
       </div>
       ${mine?`<button class="post-menu" onclick="openPostMenu('${post.id}')">\u2022\u2022\u2022</button>`:''}
     </div>
@@ -1384,7 +1399,7 @@ function openCallLogs(){
   $('call-log-list').innerHTML=callLogs.length?callLogs.map(c=>`
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--s2);">
       <div style="font-size:24px;">${c.type==='video'?'\ud83d\udcf9':'\ud83d\udcde'}</div>
-      <div style="flex:1;"><div style="font-weight:700;font-size:14px;">${c.name||'Unknown'}</div><div style="font-size:12px;color:${c.status==='missed'?'var(--red)':'var(--g2)'};">${c.status} \u00b7 ${c.duration}</div></div>
+      <div style="flex:1;"><div style="font-weight:700;font-size:14px;">${c.name||'Unknown'}</div><div style="font-size:12px;color:${c.status==='missed'?'var(--red)':'var(--g2)'};">${c.status} · ${c.duration}</div></div>
       <div style="font-size:11px;color:var(--g2);">${timeAgo(c.time)}</div>
     </div>`).join(''):'<div style="padding:60px;text-align:center;color:var(--g2);">No recent calls</div>';
   $('call-logs-overlay').classList.add('show');
