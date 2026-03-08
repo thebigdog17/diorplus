@@ -15,11 +15,11 @@
 }
 body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
 
-/* ── TOAST ── */
+/* \u2500\u2500 TOAST \u2500\u2500 */
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#222238;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:.3s;z-index:9999;white-space:nowrap;pointer-events:none;}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* ── AUTH ── */
+/* \u2500\u2500 AUTH \u2500\u2500 */
 #auth{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;max-width:480px;margin:0 auto;}
 .auth-logo{font-size:52px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
 .auth-sub{color:var(--g1);font-size:14px;margin-bottom:32px;letter-spacing:2px;}
@@ -31,15 +31,19 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .auth-err{color:var(--red);font-size:12px;min-height:16px;margin-bottom:6px;text-align:center;}
 .auth-btn{width:100%;background:var(--grad);border:none;border-radius:12px;padding:15px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;margin-top:4px;}
 .auth-btn:disabled{opacity:.6;}
+.pw-wrap{position:relative;width:100%;margin-bottom:10px;}
+.pw-wrap .auth-inp{margin-bottom:0;padding-right:48px;}
+.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g2);font-size:18px;cursor:pointer;padding:4px;}
+.auth-link{color:var(--sky);font-size:13px;text-align:center;cursor:pointer;margin-top:12px;background:none;border:none;width:100%;}
 
-/* ── SPLASH ── */
+/* \u2500\u2500 SPLASH \u2500\u2500 */
 #splash{position:fixed;inset:0;z-index:8000;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;max-width:480px;margin:0 auto;}
 .sp-logo{font-size:48px;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .sp-bar{width:160px;height:3px;background:var(--s3);border-radius:3px;margin-top:24px;overflow:hidden;}
 .sp-fill{height:100%;background:var(--grad);border-radius:3px;animation:spfill 1.2s ease forwards;}
 @keyframes spfill{from{width:0}to{width:100%}}
 
-/* ── APP ── */
+/* \u2500\u2500 APP \u2500\u2500 */
 #app{display:none;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;}
 #app.show{display:flex;}
 .hdr{display:flex;align-items:center;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--s2);position:sticky;top:0;z-index:100;}
@@ -50,12 +54,12 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .ndot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;display:none;}
 .ndot.show{display:block;}
 
-/* ── SCREENS ── */
+/* \u2500\u2500 SCREENS \u2500\u2500 */
 .content{flex:1;overflow-y:auto;padding-bottom:70px;}
 .screen{display:none;}
 .screen.on{display:block;}
 
-/* ── TABBAR ── */
+/* \u2500\u2500 TABBAR \u2500\u2500 */
 .tabbar{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--s1);border-top:1px solid var(--s2);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:200;}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--g2);cursor:pointer;padding:4px 0;transition:.2s;}
 .tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;}
@@ -63,7 +67,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .tab.on{color:var(--sky);}
 .tab-av{width:22px;height:22px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;overflow:hidden;}
 
-/* ── STORIES ── */
+/* \u2500\u2500 STORIES \u2500\u2500 */
 .stories-bar{display:flex;gap:12px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;}
 .stories-bar::-webkit-scrollbar{display:none;}
 .story-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;}
@@ -73,7 +77,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .story-nm{font-size:10px;color:var(--g1);max-width:60px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 .story-add{background:var(--s2);border:2px dashed var(--s3);cursor:pointer;}
 
-/* ── POSTS ── */
+/* \u2500\u2500 POSTS \u2500\u2500 */
 .post{background:var(--s1);margin-bottom:8px;border-radius:0;}
 .post-hdr{display:flex;align-items:center;padding:12px 14px;gap:10px;}
 .post-av{width:38px;height:38px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;overflow:hidden;flex-shrink:0;}
@@ -97,7 +101,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .post-caption{padding:4px 14px 12px;font-size:14px;line-height:1.5;}
 .post-caption .post-user{font-weight:700;}
 
-/* ── EXPLORE ── */
+/* \u2500\u2500 EXPLORE \u2500\u2500 */
 .ex-search{padding:12px 16px;}
 .ex-inp{width:100%;background:var(--s2);border:none;border-radius:12px;padding:12px 16px;color:var(--w);font-size:14px;outline:none;}
 .ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
@@ -108,7 +112,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .ex-uav{width:44px;height:44px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;overflow:hidden;flex-shrink:0;}
 .ex-uav img{width:100%;height:100%;object-fit:cover;}
 
-/* ── MESSAGES ── */
+/* \u2500\u2500 MESSAGES \u2500\u2500 */
 .ms-search{padding:12px 16px;}
 .ms-inp{width:100%;background:var(--s2);border:none;border-radius:12px;padding:12px 16px;color:var(--w);font-size:14px;outline:none;}
 .ms-sec{font-size:12px;font-weight:800;color:var(--g2);padding:4px 16px 8px;letter-spacing:1px;}
@@ -122,7 +126,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .ms-time{font-size:11px;color:var(--g2);}
 .online-dot{width:10px;height:10px;border-radius:50%;background:var(--green);position:absolute;bottom:2px;right:2px;border:2px solid var(--bg);}
 
-/* ── CHAT ── */
+/* \u2500\u2500 CHAT \u2500\u2500 */
 #chat{position:fixed;inset:0;background:var(--bg);z-index:300;display:none;flex-direction:column;max-width:480px;margin:0 auto;}
 .ch-hdr{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid var(--s2);gap:10px;background:var(--s1);}
 .ch-back{background:none;border:none;color:var(--w);cursor:pointer;padding:4px;}
@@ -148,7 +152,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .emoji-btn{background:none;border:none;font-size:22px;cursor:pointer;padding:2px;}
 .ai-bubble{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;align-self:flex-start;max-width:80%;border-bottom-left-radius:4px;}
 
-/* ── PROFILE ── */
+/* \u2500\u2500 PROFILE \u2500\u2500 */
 .prof-hdr{display:flex;align-items:center;padding:14px 16px;gap:10px;}
 .prof-hdr h1{flex:1;font-size:18px;font-weight:800;}
 .prof-hdr button{background:none;border:none;color:var(--w);cursor:pointer;padding:6px;}
@@ -175,13 +179,17 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .prof-item{aspect-ratio:1;overflow:hidden;cursor:pointer;background:var(--s2);}
 .prof-item img,.prof-item video{width:100%;height:100%;object-fit:cover;}
 
-/* ── VERIFY BADGE ── */
-.badge{font-size:13px;}
+/* \u2500\u2500 VERIFY BADGE \u2500\u2500 */
+.vbadge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:900;color:#000;flex-shrink:0;}
+.vbadge.blue{background:var(--sky);}
+.vbadge.gold{background:var(--gold);}
+.vbadge.purple{background:var(--purple);color:#fff;}
+.vbadge.creator{background:linear-gradient(135deg,#fbbf24,#f472b6);}
 .badge.blue{color:var(--sky);}
 .badge.gold{color:var(--gold);}
 .badge.purple{color:var(--purple);}
 
-/* ── OVERLAYS (generic) ── */
+/* \u2500\u2500 OVERLAYS (generic) \u2500\u2500 */
 .overlay{position:fixed;inset:0;background:var(--bg);z-index:400;display:none;flex-direction:column;max-width:480px;margin:0 auto;}
 .overlay.show{display:flex;}
 .ov-hdr{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--s2);gap:10px;}
@@ -189,7 +197,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .ov-close{background:none;border:none;color:var(--g1);font-size:22px;cursor:pointer;}
 .ov-done{background:var(--grad);border:none;border-radius:20px;padding:8px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;}
 
-/* ── BOTTOM SHEET ── */
+/* \u2500\u2500 BOTTOM SHEET \u2500\u2500 */
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:flex-end;max-width:480px;margin:0 auto;}
 .sheet.show{display:flex;}
 .sheet-box{background:var(--s1);border-radius:22px 22px 0 0;width:100%;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;}
@@ -198,13 +206,13 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .sheet-opt:active{opacity:.7;}
 .sheet-opt.danger{color:var(--red);}
 
-/* ── CREATE ── */
+/* \u2500\u2500 CREATE \u2500\u2500 */
 #create-overlay .media-preview{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;}
 #create-overlay .media-preview::-webkit-scrollbar{display:none;}
 .media-thumb{width:80px;height:80px;border-radius:10px;object-fit:cover;flex-shrink:0;}
 .create-inp{width:100%;background:var(--s2);border:none;border-radius:12px;padding:14px 16px;color:var(--w);font-size:14px;outline:none;margin:0 16px 12px;width:calc(100% - 32px);min-height:80px;resize:none;}
 
-/* ── STORY VIEWER ── */
+/* \u2500\u2500 STORY VIEWER \u2500\u2500 */
 #sv{position:fixed;inset:0;background:#000;z-index:600;display:none;flex-direction:column;max-width:480px;margin:0 auto;}
 .sv-progress{display:flex;gap:3px;padding:10px 12px 0;}
 .sv-bar{flex:1;height:2px;background:rgba(255,255,255,.3);border-radius:2px;}
@@ -222,7 +230,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .sv-tap-r{position:absolute;right:0;top:0;width:40%;height:100%;}
 .sv-viewers{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);padding:4px 12px;border-radius:20px;font-size:12px;color:#fff;}
 
-/* ── SETTINGS ── */
+/* \u2500\u2500 SETTINGS \u2500\u2500 */
 .settings-row{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--s2);gap:12px;cursor:pointer;}
 .settings-ico{font-size:20px;width:32px;text-align:center;}
 .settings-lbl{flex:1;font-size:15px;font-weight:600;}
@@ -230,18 +238,18 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .settings-arrow{color:var(--g2);}
 .settings-sec{font-size:11px;font-weight:800;color:var(--g2);padding:16px 16px 6px;letter-spacing:1px;}
 
-/* ── VERIFY ── */
+/* \u2500\u2500 VERIFY \u2500\u2500 */
 .verify-tier{display:flex;align-items:center;gap:12px;background:var(--s2);border-radius:12px;padding:14px;cursor:pointer;border:1px solid var(--s3);margin-bottom:10px;}
 .verify-tier:active{opacity:.8;}
 
-/* ── NOTIFICATIONS ── */
+/* \u2500\u2500 NOTIFICATIONS \u2500\u2500 */
 .notif-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--s2);}
 .notif-av{width:42px;height:42px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;overflow:hidden;flex-shrink:0;}
 .notif-av img{width:100%;height:100%;object-fit:cover;}
 .notif-txt{flex:1;font-size:13px;line-height:1.5;}
 .notif-txt b{font-weight:700;}
 
-/* ── REELS ── */
+/* \u2500\u2500 REELS \u2500\u2500 */
 #screen-reels{position:relative;height:calc(100vh - 120px);overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;}
 #screen-reels::-webkit-scrollbar{display:none;}
 .reel-item{position:relative;height:calc(100vh - 120px);scroll-snap-align:start;background:#000;display:flex;align-items:center;justify-content:center;}
@@ -254,7 +262,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .reel-user{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
 .reel-cap{font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;}
 
-/* ── STUDIO ── */
+/* \u2500\u2500 STUDIO \u2500\u2500 */
 .st-hdr{padding:16px;text-align:center;}
 .st-hdr h2{font-size:20px;font-weight:800;}
 .st-hdr p{font-size:13px;color:var(--g2);margin-top:4px;}
@@ -268,7 +276,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .st-qab-ico{font-size:28px;margin-bottom:6px;}
 .st-qab-lbl{font-size:12px;font-weight:700;color:var(--g1);}
 
-/* ── LIVE ── */
+/* \u2500\u2500 LIVE \u2500\u2500 */
 #live-overlay{position:fixed;inset:0;background:#000;z-index:700;display:none;flex-direction:column;max-width:480px;margin:0 auto;}
 #live-overlay.show{display:flex;}
 .live-video{flex:1;background:#111;display:flex;align-items:center;justify-content:center;position:relative;}
@@ -282,7 +290,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .live-inp{flex:1;background:rgba(255,255,255,.1);border:none;border-radius:20px;padding:10px 14px;color:#fff;font-size:14px;outline:none;}
 .live-send{background:var(--grad);border:none;border-radius:20px;padding:10px 16px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;}
 
-/* ── CALL ── */
+/* \u2500\u2500 CALL \u2500\u2500 */
 #call-overlay{position:fixed;inset:0;background:var(--s1);z-index:800;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;max-width:480px;margin:0 auto;}
 #call-overlay.show{display:flex;}
 .call-av{width:100px;height:100px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;}
@@ -291,20 +299,20 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .call-btns{display:flex;gap:20px;margin-top:20px;}
 .call-btn{width:64px;height:64px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;}
 
-/* ── OTP ── */
+/* \u2500\u2500 OTP \u2500\u2500 */
 #otp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9500;display:none;align-items:center;justify-content:center;max-width:480px;margin:0 auto;}
 #otp-overlay.show{display:flex;}
 .otp-box{background:var(--s1);border-radius:20px;padding:28px 24px;width:90%;max-width:340px;text-align:center;}
 .otp-inp{width:42px;height:50px;border-radius:12px;background:var(--s2);border:2px solid var(--s3);color:var(--w);font-size:22px;font-weight:800;text-align:center;outline:none;}
 .otp-inp:focus{border-color:var(--sky);}
 
-/* ── AVATAR ── */
+/* \u2500\u2500 AVATAR \u2500\u2500 */
 .av-opt{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:3px solid transparent;background:var(--s2);}
 .av-opt.sel{border-color:var(--sky);}
 .av-bg-opt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;}
 .av-bg-opt.sel{border-color:var(--sky);}
 
-/* ── GROUP CHAT BADGE ── */
+/* \u2500\u2500 GROUP CHAT BADGE \u2500\u2500 */
 .gc-badge{background:var(--sky);color:#000;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;}
 </style>
 </head>
@@ -312,36 +320,39 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 
 <div id="toast"></div>
 
-<!-- ── AUTH ── -->
+<!-- \u2500\u2500 AUTH \u2500\u2500 -->
 <div id="auth">
   <div class="auth-logo">DIOR+</div>
-  <div class="auth-sub">Connect · Share · Live</div>
+  <div class="auth-sub">Connect \u00b7 Share \u00b7 Live</div>
   <div class="auth-tabs">
     <div class="auth-tab on" id="at-li" onclick="authTab('li')">Log In</div>
     <div class="auth-tab" id="at-su" onclick="authTab('su')">Sign Up</div>
   </div>
-  <div id="auth-li">
-    <input class="auth-inp" id="li-user" placeholder="Username" autocomplete="username"/>
-    <input class="auth-inp" id="li-pass" placeholder="Password" type="password" autocomplete="current-password"/>
+  <div id="auth-li" style="width:100%;">
+    <input class="auth-inp" id="li-user" placeholder="Username or Email"/>
+    <div class="pw-wrap"><input class="auth-inp" id="li-pass" placeholder="Password" type="password"/><button class="pw-eye" onclick="togglePw('li-pass',this)">👁</button></div>
     <div class="auth-err" id="li-err"></div>
     <button class="auth-btn" id="li-btn" onclick="doLogin()">Log In</button>
+    <button class="auth-link" onclick="openForgotPw()">Forgot password?</button>
   </div>
-  <div id="auth-su" style="display:none;">
+  <div id="auth-su" style="display:none;width:100%;">
     <input class="auth-inp" id="su-name" placeholder="Full Name"/>
-    <input class="auth-inp" id="su-user" placeholder="Username (no spaces)" autocomplete="username"/>
-    <input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password" autocomplete="new-password"/>
+    <input class="auth-inp" id="su-user" placeholder="Username (no spaces)"/>
+    <input class="auth-inp" id="su-email" placeholder="Email address"/>
+    <input class="auth-inp" id="su-phone" placeholder="Phone number (optional)"/>
+    <div class="pw-wrap"><input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password"/><button class="pw-eye" onclick="togglePw('su-pass',this)">👁</button></div>
     <div class="auth-err" id="su-err"></div>
     <button class="auth-btn" id="su-btn" onclick="doSignup()">Create Account</button>
   </div>
 </div>
 
-<!-- ── SPLASH ── -->
+<!-- \u2500\u2500 SPLASH \u2500\u2500 -->
 <div id="splash">
   <div class="sp-logo">DIOR+</div>
   <div class="sp-bar"><div class="sp-fill"></div></div>
 </div>
 
-<!-- ── APP ── -->
+<!-- \u2500\u2500 APP \u2500\u2500 -->
 <div id="app">
   <div class="hdr">
     <div class="hdr-logo">DIOR+</div>
@@ -370,9 +381,9 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <div style="display:flex;align-items:center;padding:12px 16px 0;gap:8px;">
         <div style="font-size:18px;font-weight:800;flex:1;">Messages</div>
         <button onclick="openGroupCreate()" style="background:var(--grad);border:none;border-radius:20px;padding:7px 14px;color:#fff;font-size:12px;font-weight:800;cursor:pointer;">+ Group</button>
-        <button onclick="openCallLogs()" style="background:var(--s2);border:none;border-radius:20px;padding:7px 14px;color:var(--w);font-size:12px;font-weight:700;cursor:pointer;">📋 Calls</button>
+        <button onclick="openCallLogs()" style="background:var(--s2);border:none;border-radius:20px;padding:7px 14px;color:var(--w);font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udccb Calls</button>
       </div>
-      <div class="ms-search"><input class="ms-inp" placeholder="🔍 Search users" id="ms-inp" oninput="searchUsers(this.value)"/></div>
+      <div class="ms-search"><input class="ms-inp" placeholder="\ud83d\udd0d Search users" id="ms-inp" oninput="searchUsers(this.value)"/></div>
       <div class="ms-sec">Direct Messages</div>
       <div id="conv-list"></div>
       <div class="ms-sec" id="gc-sec" style="display:none;">Group Chats</div>
@@ -390,10 +401,10 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <div class="st-grid" id="st-grid"></div>
       <div style="font-size:12px;font-weight:800;color:var(--g2);padding:8px 16px;">QUICK ACTIONS</div>
       <div class="st-qa">
-        <div class="st-qab" onclick="openCreate()"><div class="st-qab-ico">📸</div><div class="st-qab-lbl">New Post</div></div>
-        <div class="st-qab" onclick="startLive()"><div class="st-qab-ico">🔴</div><div class="st-qab-lbl">Go Live</div></div>
-        <div class="st-qab" onclick="openStoryCreate()"><div class="st-qab-ico">◎</div><div class="st-qab-lbl">Story</div></div>
-        <div class="st-qab" onclick="openReelUpload()"><div class="st-qab-ico">🎬</div><div class="st-qab-lbl">Reel</div></div>
+        <div class="st-qab" onclick="openCreate()"><div class="st-qab-ico">\ud83d\udcf8</div><div class="st-qab-lbl">New Post</div></div>
+        <div class="st-qab" onclick="startLive()"><div class="st-qab-ico">\ud83d\udd34</div><div class="st-qab-lbl">Go Live</div></div>
+        <div class="st-qab" onclick="openStoryCreate()"><div class="st-qab-ico">\u25ce</div><div class="st-qab-lbl">Story</div></div>
+        <div class="st-qab" onclick="openReelUpload()"><div class="st-qab-ico">\ud83c\udfac</div><div class="st-qab-lbl">Reel</div></div>
       </div>
     </div>
     <!-- PROFILE -->
@@ -408,7 +419,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
           <label style="cursor:pointer;">
             <input type="file" accept="image/*" style="display:none;" onchange="changeAvatar(this)"/>
             <div class="prof-av" id="prof-av"></div>
-            <div class="prof-av-edit">✏️</div>
+            <div class="prof-av-edit">\u270f\ufe0f</div>
           </label>
         </div>
         <div class="prof-stats">
@@ -423,8 +434,8 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       </div>
       <div class="prof-btns">
         <button class="prof-btn" onclick="openEditProfile()">Edit Profile</button>
-        <button class="prof-btn" onclick="openAvatarBuilder()">🎨 Avatar</button>
-        <button class="prof-btn" onclick="startLive()">🔴 Go Live</button>
+        <button class="prof-btn" onclick="openAvatarBuilder()">\ud83c\udfa8 Avatar</button>
+        <button class="prof-btn" onclick="startLive()">\ud83d\udd34 Go Live</button>
       </div>
       <div class="prof-tabs">
         <div class="prof-tab on" id="ptab-posts" onclick="switchPTab('posts')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
@@ -444,54 +455,54 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ── CHAT ── -->
+<!-- \u2500\u2500 CHAT \u2500\u2500 -->
 <div id="chat">
   <div class="ch-hdr">
     <button class="ch-back" onclick="closeChat()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="ch-av" id="ch-av"></div>
     <div class="ch-info"><div class="ch-name" id="ch-name"></div><div class="ch-status" id="ch-status">Active now</div></div>
     <div class="ch-hdr-btns">
-      <button class="ch-hdr-btn" onclick="startVoiceCall()">📞</button>
-      <button class="ch-hdr-btn" onclick="startVideoCall()">📹</button>
-      <button class="ch-hdr-btn" id="ai-btn" onclick="toggleAI()">✨ AI</button>
-      <button class="ch-hdr-btn" onclick="openReport()">⚠️</button>
+      <button class="ch-hdr-btn" onclick="startVoiceCall()">\ud83d\udcde</button>
+      <button class="ch-hdr-btn" onclick="startVideoCall()">\ud83d\udcf9</button>
+      <button class="ch-hdr-btn" id="ai-btn" onclick="toggleAI()">\u2728 AI</button>
+      <button class="ch-hdr-btn" onclick="openReport()">\u26a0\ufe0f</button>
     </div>
   </div>
   <div class="ch-body" id="ch-body"></div>
   <div id="ch-typing" class="ch-typing" style="padding:0 14px;display:none;">typing...</div>
   <div id="emoji-tray" class="emoji-tray" style="display:none;">
-    <button class="emoji-btn" onclick="insertEmoji('❤️')">❤️</button>
-    <button class="emoji-btn" onclick="insertEmoji('😂')">😂</button>
-    <button class="emoji-btn" onclick="insertEmoji('😍')">😍</button>
-    <button class="emoji-btn" onclick="insertEmoji('🔥')">🔥</button>
-    <button class="emoji-btn" onclick="insertEmoji('👏')">👏</button>
-    <button class="emoji-btn" onclick="insertEmoji('😭')">😭</button>
-    <button class="emoji-btn" onclick="insertEmoji('🙏')">🙏</button>
-    <button class="emoji-btn" onclick="insertEmoji('💯')">💯</button>
-    <button class="emoji-btn" onclick="insertEmoji('🎉')">🎉</button>
-    <button class="emoji-btn" onclick="insertEmoji('😊')">😊</button>
-    <button class="emoji-btn" onclick="insertEmoji('🥰')">🥰</button>
-    <button class="emoji-btn" onclick="insertEmoji('😎')">😎</button>
-    <button class="emoji-btn" onclick="insertEmoji('🤔')">🤔</button>
-    <button class="emoji-btn" onclick="insertEmoji('👀')">👀</button>
-    <button class="emoji-btn" onclick="insertEmoji('💀')">💀</button>
-    <button class="emoji-btn" onclick="insertEmoji('🚀')">🚀</button>
+    <button class="emoji-btn" onclick="insertEmoji('\u2764\ufe0f')">\u2764\ufe0f</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude02')">\ud83d\ude02</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude0d')">\ud83d\ude0d</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\udd25')">\ud83d\udd25</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\udc4f')">\ud83d\udc4f</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude2d')">\ud83d\ude2d</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude4f')">\ud83d\ude4f</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\udcaf')">\ud83d\udcaf</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83c\udf89')">\ud83c\udf89</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude0a')">\ud83d\ude0a</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83e\udd70')">\ud83e\udd70</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude0e')">\ud83d\ude0e</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83e\udd14')">\ud83e\udd14</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\udc40')">\ud83d\udc40</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\udc80')">\ud83d\udc80</button>
+    <button class="emoji-btn" onclick="insertEmoji('\ud83d\ude80')">\ud83d\ude80</button>
   </div>
   <div class="ch-inp-row">
-    <button class="ch-hdr-btn" onclick="toggleEmoji()">😊</button>
+    <button class="ch-hdr-btn" onclick="toggleEmoji()">\ud83d\ude0a</button>
     <input class="ch-inp" id="ch-inp" placeholder="Message..." onkeydown="if(event.key==='Enter')sendMsg()" oninput="onTyping()"/>
     <button class="ch-send" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 
-<!-- ── STORY VIEWER ── -->
+<!-- \u2500\u2500 STORY VIEWER \u2500\u2500 -->
 <div id="sv">
   <div class="sv-progress" id="sv-progress"></div>
   <div class="sv-hdr">
     <div class="sv-av" id="sv-av"></div>
     <div class="sv-nm" id="sv-nm"></div>
     <div class="sv-time" id="sv-time"></div>
-    <button class="sv-close" onclick="closeSV()">✕</button>
+    <button class="sv-close" onclick="closeSV()">\u2715</button>
   </div>
   <div class="sv-media" id="sv-media">
     <div class="sv-tap-l" onclick="svPrev()"></div>
@@ -500,126 +511,103 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ── NOTIFICATIONS ── -->
+<!-- \u2500\u2500 NOTIFICATIONS \u2500\u2500 -->
 <div class="overlay" id="notifs-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeNotifs()">✕</button><h2>Notifications</h2><div style="width:36px;"></div></div>
+  <div class="ov-hdr"><button class="ov-close" onclick="closeNotifs()">\u2715</button><h2>Notifications</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;" id="notif-list"></div>
 </div>
 
-<!-- ── CREATE POST ── -->
+<!-- \u2500\u2500 CREATE POST \u2500\u2500 -->
 <div class="overlay" id="create-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeCreate()">✕</button><h2>New Post</h2><button class="ov-done" onclick="submitPost()">Share</button></div>
+  <div class="ov-hdr"><button class="ov-close" onclick="closeCreate()">\u2715</button><h2>New Post</h2><button class="ov-done" onclick="submitPost()">Share</button></div>
   <div id="media-preview" class="media-preview" style="display:none;"></div>
   <label style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--s2);border:1px dashed var(--s3);border-radius:12px;padding:14px;cursor:pointer;margin:12px 16px;color:var(--g1);font-size:14px;font-weight:700;">
-    <input type="file" accept="image/*,video/*" multiple style="display:none;" onchange="pickMedia(this)"/> 📷 Add Photos / Videos
+    <input type="file" accept="image/*,video/*" multiple style="display:none;" onchange="pickMedia(this)"/> \ud83d\udcf7 Add Photos / Videos
   </label>
   <textarea class="create-inp" id="create-cap" placeholder="Write a caption... #hashtag @mention" rows="4"></textarea>
 </div>
 
-<!-- ── STORY CREATE ── -->
+<!-- \u2500\u2500 STORY CREATE \u2500\u2500 -->
 <div class="overlay" id="story-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeStoryCreate()">✕</button><h2>New Story</h2><button class="ov-done" onclick="submitStory()">Post</button></div>
+  <div class="ov-hdr"><button class="ov-close" onclick="closeStoryCreate()">\u2715</button><h2>New Story</h2><button class="ov-done" onclick="submitStory()">Post</button></div>
   <div id="story-preview" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--s2);margin:12px 16px;border-radius:14px;overflow:hidden;">
-    <div style="color:var(--g2);font-size:40px;">📸</div>
+    <div style="color:var(--g2);font-size:40px;">\ud83d\udcf8</div>
   </div>
   <label style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--s2);border:1px dashed var(--s3);border-radius:12px;padding:14px;cursor:pointer;margin:0 16px 12px;color:var(--g1);font-size:14px;font-weight:700;">
-    <input type="file" accept="image/*,video/*" style="display:none;" onchange="pickStory(this)"/> 📷 Choose Media
+    <input type="file" accept="image/*,video/*" style="display:none;" onchange="pickStory(this)"/> \ud83d\udcf7 Choose Media
   </label>
   <input style="background:var(--s2);border:none;border-radius:12px;padding:13px 16px;color:var(--w);font-size:14px;outline:none;margin:0 16px 12px;width:calc(100%-32px);display:block;" id="story-cap" placeholder="Add a caption..."/>
 </div>
 
-<!-- ── REEL UPLOAD ── -->
+<!-- \u2500\u2500 REEL UPLOAD \u2500\u2500 -->
 <div class="sheet" id="reel-sheet">
   <div class="sheet-box">
     <div class="sheet-title">New Reel</div>
     <label style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--s2);border:1px dashed var(--s3);border-radius:12px;padding:14px;cursor:pointer;margin-bottom:12px;color:var(--g1);font-size:14px;font-weight:700;">
-      <input type="file" accept="video/*" style="display:none;" onchange="pickReel(this)"/> 🎥 Choose Video
+      <input type="file" accept="video/*" style="display:none;" onchange="pickReel(this)"/> \ud83c\udfa5 Choose Video
     </label>
     <div id="reel-preview" style="display:none;margin-bottom:12px;"><video id="reel-vid" style="width:100%;border-radius:12px;max-height:200px;object-fit:cover;" playsinline muted></video></div>
     <input style="width:100%;background:var(--s2);border:none;border-radius:12px;padding:13px 16px;color:var(--w);font-size:14px;outline:none;margin-bottom:12px;display:block;" id="reel-cap" placeholder="Add a caption..."/>
     <div style="display:flex;gap:10px;">
       <button class="sheet-opt" style="flex:1;text-align:center;" onclick="closeReelSheet()">Cancel</button>
-      <button class="sheet-opt" style="flex:1;text-align:center;background:var(--grad);color:#fff;" onclick="submitReel()">Post 🚀</button>
+      <button class="sheet-opt" style="flex:1;text-align:center;background:var(--grad);color:#fff;" onclick="submitReel()">Post \ud83d\ude80</button>
     </div>
   </div>
 </div>
 
-<!-- ── REPORT ── -->
+<!-- \u2500\u2500 REPORT \u2500\u2500 -->
 <div class="sheet" id="report-sheet">
   <div class="sheet-box">
     <div class="sheet-title">Report</div>
-    <button class="sheet-opt" onclick="submitReport('spam')">🚫 Spam</button>
-    <button class="sheet-opt" onclick="submitReport('hate')">😡 Hate speech</button>
-    <button class="sheet-opt" onclick="submitReport('harassment')">🎯 Harassment</button>
-    <button class="sheet-opt" onclick="submitReport('fake')">🎭 False information</button>
-    <button class="sheet-opt" onclick="submitReport('violence')">⚠️ Violence</button>
-    <button class="sheet-opt" onclick="submitReport('nudity')">🔞 Nudity</button>
-    <button class="sheet-opt danger" onclick="submitReport('other')">⛔ Other</button>
+    <button class="sheet-opt" onclick="submitReport('spam')">\ud83d\udeab Spam</button>
+    <button class="sheet-opt" onclick="submitReport('hate')">\ud83d\ude21 Hate speech</button>
+    <button class="sheet-opt" onclick="submitReport('harassment')">\ud83c\udfaf Harassment</button>
+    <button class="sheet-opt" onclick="submitReport('fake')">\ud83c\udfad False information</button>
+    <button class="sheet-opt" onclick="submitReport('violence')">\u26a0\ufe0f Violence</button>
+    <button class="sheet-opt" onclick="submitReport('nudity')">\ud83d\udd1e Nudity</button>
+    <button class="sheet-opt danger" onclick="submitReport('other')">\u26d4 Other</button>
     <button class="sheet-opt" style="color:var(--g2);" onclick="closeReport()">Cancel</button>
   </div>
 </div>
 
-<!-- ── POST MENU ── -->
+<!-- \u2500\u2500 POST MENU \u2500\u2500 -->
 <div class="sheet" id="post-menu-sheet">
   <div class="sheet-box">
     <div class="sheet-title">Post Options</div>
-    <button class="sheet-opt" id="pm-delete" onclick="deletePost()">🗑️ Delete Post</button>
+    <button class="sheet-opt" id="pm-delete" onclick="deletePost()">\ud83d\uddd1\ufe0f Delete Post</button>
     <button class="sheet-opt" onclick="closePostMenu()">Cancel</button>
   </div>
 </div>
 
-<!-- ── SETTINGS ── -->
+<!-- \u2500\u2500 SETTINGS \u2500\u2500 -->
 <div class="overlay" id="settings-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeSettings()">✕</button><h2>Settings</h2><div style="width:36px;"></div></div>
+  <div class="ov-hdr"><button class="ov-close" onclick="closeSettings()">\u2715</button><h2>Settings</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;">
     <div class="settings-sec">ACCOUNT</div>
-    <div class="settings-row" onclick="openEditProfile()"><span class="settings-ico">👤</span><span class="settings-lbl">Edit Profile</span><span class="settings-arrow">›</span></div>
-    <div class="settings-row" onclick="openChangePassword()"><span class="settings-ico">🔑</span><span class="settings-lbl">Change Password</span><span class="settings-arrow">›</span></div>
-    <div class="settings-row" onclick="openVerify()"><span class="settings-ico">✓</span><span class="settings-lbl">Get Verified</span><span class="settings-arrow">›</span></div>
+    <div class="settings-row" onclick="openEditProfile()"><span class="settings-ico">\ud83d\udc64</span><span class="settings-lbl">Edit Profile</span><span class="settings-arrow">\u203a</span></div>
+    <div class="settings-row" onclick="openChangePassword()"><span class="settings-ico">\ud83d\udd11</span><span class="settings-lbl">Change Password</span><span class="settings-arrow">\u203a</span></div>
+    <div class="settings-row" onclick="openVerify()"><span class="settings-ico">\u2713</span><span class="settings-lbl">Get Verified</span><span class="settings-arrow">\u203a</span></div>
+    <div class="settings-row" onclick="openLinkedAccounts()"><span class="settings-ico">&#x1F517;</span><span class="settings-lbl">Linked Accounts</span><span style="color:var(--g2);">&#x203A;</span></div>
     <div class="settings-sec">APPEARANCE</div>
-    <div class="settings-row" onclick="toggleDark()"><span class="settings-ico" id="dark-ico">🌙</span><span class="settings-lbl" id="dark-lbl">Dark Mode</span><span class="settings-val" id="dark-val">On</span></div>
+    <div class="settings-row" onclick="toggleDark()"><span class="settings-ico" id="dark-ico">\ud83c\udf19</span><span class="settings-lbl" id="dark-lbl">Dark Mode</span><span class="settings-val" id="dark-val">On</span></div>
     <div class="settings-sec">PRIVACY</div>
-    <div class="settings-row"><span class="settings-ico">🔐</span><span class="settings-lbl">Two-Factor Auth</span><span class="settings-val">Coming soon</span></div>
+    <div class="settings-row"><span class="settings-ico">\ud83d\udd10</span><span class="settings-lbl">Two-Factor Auth</span><span class="settings-val">Coming soon</span></div>
     <div class="settings-sec">DANGER</div>
-    <div class="settings-row" onclick="doLogout()" style="color:var(--red);"><span class="settings-ico">🚪</span><span class="settings-lbl" style="color:var(--red);">Log Out</span></div>
+    <div class="settings-row" onclick="doLogout()" style="color:var(--red);"><span class="settings-ico">\ud83d\udeaa</span><span class="settings-lbl" style="color:var(--red);">Log Out</span></div>
   </div>
 </div>
 
-<!-- ── EDIT PROFILE ── -->
+<!-- \u2500\u2500 EDIT PROFILE \u2500\u2500 -->
 <div class="overlay" id="ep-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closeEditProfile()">Cancel</button><h2>Edit Profile</h2><button class="ov-done" onclick="saveProfile()">Save</button></div>
-  <div style="flex:1;overflow-y:auto;">
-    <!-- Photo section -->
-    <div style="display:flex;flex-direction:column;align-items:center;padding:24px 16px 16px;border-bottom:1px solid var(--s2);">
-      <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <input type="file" accept="image/*" style="display:none;" id="ep-photo-inp" onchange="epChangePhoto(this)"/>
-        <div id="ep-av" style="width:90px;height:90px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;overflow:hidden;border:3px solid var(--s3);"></div>
-        <div style="color:var(--sky);font-size:14px;font-weight:700;">Change Profile Photo</div>
-      </label>
-    </div>
-    <!-- Fields -->
-    <div style="padding:16px;">
-      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">NAME</div>
-      <input class="auth-inp" id="ep-name" placeholder="Full Name" style="margin-bottom:16px;"/>
-      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">USERNAME</div>
-      <input class="auth-inp" id="ep-username" placeholder="Username" style="margin-bottom:16px;"/>
-      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">BIO</div>
-      <textarea class="auth-inp" id="ep-bio" placeholder="Write a bio..." rows="3" style="resize:none;margin-bottom:16px;"></textarea>
-      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">WEBSITE</div>
-      <input class="auth-inp" id="ep-link" placeholder="Website link" style="margin-bottom:16px;"/>
-      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">GENDER</div>
-      <select class="auth-inp" id="ep-gender" style="margin-bottom:16px;">
-        <option value="">Prefer not to say</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-      </select>
-      <div class="auth-err" id="ep-err"></div>
-    </div>
+  <div style="flex:1;overflow-y:auto;padding:16px;">
+    <input class="auth-inp" id="ep-name" placeholder="Full Name"/>
+    <input class="auth-inp" id="ep-bio" placeholder="Bio"/>
+    <input class="auth-inp" id="ep-link" placeholder="Website link"/>
   </div>
 </div>
 
-<!-- ── CHANGE PASSWORD ── -->
+<!-- \u2500\u2500 CHANGE PASSWORD \u2500\u2500 -->
 <div class="overlay" id="pw-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closePW()">Cancel</button><h2>Change Password</h2><button class="ov-done" onclick="savePassword()">Save</button></div>
   <div style="flex:1;overflow-y:auto;padding:16px;">
@@ -630,29 +618,57 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ── VERIFY ── -->
-<div class="overlay" id="verify-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeVerify()">✕</button><h2>Get Verified</h2><div style="width:36px;"></div></div>
-  <div style="flex:1;overflow-y:auto;padding:16px;">
-    <p style="color:var(--g2);font-size:13px;margin-bottom:16px;">Choose a verification tier to show your authenticity.</p>
-    <div class="verify-tier" onclick="buyVerify('blue')">
-      <span style="font-size:24px;">✓</span>
-      <div><div style="font-weight:700;">Blue ✓</div><div style="font-size:12px;color:var(--g2);">$9.99/mo — Standard verification</div></div>
-    </div>
-    <div class="verify-tier" onclick="buyVerify('gold')">
-      <span style="font-size:24px;color:var(--gold);">✓</span>
-      <div><div style="font-weight:700;color:var(--gold);">Gold ✓</div><div style="font-size:12px;color:var(--g2);">$24.99/mo — Creator verification</div></div>
-    </div>
-    <div class="verify-tier" onclick="buyVerify('purple')">
-      <span style="font-size:24px;color:var(--purple);">✓</span>
-      <div><div style="font-weight:700;color:var(--purple);">Purple ✓</div><div style="font-size:12px;color:var(--g2);">$49.99/mo — Elite verification</div></div>
+<!-- FORGOT PASSWORD -->
+<div class="overlay" id="forgot-overlay">
+  <div class="ov-hdr"><button class="ov-close" onclick="closeForgotPw()">&#x2715;</button><h2>Reset Password</h2><div style="width:36px;"></div></div>
+  <div style="flex:1;overflow-y:auto;padding:24px 16px;">
+    <div style="font-size:40px;text-align:center;margin-bottom:16px;">&#x1F511;</div>
+    <p style="color:var(--g1);font-size:14px;text-align:center;margin-bottom:24px;line-height:1.6;">Enter your email or username and we'll send a reset code.</p>
+    <input class="auth-inp" id="fp-input" placeholder="Email or Username"/>
+    <div class="auth-err" id="fp-err"></div>
+    <button class="auth-btn" onclick="sendResetCode()">Send Reset Code</button>
+    <div id="fp-step2" style="display:none;margin-top:20px;">
+      <p style="color:var(--g1);font-size:13px;text-align:center;margin-bottom:16px;">Enter the 6-digit code</p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
+        <input class="otp-inp" maxlength="1" id="fp-otp0" oninput="fpOtpNext(0)"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp1" oninput="fpOtpNext(1)"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp2" oninput="fpOtpNext(2)"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp3" oninput="fpOtpNext(3)"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp4" oninput="fpOtpNext(4)"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp5" oninput="fpOtpNext(5)"/>
+      </div>
+      <div class="pw-wrap"><input class="auth-inp" id="fp-newpw" placeholder="New Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('fp-newpw',this)">&#x1F441;</button></div>
+      <div style="height:10px;"></div>
+      <button class="auth-btn" onclick="confirmReset()">Reset Password</button>
     </div>
   </div>
 </div>
 
-<!-- ── USER PROFILE ── -->
+<!-- VERIFY -->
+<div class="overlay" id="verify-overlay">
+  <div class="ov-hdr"><button class="ov-close" onclick="closeVerify()">&#x2715;</button><h2>Get Verified</h2><div style="width:36px;"></div></div>
+  <div style="flex:1;overflow-y:auto;padding:16px;">
+    <p style="color:var(--g2);font-size:13px;margin-bottom:16px;text-align:center;">Verification shows your account is authentic.</p>
+    <div class="verify-tier" id="vt-blue" onclick="buyVerify('blue')">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;flex-shrink:0;">&#x2713;</div>
+      <div style="flex:1;"><div style="font-weight:700;">Blue &#x2713; Verified</div><div style="font-size:12px;color:var(--g2);margin-top:2px;">Standard account verification</div></div>
+      <div style="font-size:13px;font-weight:800;color:var(--sky);">$9.99/mo</div>
+    </div>
+    <div class="verify-tier" id="vt-gold" onclick="buyVerify('gold')">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#000;flex-shrink:0;">&#x2713;</div>
+      <div style="flex:1;"><div style="font-weight:700;color:var(--gold);">Gold &#x2713; Creator</div><div style="font-size:12px;color:var(--g2);margin-top:2px;">For content creators</div></div>
+      <div style="font-size:13px;font-weight:800;color:var(--gold);">$24.99/mo</div>
+    </div>
+    <div class="verify-tier" id="vt-purple" onclick="buyVerify('purple')">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0;">&#x2713;</div>
+      <div style="flex:1;"><div style="font-weight:700;color:var(--purple);">Purple &#x2713; Elite</div><div style="font-size:12px;color:var(--g2);margin-top:2px;">For businesses &amp; celebrities</div></div>
+      <div style="font-size:13px;font-weight:800;color:var(--purple);">$49.99/mo</div>
+    </div>
+  </div>
+</div>
+<!-- \u2500\u2500 USER PROFILE \u2500\u2500 -->
 <div class="overlay" id="uprofile-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeUProfile()">✕</button><h2 id="up-username">@user</h2><div style="width:36px;"></div></div>
+  <div class="ov-hdr"><button class="ov-close" onclick="closeUProfile()">\u2715</button><h2 id="up-username">@user</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;">
     <div class="prof-info">
       <div class="prof-av-wrap"><div class="prof-av" id="up-av"></div></div>
@@ -671,88 +687,53 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ── LIVE ── -->
+<!-- \u2500\u2500 LIVE \u2500\u2500 -->
 <div id="live-overlay">
   <div class="live-video">
     <video id="live-vid" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;"></video>
-    <div class="live-badge">🔴 LIVE</div>
-    <div class="live-vc" id="live-vc">👁 0</div>
-    <button class="live-close" onclick="endLive()">✕</button>
+    <div class="live-badge">\ud83d\udd34 LIVE</div>
+    <div class="live-vc" id="live-vc">\ud83d\udc41 0</div>
+    <div class="live-coins" id="live-coins">&#x1FA99; 0</div>
+    <button class="live-close" onclick="endLive()">\u2715</button>
   </div>
   <div class="live-comments" id="live-comments"></div>
   <div style="display:flex;gap:8px;padding:8px 14px;background:rgba(0,0,0,.4);">
-    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer;font-size:18px;" onclick="liveReact('❤️')">❤️</button>
-    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer;font-size:18px;" onclick="liveReact('🔥')">🔥</button>
-    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer;font-size:18px;" onclick="liveReact('👏')">👏</button>
+    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer;font-size:18px;" onclick="liveReact('\u2764\ufe0f')">\u2764\ufe0f</button>
+    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer;font-size:18px;" onclick="liveReact('\ud83d\udd25')">\ud83d\udd25</button>
+    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 14px;color:#fff;cursor:pointer;font-size:18px;" onclick="liveReact('\ud83d\udc4f')">\ud83d\udc4f</button>
   </div>
+    <button style="background:linear-gradient(135deg,#fbbf24,#f472b6);border:none;border-radius:20px;padding:8px 14px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-left:auto;" onclick="openGiftPanel()">&#x1F381; Gift</button>
   <div class="live-inp-row">
     <input class="live-inp" id="live-inp" placeholder="Comment..." onkeydown="if(event.key==='Enter')sendLiveComment()"/>
     <button class="live-send" onclick="sendLiveComment()">Send</button>
   </div>
 </div>
 
-<!-- ── LIVE BROWSER ── -->
+<!-- \u2500\u2500 LIVE BROWSER \u2500\u2500 -->
 <div class="overlay" id="live-browser-overlay">
-  <div class="ov-hdr"><button class="ov-close" onclick="closeLiveBrowser()">✕</button><h2>Live Now 🔴</h2><div style="width:36px;"></div></div>
+  <div class="ov-hdr"><button class="ov-close" onclick="closeLiveBrowser()">\u2715</button><h2>Live Now \ud83d\udd34</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;" id="live-browser-list"></div>
 </div>
 
-<!-- ── INCOMING CALL ── -->
-<div id="incoming-call" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;max-width:480px;margin:0 auto;">
-  <div id="ic-av" style="width:90px;height:90px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;border:3px solid var(--sky);"></div>
-  <div id="ic-name" style="font-size:22px;font-weight:800;color:#fff;"></div>
-  <div id="ic-type" style="font-size:14px;color:rgba(255,255,255,.7);">Incoming call...</div>
-  <div style="display:flex;gap:40px;margin-top:20px;">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <button onclick="rejectCall()" style="width:64px;height:64px;border-radius:50%;background:var(--red);border:none;font-size:26px;cursor:pointer;">📵</button>
-      <span style="font-size:12px;color:rgba(255,255,255,.7);">Decline</span>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-      <button onclick="acceptCall()" style="width:64px;height:64px;border-radius:50%;background:var(--green);border:none;font-size:26px;cursor:pointer;">📞</button>
-      <span style="font-size:12px;color:rgba(255,255,255,.7);">Accept</span>
-    </div>
-  </div>
-</div>
-
-<!-- ── ACTIVE CALL ── -->
+<!-- \u2500\u2500 CALL \u2500\u2500 -->
 <div id="call-overlay">
-  <!-- Remote video (full screen) -->
-  <video id="remote-vid" autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111;display:none;"></video>
-  <!-- Local video (small pip) -->
-  <video id="local-vid" autoplay playsinline muted style="position:absolute;bottom:100px;right:14px;width:100px;height:140px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.3);z-index:2;display:none;"></video>
-  <!-- Voice call avatar (shown when no video) -->
-  <div id="call-bg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--s1);">
-    <div class="call-av" id="call-av"></div>
-    <div class="call-name" id="call-name"></div>
-    <div class="call-status" id="call-status">Calling...</div>
-    <div id="call-timer" style="font-size:22px;font-weight:700;display:none;">0:00</div>
-  </div>
-  <!-- Controls -->
-  <div style="position:absolute;bottom:30px;left:0;right:0;display:flex;justify-content:center;gap:16px;z-index:3;">
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <button id="mute-btn" onclick="toggleMute()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:none;font-size:22px;cursor:pointer;">🎤</button>
-      <span style="font-size:11px;color:rgba(255,255,255,.8);">Mute</span>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <button onclick="endCall()" style="width:64px;height:64px;border-radius:50%;background:var(--red);border:none;font-size:26px;cursor:pointer;">📵</button>
-      <span style="font-size:11px;color:rgba(255,255,255,.8);">End</span>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <button id="vid-btn" onclick="toggleVideo()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:none;font-size:22px;cursor:pointer;">📷</button>
-      <span style="font-size:11px;color:rgba(255,255,255,.8);">Camera</span>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-      <button onclick="switchCamera()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:none;font-size:22px;cursor:pointer;">🔄</button>
-      <span style="font-size:11px;color:rgba(255,255,255,.8);">Flip</span>
-    </div>
+  <div class="call-av" id="call-av"></div>
+  <div class="call-name" id="call-name"></div>
+  <div class="call-status" id="call-status">Calling...</div>
+  <div id="call-timer" style="font-size:20px;font-weight:700;display:none;">0:00</div>
+  <video id="call-vid" autoplay playsinline style="width:200px;height:150px;border-radius:12px;object-fit:cover;display:none;"></video>
+  <div class="call-btns">
+    <button class="call-btn" style="background:var(--s3);font-size:20px;" onclick="toggleMute()">\ud83c\udfa4</button>
+    <button class="call-btn" style="background:var(--red);" onclick="endCall()">\ud83d\udcf5</button>
+    <button class="call-btn" style="background:var(--s3);font-size:20px;" id="vid-toggle-btn" onclick="toggleVideo()">\ud83d\udcf7</button>
   </div>
 </div>
 
-<!-- ── GROUP CHAT CREATE ── -->
+<!-- \u2500\u2500 GROUP CHAT CREATE \u2500\u2500 -->
 <div class="sheet" id="gc-create-sheet">
   <div class="sheet-box">
     <div style="display:flex;align-items:center;margin-bottom:14px;">
-      <button onclick="closeGroupCreate()" style="background:none;border:none;color:var(--g2);font-size:22px;cursor:pointer;">✕</button>
+      <button onclick="closeGroupCreate()" style="background:none;border:none;color:var(--g2);font-size:22px;cursor:pointer;">\u2715</button>
       <div style="flex:1;text-align:center;font-weight:800;">New Group</div>
       <button onclick="createGroup()" style="background:var(--grad);border:none;border-radius:20px;padding:8px 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;">Create</button>
     </div>
@@ -763,33 +744,33 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ── GROUP CHAT VIEW ── -->
+<!-- \u2500\u2500 GROUP CHAT VIEW \u2500\u2500 -->
 <div id="gc-chat" style="position:fixed;inset:0;background:var(--bg);z-index:300;display:none;flex-direction:column;max-width:480px;margin:0 auto;">
   <div class="ch-hdr">
     <button class="ch-back" onclick="closeGCChat()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div style="width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">👥</div>
+    <div style="width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">\ud83d\udc65</div>
     <div class="ch-info"><div class="ch-name" id="gc-chat-name"></div><div class="ch-status" id="gc-chat-members"></div></div>
-    <button class="ch-hdr-btn" onclick="openReport()">⚠️</button>
+    <button class="ch-hdr-btn" onclick="openReport()">\u26a0\ufe0f</button>
   </div>
   <div class="ch-body" id="gc-body"></div>
   <div class="ch-inp-row">
-    <button class="ch-hdr-btn" onclick="toggleGCEmoji()">😊</button>
+    <button class="ch-hdr-btn" onclick="toggleGCEmoji()">\ud83d\ude0a</button>
     <input class="ch-inp" id="gc-inp" placeholder="Message group..." onkeydown="if(event.key==='Enter')sendGCMsg()"/>
     <button class="ch-send" onclick="sendGCMsg()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 
-<!-- ── CALL LOGS ── -->
+<!-- \u2500\u2500 CALL LOGS \u2500\u2500 -->
 <div class="overlay" id="call-logs-overlay">
   <div class="ov-hdr">
-    <button class="ov-close" onclick="closeCallLogs()">✕</button>
+    <button class="ov-close" onclick="closeCallLogs()">\u2715</button>
     <h2>Recent Calls</h2>
     <button style="background:none;border:none;color:var(--red);font-size:13px;font-weight:700;cursor:pointer;" onclick="clearCallLogs()">Clear</button>
   </div>
   <div style="flex:1;overflow-y:auto;" id="call-log-list"></div>
 </div>
 
-<!-- ── AVATAR BUILDER ── -->
+<!-- \u2500\u2500 AVATAR BUILDER \u2500\u2500 -->
 <div class="overlay" id="avatar-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closeAvatarBuilder()">Cancel</button><h2>Avatar Builder</h2><button class="ov-done" onclick="saveAvatar()">Save</button></div>
   <div style="flex:1;overflow-y:auto;padding:16px;">
@@ -807,10 +788,10 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
-<!-- ── OTP ── -->
+<!-- \u2500\u2500 OTP \u2500\u2500 -->
 <div id="otp-overlay">
   <div class="otp-box">
-    <div style="font-size:36px;margin-bottom:12px;">📱</div>
+    <div style="font-size:36px;margin-bottom:12px;">\ud83d\udcf1</div>
     <div style="font-size:18px;font-weight:800;margin-bottom:8px;">Verify Account</div>
     <div style="font-size:13px;color:var(--g2);margin-bottom:20px;" id="otp-msg">Enter the 6-digit code</div>
     <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;">
@@ -821,7 +802,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <input class="otp-inp" maxlength="1" id="otp4" oninput="otpNext(4)"/>
       <input class="otp-inp" maxlength="1" id="otp5" oninput="otpNext(5)"/>
     </div>
-    <button onclick="verifyOTP()" class="auth-btn">Verify ✓</button>
+    <button onclick="verifyOTP()" class="auth-btn">Verify \u2713</button>
     <button onclick="resendOTP()" style="background:none;border:none;color:var(--sky);font-size:13px;cursor:pointer;margin-top:10px;width:100%;">Resend code</button>
   </div>
 </div>
@@ -838,17 +819,19 @@ let aiMode = false;
 let typingTimer = null;
 let notifications = [];
 let callLogs = JSON.parse(localStorage.getItem('dp_call_logs')||'[]');
+let chatSettings=JSON.parse(localStorage.getItem("dp_chat_settings")||"{}"); let streaks=JSON.parse(localStorage.getItem("dp_streaks")||"{}"); let myCoins=parseInt(localStorage.getItem("dp_coins")||"1000"); let selectedGift=null,fpResetCode="",fpTargetUser=null,liveCoinsEarned=0;
+const CREATOR_USERNAME="dior"; const THEMES={grad:"linear-gradient(135deg,#38bdf8,#f472b6)",ocean:"linear-gradient(135deg,#4ade80,#22d3ee)",sunset:"linear-gradient(135deg,#f472b6,#fbbf24)",purple:"linear-gradient(135deg,#a855f7,#6366f1)",fire:"linear-gradient(135deg,#fb923c,#f87171)",gold:"linear-gradient(135deg,#fbbf24,#4ade80)",white:"#fff",dark:"#2a2a3d"}; const GIFTS=[{ico:"🌹",name:"Rose",coins:10},{ico:"🍭",name:"Candy",coins:20},{ico:"💐",name:"Bouquet",coins:50},{ico:"🎂",name:"Cake",coins:100},{ico:"💎",name:"Diamond",coins:200},{ico:"🏆",name:"Trophy",coins:500},{ico:"🚀",name:"Rocket",coins:1000},{ico:"👑",name:"Crown",coins:2000}];
 let localStream = null, peerConn = null;
 let callType = 'voice', callInterval = null, callSecs = 0;
 let gcSelected = [];
 let menuPostId = null;
 let viewingUserId = null;
 let darkMode = true;
-let avatarState = {skin:'👤',hair:'🧑',eyes:'😊',acc:'none',bg:'#1a1a2e'};
+let avatarState = {skin:'\ud83d\udc64',hair:'\ud83e\uddd1',eyes:'\ud83d\ude0a',acc:'none',bg:'#1a1a2e'};
 let otpCode = '', otpCallback = null;
 let currentStreamId = null;
 
-// ── HELPERS ──────────────────────────────────────────────────────────────
+// \u2500\u2500 HELPERS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function $(id){ return document.getElementById(id); }
 function toast(msg, d=2500){
   const t=$('toast'); t.textContent=msg; t.classList.add('show');
@@ -866,46 +849,88 @@ function timeAgo(ts){
   if(s<3600) return Math.floor(s/60)+'m';
   if(s<86400) return Math.floor(s/3600)+'h';
   return Math.floor(s/86400)+'d';
-}
-function badge(tier){
-  if(!tier) return '';
-  const colors={blue:'var(--sky)',gold:'var(--gold)',purple:'var(--purple)'};
-  return `<span style="color:${colors[tier]||'var(--sky)'};font-size:13px;">✓</span>`;
-}
-function avatarEl(user, size=38){
-  if(user?.photoUrl) return `<img src="${user.photoUrl}" style="width:100%;height:100%;object-fit:cover;"/>`;
-  const initials = (user?.name||'?').slice(0,2).toUpperCase();
-  return `<span style="font-size:${Math.floor(size*0.35)}px;font-weight:700;">${initials}</span>`;
-}
-function imgSrc(url){ return url?.startsWith('/uploads/') ? API+url : url; }
+// ── CONSTANTS
+const CREATOR_USERNAME = 'dior'; // set this to your username for auto creator badge
+const THEMES = {grad:"linear-gradient(135deg,#38bdf8,#f472b6)",ocean:"linear-gradient(135deg,#4ade80,#22d3ee)",sunset:"linear-gradient(135deg,#f472b6,#fbbf24)",purple:"linear-gradient(135deg,#a855f7,#6366f1)",fire:"linear-gradient(135deg,#fb923c,#f87171)",gold:"linear-gradient(135deg,#fbbf24,#4ade80)",white:"#fff",dark:"#2a2a3d"};
+const GIFTS = [{ico:"🌹",name:"Rose",coins:10},{ico:"🍭",name:"Candy",coins:20},{ico:"💐",name:"Bouquet",coins:50},{ico:"🎂",name:"Cake",coins:100},{ico:"💎",name:"Diamond",coins:200},{ico:"🏆",name:"Trophy",coins:500},{ico:"🚀",name:"Rocket",coins:1000},{ico:"👑",name:"Crown",coins:2000}];
+let chatSettings = JSON.parse(localStorage.getItem("dp_chat_settings")||"{}") ;
+let streaks = JSON.parse(localStorage.getItem("dp_streaks")||"{}");
+let myCoins = parseInt(localStorage.getItem("dp_coins")||"1000");
+let selectedGift = null, fpResetCode = "", fpTargetUser = null, liveCoinsEarned = 0;
 
-// ── AUTH ─────────────────────────────────────────────────────────────────
+// BADGE — renders as a styled icon span, never as raw text/code
+function badge(user){
+  if(!user) return '';
+  const isCreator = user.username===CREATOR_USERNAME || user.verifyTier==="creator";
+  if(isCreator) return '<span class="vbadge creator" title="Creator">&#x2605;</span>';
+  if(!user.verified || !user.verifyTier) return '';
+  return `<span class="vbadge ${user.verifyTier}" title="${user.verifyTier} verified">&#x2713;</span>`;
+}
+
+// PASSWORD EYE TOGGLE
+function togglePw(id, btn){ const inp=$(id); if(inp.type==="password"){ inp.type="text"; btn.textContent="🙈"; } else { inp.type="password"; btn.textContent="👁"; } }
+
+// STREAK HELPERS
+function getStreak(uid){ return streaks[uid]||{count:0,lastDate:null}; }
+function updateStreak(uid){ const today=new Date().toDateString(); let s=getStreak(uid); if(s.lastDate===today){} else if(s.lastDate===new Date(Date.now()-86400000).toDateString()){ s.count++; s.lastDate=today; } else { s.count=1; s.lastDate=today; } streaks[uid]=s; localStorage.setItem("dp_streaks",JSON.stringify(streaks)); return s; }
+function streakColor(n){ if(n>=365)return"#ff00ff"; if(n>=100)return"var(--gold)"; if(n>=30)return"var(--pink)"; if(n>=7)return"var(--orange)"; return"var(--sky)"; }
+function streakEmoji(n){ if(n<3)return""; if(n>=365)return"💎"; if(n>=100)return"👑"; if(n>=30)return"🔥"; if(n>=7)return"⚡"; return"🔥"; }
+function streakBadge(uid){ const s=getStreak(uid); if(s.count<3)return""; return `<span class="streak-badge" style="color:${streakColor(s.count)};">${streakEmoji(s.count)}${s.count}</span>`; }
+
+// ── AUTH
 function authTab(t){
   $('at-li').classList.toggle('on', t==='li');
   $('at-su').classList.toggle('on', t==='su');
   $('auth-li').style.display = t==='li'?'block':'none';
   $('auth-su').style.display = t==='su'?'block':'none';
 }
+
 async function doLogin(){
   const u=$('li-user').value.trim(), p=$('li-pass').value;
   if(!u||!p){ $('li-err').textContent='Fill all fields'; return; }
   const btn=$('li-btn'); btn.textContent='Logging in...'; btn.disabled=true; $('li-err').textContent='';
-  const r = await api('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+  const r=await api('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
   btn.textContent='Log In'; btn.disabled=false;
   if(r.error){ $('li-err').textContent=r.error; return; }
   if(!r.user){ $('li-err').textContent='Server waking up, try again in 15 seconds'; return; }
   ME=r.user; launchApp();
 }
+
 async function doSignup(){
-  const n=$('su-name').value.trim(), u=$('su-user').value.trim().replace(/\s/g,''), p=$('su-pass').value;
-  if(!n||!u||!p){ $('su-err').textContent='Fill all fields'; return; }
+  const n=$('su-name').value.trim(), u=$('su-user').value.trim().replace(/\s/g,'').toLowerCase();
+  const e=$('su-email').value.trim(), ph=$('su-phone').value.trim(), p=$('su-pass').value;
+  if(!n||!u||!p){ $('su-err').textContent='Name, username and password required'; return; }
   if(p.length<6){ $('su-err').textContent='Password must be 6+ characters'; return; }
+  if(u.toLowerCase()===p.toLowerCase()||p.toLowerCase().includes(u.toLowerCase())){ $('su-err').textContent='Password cannot be similar to your username'; return; }
   const btn=$('su-btn'); btn.textContent='Creating...'; btn.disabled=true; $('su-err').textContent='';
-  const r = await api('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,username:u,password:p})});
+  const r=await api('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,username:u,email:e,phone:ph,password:p})});
   btn.textContent='Create Account'; btn.disabled=false;
   if(r.error){ $('su-err').textContent=r.error; return; }
   if(!r.user){ $('su-err').textContent='Server waking up, try again in 15 seconds'; return; }
   ME=r.user; launchApp();
+}
+
+// FORGOT PASSWORD
+function openForgotPw(){ $('forgot-overlay').classList.add('show'); $('fp-err').textContent=''; $('fp-step2').style.display='none'; }
+function closeForgotPw(){ $('forgot-overlay').classList.remove('show'); }
+async function sendResetCode(){
+  const val=$('fp-input').value.trim();
+  if(!val){ $('fp-err').textContent='Enter email or username'; return; }
+  const r=await api('/api/auth/forgot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:val})});
+  if(r.error){ $('fp-err').textContent=r.error; return; }
+  fpResetCode=r.code||(Math.floor(100000+Math.random()*900000).toString());
+  fpTargetUser=r.userId;
+  $('fp-step2').style.display='block'; $('fp-err').textContent='';
+  toast("Demo reset code: "+fpResetCode, 8000);
+}
+function fpOtpNext(idx){ const v=document.getElementById("fp-otp"+idx).value; if(v&&idx<5) document.getElementById("fp-otp"+(idx+1)).focus(); }
+async function confirmReset(){
+  const entered=[0,1,2,3,4,5].map(i=>document.getElementById("fp-otp"+i).value).join("");
+  if(entered!==fpResetCode){ toast('Wrong code ❌'); return; }
+  const newpw=$('fp-newpw').value;
+  if(!newpw||newpw.length<6){ toast('Password must be 6+ chars'); return; }
+  const r=await api('/api/auth/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:fpTargetUser,newPassword:newpw})});
+  if(r.ok){ toast('Password reset! Log in now ✓'); closeForgotPw(); } else toast('Reset failed');
 }
 function launchApp(){
   $('auth').style.display='none';
@@ -918,7 +943,7 @@ function launchApp(){
   },1400);
 }
 
-// ── SOCKET ────────────────────────────────────────────────────────────────
+// \u2500\u2500 SOCKET \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function connectSocket(){
   socket = io();
   socket.emit('auth',{userId:ME.id});
@@ -932,21 +957,19 @@ function connectSocket(){
   socket.on('notification', n=>{ addNotif(n); });
   socket.on('typing', ({fromId})=>{ if(activeConv===fromId){ $('ch-typing').style.display='block'; } });
   socket.on('stop_typing', ({fromId})=>{ if(activeConv===fromId){ $('ch-typing').style.display='none'; } });
-  socket.on('live_available', ({streamId,host})=>{ $('live-dot').classList.add('show'); toast(`🔴 ${host.name} is live!`); });
+  socket.on('live_available', ({streamId,host})=>{ $('live-dot').classList.add('show'); toast(`\ud83d\udd34 ${host.name} is live!`); });
   socket.on('live_ended', ()=>{ $('live-dot').classList.remove('show'); });
-  socket.on('viewer_joined', ({user,viewerCount})=>{ addLiveMsg(`${user.name} joined 👋`); $('live-vc').textContent=`👁 ${viewerCount}`; });
+  socket.on('viewer_joined', ({user,viewerCount})=>{ addLiveMsg(`${user.name} joined \ud83d\udc4b`); $('live-vc').textContent=`\ud83d\udc41 ${viewerCount}`; });
   socket.on('live_comment', ({user,text})=>{ addLiveMsg(`${user.name}: ${text}`); });
   socket.on('live_react', ({user,reaction})=>{ addLiveMsg(`${user.name} reacted ${reaction}`); });
-  socket.on('webrtc_offer', async({from,offer,callType:ct,from:caller})=>{ callType=ct||'voice'; await handleOffer(from,offer,ct,caller); });
-  socket.on('webrtc_answer', async({answer})=>{ if(peerConn){await peerConn.setRemoteDescription(answer); startCallTimer();} });
+  socket.on('webrtc_offer', async({from,offer})=>{ await handleOffer(from,offer); });
+  socket.on('webrtc_answer', async({answer})=>{ if(peerConn) await peerConn.setRemoteDescription(answer); });
   socket.on('webrtc_ice', async({candidate})=>{ if(peerConn&&candidate) await peerConn.addIceCandidate(candidate); });
-  socket.on('call_ended', ()=>{ endCall(); toast('Call ended'); });
-  socket.on('call_rejected', ()=>{ endCall(); toast('Call declined'); });
   socket.on('user_online', ({userId})=>{ updateOnlineStatus(userId,true); });
   socket.on('user_offline', ({userId})=>{ updateOnlineStatus(userId,false); });
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
+// \u2500\u2500 INIT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 let cmtsPostId = null;
 function initApp(){
   updateProfileUI();
@@ -958,7 +981,7 @@ function initApp(){
   loadProfilePosts();
 }
 
-// ── TAB SWITCHING ─────────────────────────────────────────────────────────
+// \u2500\u2500 TAB SWITCHING \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function switchTab(tab){
   ['feed','messages','reels','explore','studio','profile'].forEach(t=>{
     const s = t==='feed'?'s-feed':t==='messages'?'s-messages':t==='reels'?'screen-reels':t==='explore'?'s-explore':t==='studio'?'s-studio':'s-profile';
@@ -969,11 +992,11 @@ function switchTab(tab){
   if(tab==='explore') loadExploreGrid();
 }
 
-// ── PROFILE UI ────────────────────────────────────────────────────────────
+// \u2500\u2500 PROFILE UI \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function updateProfileUI(){
   if(!ME) return;
   $('prof-hdr-nm').textContent = '@'+ME.username;
-  $('prof-nm').textContent = ME.name + (ME.verified?` ${badge(ME.verifyTier)}`:'');
+  $('prof-nm').innerHTML = ME.name + ' ' + badge(ME);
   $('prof-bio-txt').textContent = ME.bio||'';
   $('prof-posts-n').textContent = ME.posts?.length||0;
   $('prof-followers-n').textContent = ME.followers?.length||0;
@@ -982,7 +1005,7 @@ function updateProfileUI(){
   const tav=$('tab-av'); tav.innerHTML=ME.photoUrl?`<img src="${imgSrc(ME.photoUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`:ME.name?.slice(0,2).toUpperCase()||'?';
 }
 
-// ── STORIES ───────────────────────────────────────────────────────────────
+// \u2500\u2500 STORIES \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function loadStories(){
   const stories = await api('/api/stories');
   if(!Array.isArray(stories)) return;
@@ -1012,9 +1035,13 @@ function showSV(){
   const story=grp[svIdx]; if(!story) { svGroupIdx++; svIdx=0; showSV(); return; }
   const u=story.user;
   $('sv-av').innerHTML=avatarEl(u,34);
-  $('sv-nm').textContent=(u.name||'?')+badge(u.verifyTier);
+  $('sv-nm').innerHTML=(u.name||'?')+' '+badge(u);
   $('sv-time').textContent=timeAgo(story.createdAt);
-  $('sv-viewers').textContent=`👁 ${story.seenBy?.length||0}`;
+  currentStoryId=story.id;
+  const isMyStory=story.userId===ME?.id;
+  const vEl=$('sv-viewers'); if(vEl){vEl.style.display=isMyStory?'block':'none'; vEl.innerHTML=isMyStory?`<button onclick='openStoryViewers()' style='background:rgba(0,0,0,.5);border:none;color:#fff;font-size:12px;padding:6px 12px;border-radius:20px;cursor:pointer;'>👁 ${story.seenBy?.length||0} views</button>`:'';};
+  // Expiry countdown
+  const msLeft=(story.createdAt+86400000)-Date.now(); const hLeft=Math.max(0,Math.floor(msLeft/3600000)); const tEl=$('sv-time'); if(tEl) tEl.textContent=hLeft>0?(hLeft+'h left'):'Expiring soon';
   const media=$('sv-media');
   const old=media.querySelector('.sv-img,.sv-vid');if(old)old.remove();
   if(story.mediaUrl){
@@ -1031,7 +1058,7 @@ function showSV(){
 function svNext(){ svIdx++; if(svIdx>=svGroups[svGroupIdx]?.length){svGroupIdx++;svIdx=0;} showSV(); }
 function svPrev(){ svIdx=Math.max(0,svIdx-1); showSV(); }
 
-// ── STORY CREATE ──────────────────────────────────────────────────────────
+// \u2500\u2500 STORY CREATE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openStoryCreate(){ $('story-overlay').classList.add('show'); }
 function closeStoryCreate(){ $('story-overlay').classList.remove('show'); storyFile=null; }
 function pickStory(inp){
@@ -1049,11 +1076,11 @@ async function submitStory(){
   fd.append('userId',ME.id); fd.append('caption',$('story-cap').value);
   fd.append('media',storyFile);
   const r=await api('/api/stories',{method:'POST',body:fd});
-  if(r.id){ toast('Story posted! ◎'); closeStoryCreate(); loadStories(); }
+  if(r.id){ toast('Story posted! \u25ce'); closeStoryCreate(); loadStories(); }
   else toast('Failed to post story');
 }
 
-// ── POSTS ─────────────────────────────────────────────────────────────────
+// \u2500\u2500 POSTS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function loadPosts(){
   const posts=await api('/api/posts');
   const feed=$('posts-feed'); feed.innerHTML='';
@@ -1078,9 +1105,9 @@ function prependPost(post, prepend=true){
       <div class="post-av" onclick="openUserProfile('${post.userId}')">${avatarEl(post.user,38)}</div>
       <div class="post-info">
         <div class="post-name">${post.user?.name||'?'} ${badge(post.user?.verifyTier)}</div>
-        <div class="post-time">@${post.user?.username||'?'} · ${timeAgo(post.createdAt)}</div>
+        <div class="post-time">@${post.user?.username||'?'} \u00b7 ${timeAgo(post.createdAt)}</div>
       </div>
-      ${mine?`<button class="post-menu" onclick="openPostMenu('${post.id}')">•••</button>`:''}
+      ${mine?`<button class="post-menu" onclick="openPostMenu('${post.id}')">\u2022\u2022\u2022</button>`:''}
     </div>
     ${mediaHTML}
     <div class="post-actions">
@@ -1116,7 +1143,7 @@ async function savePost(id){
   const r=await api('/api/posts/'+id+'/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id})});
   const btn=document.getElementById('save-'+id);
   if(btn) btn.className='action-btn'+(r.saved?' saved':'');
-  toast(r.saved?'Saved ✓':'Unsaved');
+  toast(r.saved?'Saved \u2713':'Unsaved');
 }
 function sharePost(id){ navigator.share?.({url:API+'/?post='+id}).catch(()=>{})||toast('Link copied!'); }
 function openPostMenu(id){ menuPostId=id; $('pm-delete').style.display=menuPostId&&menuPostId===id?'block':'block'; $('post-menu-sheet').classList.add('show'); }
@@ -1129,7 +1156,7 @@ async function deletePost(){
   loadProfilePosts();
 }
 
-// ── COMMENTS (sheet) ──────────────────────────────────────────────────────
+// \u2500\u2500 COMMENTS (sheet) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 let cmtsSheet=null;
 function openComments(postId){
   cmtsPostId=postId;
@@ -1169,7 +1196,7 @@ async function submitComment(){
   await api('/api/posts/'+cmtsPostId+'/comments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id,text})});
 }
 
-// ── CREATE POST ───────────────────────────────────────────────────────────
+// \u2500\u2500 CREATE POST \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openCreate(){ $('create-overlay').classList.add('show'); }
 function closeCreate(){ $('create-overlay').classList.remove('show'); pickedFiles=[]; $('media-preview').style.display='none'; $('media-preview').innerHTML=''; $('create-cap').value=''; }
 function pickMedia(inp){
@@ -1183,11 +1210,11 @@ async function submitPost(){
   fd.append('userId',ME.id); fd.append('caption',$('create-cap').value);
   pickedFiles.forEach(f=>fd.append('media',f));
   const r=await api('/api/posts',{method:'POST',body:fd});
-  if(r.post){ toast('Posted! 🎉'); closeCreate(); if(ME.posts) ME.posts.push(r.post.id); updateProfileUI(); loadProfilePosts(); }
+  if(r.post){ toast('Posted! \ud83c\udf89'); closeCreate(); if(ME.posts) ME.posts.push(r.post.id); updateProfileUI(); loadProfilePosts(); }
   else toast('Failed to post');
 }
 
-// ── EXPLORE ───────────────────────────────────────────────────────────────
+// \u2500\u2500 EXPLORE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function exploreSearch(q){
   if(!q){ $('ex-results').innerHTML=''; loadExploreGrid(); return; }
   $('ex-grid').innerHTML='';
@@ -1203,7 +1230,7 @@ async function loadExploreGrid(){
   $('ex-grid').innerHTML=Array.isArray(posts)?posts.map(p=>p.mediaUrls?.length?`<div class="ex-item" onclick="openUserProfile('${p.userId}')">${p.mediaUrls[0].endsWith('.mp4')?`<video src="${imgSrc(p.mediaUrls[0])}" muted playsinline></video>`:`<img src="${imgSrc(p.mediaUrls[0])}" loading="lazy"/>`}</div>`:'').join(''):'';
 }
 
-// ── MESSAGES ──────────────────────────────────────────────────────────────
+// \u2500\u2500 MESSAGES \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function searchUsers(q){
   if(!q){ loadConversations(); return; }
   const users=await api('/api/users/search?q='+encodeURIComponent(q));
@@ -1227,7 +1254,7 @@ function updateOnlineStatus(userId, online){
   if(dot) dot.style.display=online?'block':'none';
 }
 
-// ── CHAT ──────────────────────────────────────────────────────────────────
+// \u2500\u2500 CHAT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function openChat(userId){
   activeConv=userId;
   const r=await api('/api/users/'+userId);
@@ -1277,13 +1304,13 @@ function stopTyping(){ socket?.emit('stop_typing',{toId:activeConv,fromId:ME.id}
 function toggleEmoji(){ const t=$('emoji-tray'); t.style.display=t.style.display==='none'?'flex':'none'; }
 function insertEmoji(e){ $('ch-inp').value+= e; $('emoji-tray').style.display='none'; }
 
-// ── AI CHAT ───────────────────────────────────────────────────────────────
+// \u2500\u2500 AI CHAT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function toggleAI(){
   aiMode=!aiMode;
   const btn=$('ai-btn');
   btn.style.background=aiMode?'var(--grad)':'none';
   btn.style.color=aiMode?'#fff':'var(--g1)';
-  toast(aiMode?'AI Mode ON ✨':'AI Mode OFF');
+  toast(aiMode?'AI Mode ON \u2728':'AI Mode OFF');
 }
 async function handleAI(text){
   const body=$('ch-body');
@@ -1303,7 +1330,7 @@ async function handleAI(text){
   body.scrollTop=body.scrollHeight;
 }
 
-// ── REPORT ────────────────────────────────────────────────────────────────
+// \u2500\u2500 REPORT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openReport(){ $('report-sheet').classList.add('show'); }
 function closeReport(){ $('report-sheet').classList.remove('show'); }
 async function submitReport(reason){
@@ -1311,228 +1338,43 @@ async function submitReport(reason){
   closeReport(); toast('Report submitted');
 }
 
-// ── REAL WebRTC CALLS ────────────────────────────────────────────────────
-let isMuted = false, isCamOff = false, incomingFrom = null, incomingOffer = null;
-const STUN = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
-
-function startVoiceCall(){ callType='voice'; initiateCall(); }
-function startVideoCall(){ callType='video'; initiateCall(); }
-
-async function initiateCall(){
-  if(!convUser){ toast('Open a chat first'); return; }
-  try {
-    const constraints = callType==='video' ? {video:true,audio:true} : {audio:true};
-    localStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch(e){ toast('Allow camera/mic permission'); return; }
-
-  peerConn = new RTCPeerConnection(STUN);
-  localStream.getTracks().forEach(t => peerConn.addTrack(t, localStream));
-
-  peerConn.onicecandidate = e => { if(e.candidate) socket?.emit('webrtc_ice',{to:convUser.id,candidate:e.candidate}); };
-  peerConn.ontrack = e => {
-    const rv = $('remote-vid');
-    rv.srcObject = e.streams[0];
-    rv.style.display = 'block';
-    $('call-bg').style.display = 'none';
-  };
-
-  // Show local video
-  if(callType==='video'){
-    const lv = $('local-vid');
-    lv.srcObject = localStream;
-    lv.style.display = 'block';
-  }
-
-  const offer = await peerConn.createOffer();
-  await peerConn.setLocalDescription(offer);
-  socket?.emit('webrtc_offer', { to: convUser.id, offer, callType, from: ME });
-
-  // Show call UI
-  showCallUI(convUser, 'Calling...');
-  logCall(convUser.id, convUser.name, callType, 'outgoing');
-}
-
-async function handleOffer(from, offer, callType, caller){
-  incomingFrom = from;
-  incomingOffer = offer;
-  // Show incoming call screen
-  const ic = $('incoming-call');
-  $('ic-av').innerHTML = avatarEl(caller||{name:'?'},90);
-  $('ic-name').textContent = caller?.name||'Unknown';
-  $('ic-type').textContent = (callType==='video'?'📹 Video':'📞 Voice') + ' call incoming...';
-  ic.style.display = 'flex';
-}
-
-async function acceptCall(){
-  $('incoming-call').style.display = 'none';
-  try {
-    const constraints = callType==='video'?{video:true,audio:true}:{audio:true};
-    localStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch(e){ toast('Allow camera/mic permission'); return; }
-
-  peerConn = new RTCPeerConnection(STUN);
-  localStream.getTracks().forEach(t => peerConn.addTrack(t, localStream));
-
-  peerConn.onicecandidate = e => { if(e.candidate) socket?.emit('webrtc_ice',{to:incomingFrom,candidate:e.candidate}); };
-  peerConn.ontrack = e => {
-    const rv = $('remote-vid');
-    rv.srcObject = e.streams[0];
-    rv.style.display = 'block';
-    $('call-bg').style.display = 'none';
-  };
-
-  if(callType==='video'){
-    const lv = $('local-vid');
-    lv.srcObject = localStream;
-    lv.style.display = 'block';
-  }
-
-  await peerConn.setRemoteDescription(incomingOffer);
-  const answer = await peerConn.createAnswer();
-  await peerConn.setLocalDescription(answer);
-  socket?.emit('webrtc_answer', { to: incomingFrom, answer });
-
-  showCallUI({ name: $('ic-name').textContent }, 'Connected');
-  startCallTimer();
-}
-
-function rejectCall(){
-  $('incoming-call').style.display = 'none';
-  socket?.emit('call_rejected', { to: incomingFrom });
-  incomingFrom = null; incomingOffer = null;
-}
-
-function showCallUI(user, status){
-  $('call-av').innerHTML = avatarEl(user, 90);
-  $('call-name').textContent = user.name||'';
-  $('call-status').textContent = status;
-  $('call-timer').style.display = 'none';
-  $('call-bg').style.display = 'flex';
-  $('remote-vid').style.display = 'none';
-  $('local-vid').style.display = 'none';
+// \u2500\u2500 VOICE/VIDEO CALLS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+function startVoiceCall(){ callType='voice'; openCallUI(); }
+function startVideoCall(){ callType='video'; openCallUI(); }
+function openCallUI(){
+  if(!convUser) return;
+  logCall(convUser.id,convUser.name,callType,'outgoing');
+  $('call-av').innerHTML=avatarEl(convUser,100);
+  $('call-name').textContent=convUser.name;
+  $('call-status').textContent='Calling...';
+  $('call-timer').style.display='none';
   $('call-overlay').classList.add('show');
+  callSecs=0; callInterval=null;
+  setTimeout(()=>{ $('call-status').textContent=callType==='video'?'Video Call':'Voice Call'; startCallTimer(); },2000);
 }
-
+function startCallTimer(){
+  $('call-timer').style.display='block'; $('call-status').style.display='none';
+  callInterval=setInterval(()=>{ callSecs++; const m=Math.floor(callSecs/60),s=callSecs%60; $('call-timer').textContent=m+':'+(s<10?'0':'')+s; },1000);
+}
 function endCall(){
-  clearInterval(callInterval); callInterval = null;
-  localStream?.getTracks().forEach(t => t.stop()); localStream = null;
-  peerConn?.close(); peerConn = null;
+  clearInterval(callInterval);
   $('call-overlay').classList.remove('show');
-  $('remote-vid').srcObject = null; $('local-vid').srcObject = null;
-  $('remote-vid').style.display = 'none'; $('local-vid').style.display = 'none';
-  socket?.emit('call_ended', { to: convUser?.id });
+  localStream?.getTracks().forEach(t=>t.stop());
+  localStream=null;
   toast('Call ended');
 }
-
-function startCallTimer(){
-  $('call-status').style.display = 'none';
-  $('call-timer').style.display = 'block';
-  callSecs = 0;
-  callInterval = setInterval(()=>{ callSecs++; const m=Math.floor(callSecs/60),s=callSecs%60; $('call-timer').textContent=m+':'+(s<10?'0':'')+s; },1000);
+function toggleMute(){ toast('Muted'); }
+function toggleVideo(){ toast('Camera toggled'); }
+async function handleOffer(from, offer){
+  peerConn=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+  peerConn.onicecandidate=e=>{ if(e.candidate) socket?.emit('webrtc_ice',{to:from,candidate:e.candidate}); };
+  await peerConn.setRemoteDescription(offer);
+  const answer=await peerConn.createAnswer();
+  await peerConn.setLocalDescription(answer);
+  socket?.emit('webrtc_answer',{to:from,answer});
 }
 
-function toggleMute(){
-  isMuted = !isMuted;
-  localStream?.getAudioTracks().forEach(t => t.enabled = !isMuted);
-  $('mute-btn').textContent = isMuted ? '🔇' : '🎤';
-  toast(isMuted ? 'Muted' : 'Unmuted');
-}
-
-function toggleVideo(){
-  isCamOff = !isCamOff;
-  localStream?.getVideoTracks().forEach(t => t.enabled = !isCamOff);
-  $('vid-btn').textContent = isCamOff ? '📵' : '📷';
-  toast(isCamOff ? 'Camera off' : 'Camera on');
-}
-
-async function switchCamera(){
-  if(!localStream) return;
-  const vt = localStream.getVideoTracks()[0];
-  if(!vt) return;
-  const facing = vt.getSettings().facingMode === 'user' ? 'environment' : 'user';
-  localStream.getVideoTracks().forEach(t => t.stop());
-  try {
-    const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
-    const newVt = newStream.getVideoTracks()[0];
-    $('local-vid').srcObject = new MediaStream([newVt]);
-    const sender = peerConn?.getSenders().find(s => s.track?.kind === 'video');
-    if(sender) sender.replaceTrack(newVt);
-    toast('Camera switched');
-  } catch(e){ toast('Cannot switch camera'); }
-}
-
-// Update socket to handle call events
-function setupCallSocket(){
-  socket?.on('webrtc_offer', async({from,offer,callType:ct,from:caller})=>{
-    callType = ct||'voice';
-    await handleOffer(from, offer, ct, caller);
-  });
-  socket?.on('webrtc_answer', async({answer})=>{ if(peerConn) { await peerConn.setRemoteDescription(answer); startCallTimer(); } });
-  socket?.on('webrtc_ice', async({candidate})=>{ if(peerConn&&candidate) await peerConn.addIceCandidate(candidate); });
-  socket?.on('call_ended', ()=>{ endCall(); toast('Call ended'); });
-  socket?.on('call_rejected', ()=>{ endCall(); toast('Call declined'); });
-}
-
-// ── EDIT PROFILE (INSTAGRAM STYLE) ───────────────────────────────────────
-let epPhotoFile = null;
-function epChangePhoto(inp){
-  epPhotoFile = inp.files[0];
-  if(epPhotoFile){
-    const url = URL.createObjectURL(epPhotoFile);
-    $('ep-av').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
-  }
-}
-function openEditProfile(){
-  epPhotoFile = null;
-  $('ep-av').innerHTML = avatarEl(ME, 90);
-  $('ep-name').value = ME.name||'';
-  $('ep-username').value = ME.username||'';
-  $('ep-bio').value = ME.bio||'';
-  $('ep-link').value = ME.link||'';
-  $('ep-gender').value = ME.gender||'';
-  $('ep-err').textContent = '';
-  $('ep-overlay').classList.add('show');
-  closeSettings();
-}
-function closeEditProfile(){ $('ep-overlay').classList.remove('show'); epPhotoFile = null; }
-async function saveProfile(){
-  const name = $('ep-name').value.trim();
-  const username = $('ep-user' + 'name').value.trim().replace(/\s/g,'').toLowerCase();
-  const bio = $('ep-bio').value.trim();
-  const link = $('ep-link').value.trim();
-  const gender = $('ep-gender').value;
-  if(!name){ $('ep-err').textContent='Name is required'; return; }
-  if(!username){ $('ep-err').textContent='Username is required'; return; }
-
-  // Upload photo first if changed
-  if(epPhotoFile){
-    const fd = new FormData(); fd.append('photo', epPhotoFile);
-    const pr = await api('/api/users/'+ME.id+'/photo', {method:'POST', body:fd});
-    if(pr.photoUrl) ME.photoUrl = pr.photoUrl;
-  }
-
-  const r = await api('/api/users/'+ME.id+'/update', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, username, bio, link, gender})});
-  if(r.error){ $('ep-err').textContent = r.error; return; }
-  if(r.user) ME = {...ME, ...r.user};
-  updateProfileUI(); toast('Profile saved! ✓'); closeEditProfile();
-}
-
-// ── VERIFICATION (WORKING) ────────────────────────────────────────────────
-function openVerify(){ $('verify-overlay').classList.add('show'); closeSettings(); }
-function closeVerify(){ $('verify-overlay').classList.remove('show'); }
-async function buyVerify(tier){
-  const prices = {blue:'$9.99',gold:'$24.99',purple:'$49.99'};
-  const r = await api('/api/users/'+ME.id+'/verify', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tier})});
-  if(r.ok||r.error===undefined){
-    ME.verified = true; ME.verifyTier = tier;
-    updateProfileUI();
-    const icons = {blue:'✓',gold:'✓',purple:'✓'};
-    toast(`${tier.charAt(0).toUpperCase()+tier.slice(1)} verified! ${prices[tier]}/mo`);
-    closeVerify();
-  } else { toast('Verification failed'); }
-}
-
-// ── CALL LOGS ─────────────────────────────────────────────────────────────
+// \u2500\u2500 CALL LOGS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function logCall(userId,name,type,status){
   callLogs.unshift({userId,name,type,status,duration:'0:00',time:Date.now()});
   if(callLogs.length>50) callLogs=callLogs.slice(0,50);
@@ -1541,8 +1383,8 @@ function logCall(userId,name,type,status){
 function openCallLogs(){
   $('call-log-list').innerHTML=callLogs.length?callLogs.map(c=>`
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--s2);">
-      <div style="font-size:24px;">${c.type==='video'?'📹':'📞'}</div>
-      <div style="flex:1;"><div style="font-weight:700;font-size:14px;">${c.name||'Unknown'}</div><div style="font-size:12px;color:${c.status==='missed'?'var(--red)':'var(--g2)'};">${c.status} · ${c.duration}</div></div>
+      <div style="font-size:24px;">${c.type==='video'?'\ud83d\udcf9':'\ud83d\udcde'}</div>
+      <div style="flex:1;"><div style="font-weight:700;font-size:14px;">${c.name||'Unknown'}</div><div style="font-size:12px;color:${c.status==='missed'?'var(--red)':'var(--g2)'};">${c.status} \u00b7 ${c.duration}</div></div>
       <div style="font-size:11px;color:var(--g2);">${timeAgo(c.time)}</div>
     </div>`).join(''):'<div style="padding:60px;text-align:center;color:var(--g2);">No recent calls</div>';
   $('call-logs-overlay').classList.add('show');
@@ -1550,7 +1392,7 @@ function openCallLogs(){
 function closeCallLogs(){ $('call-logs-overlay').classList.remove('show'); }
 function clearCallLogs(){ callLogs=[]; localStorage.setItem('dp_call_logs','[]'); openCallLogs(); }
 
-// ── GROUP CHAT ────────────────────────────────────────────────────────────
+// \u2500\u2500 GROUP CHAT \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openGroupCreate(){ gcSelected=[]; $('gc-create-sheet').classList.add('show'); }
 function closeGroupCreate(){ $('gc-create-sheet').classList.remove('show'); }
 async function gcSearchUsers(q){
@@ -1560,7 +1402,7 @@ async function gcSearchUsers(q){
     <div class="ms-item" onclick="gcToggle('${u.id}','${u.name}','${u.username}')">
       <div class="ms-av">${avatarEl(u,40)}</div>
       <div class="ms-info"><div class="ms-name">${u.name}</div></div>
-      <div id="gc-chk-${u.id}" style="font-size:18px;">${gcSelected.find(x=>x.id===u.id)?'✅':'⬜'}</div>
+      <div id="gc-chk-${u.id}" style="font-size:18px;">${gcSelected.find(x=>x.id===u.id)?'\u2705':'\u2b1c'}</div>
     </div>`).join(''):'';
 }
 function gcToggle(id,name,username){
@@ -1568,7 +1410,7 @@ function gcToggle(id,name,username){
   if(idx>=0) gcSelected.splice(idx,1); else gcSelected.push({id,name,username});
   $('gc-selected').innerHTML=gcSelected.map(u=>`<span style="background:var(--sky);color:#000;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;">@${u.username}</span>`).join(' ');
   const chk=document.getElementById('gc-chk-'+id);
-  if(chk) chk.textContent=gcSelected.find(x=>x.id===id)?'✅':'⬜';
+  if(chk) chk.textContent=gcSelected.find(x=>x.id===id)?'\u2705':'\u2b1c';
 }
 async function createGroup(){
   const name=$('gc-name').value.trim();
@@ -1577,7 +1419,7 @@ async function createGroup(){
   const members=[...gcSelected.map(u=>u.id),ME.id];
   const r=await api('/api/groups',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,members,createdBy:ME.id})});
   closeGroupCreate();
-  if(r.group){ toast('Group created! 🎉'); openGCChat(r.group); loadGroupChats(); }
+  if(r.group){ toast('Group created! \ud83c\udf89'); openGCChat(r.group); loadGroupChats(); }
 }
 async function loadGroupChats(){
   const groups=await api('/api/groups?userId='+ME.id);
@@ -1585,7 +1427,7 @@ async function loadGroupChats(){
   $('gc-sec').style.display='block';
   $('gc-list').innerHTML=groups.map(g=>`
     <div class="ms-item" onclick='openGCChat(${JSON.stringify(g).replace(/'/g,"&#39;")})'>
-      <div class="ms-av" style="background:var(--grad);font-size:20px;display:flex;align-items:center;justify-content:center;">👥</div>
+      <div class="ms-av" style="background:var(--grad);font-size:20px;display:flex;align-items:center;justify-content:center;">\ud83d\udc65</div>
       <div class="ms-info"><div class="ms-name">${g.name} <span class="gc-badge">GROUP</span></div><div class="ms-last">${g.members?.length} members</div></div>
     </div>`).join('');
 }
@@ -1622,9 +1464,9 @@ async function sendGCMsg(){
   appendGCMsg({fromId:ME.id,groupId:currentGC.id,text,fromUsername:ME.username});
   await api('/api/groups/'+currentGC.id+'/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:ME.id,text,fromUsername:ME.username})});
 }
-function toggleGCEmoji(){ toast('Use emoji keyboard on your phone 😊'); }
+function toggleGCEmoji(){ toast('Use emoji keyboard on your phone \ud83d\ude0a'); }
 
-// ── REELS ─────────────────────────────────────────────────────────────────
+// \u2500\u2500 REELS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function loadReels(){
   const reels=await api('/api/reels');
   const screen=$('screen-reels'); screen.innerHTML='';
@@ -1659,11 +1501,11 @@ async function submitReel(){
   if(!reelFile){ toast('Pick a video'); return; }
   const fd=new FormData(); fd.append('userId',ME.id); fd.append('caption',$('reel-cap').value); fd.append('video',reelFile);
   const r=await api('/api/reels',{method:'POST',body:fd});
-  if(r.id){ toast('Reel posted! 🎬'); closeReelSheet(); }
+  if(r.id){ toast('Reel posted! \ud83c\udfac'); closeReelSheet(); }
   else toast('Failed');
 }
 
-// ── PROFILE ───────────────────────────────────────────────────────────────
+// \u2500\u2500 PROFILE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function loadProfilePosts(userId){
   const id=userId||ME?.id;
   if(!id) return;
@@ -1685,7 +1527,7 @@ function changeAvatar(inp){
   });
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────────────────
+// \u2500\u2500 SETTINGS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openSettings(){ $('settings-overlay').classList.add('show'); }
 function closeSettings(){ $('settings-overlay').classList.remove('show'); }
 function toggleDark(){
@@ -1697,13 +1539,13 @@ function toggleDark(){
   document.documentElement.style.setProperty('--w',darkMode?'#ffffff':'#0a0a0f');
   document.documentElement.style.setProperty('--g1',darkMode?'#a0a0c0':'#404060');
   document.documentElement.style.setProperty('--g2',darkMode?'#606080':'#808098');
-  $('dark-ico').textContent=darkMode?'🌙':'☀️';
+  $('dark-ico').textContent=darkMode?'\ud83c\udf19':'\u2600\ufe0f';
   $('dark-lbl').textContent=darkMode?'Dark Mode':'Light Mode';
   $('dark-val').textContent=darkMode?'On':'Off';
 }
 function doLogout(){ ME=null; socket?.disconnect(); socket=null; $('settings-overlay').classList.remove('show'); $('app').classList.remove('show'); $('auth').style.display='flex'; $('li-user').value=''; $('li-pass').value=''; }
 
-// ── EDIT PROFILE ──────────────────────────────────────────────────────────
+// \u2500\u2500 EDIT PROFILE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openEditProfile(){ $('ep-name').value=ME.name||''; $('ep-bio').value=ME.bio||''; $('ep-link').value=ME.link||''; $('ep-overlay').classList.add('show'); closeSettings(); }
 function closeEditProfile(){ $('ep-overlay').classList.remove('show'); }
 async function saveProfile(){
@@ -1712,7 +1554,7 @@ async function saveProfile(){
   if(r.user){ ME=r.user; updateProfileUI(); toast('Profile saved!'); closeEditProfile(); }
 }
 
-// ── CHANGE PASSWORD ───────────────────────────────────────────────────────
+// \u2500\u2500 CHANGE PASSWORD \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openChangePassword(){ $('pw-overlay').classList.add('show'); closeSettings(); }
 function closePW(){ $('pw-overlay').classList.remove('show'); }
 async function savePassword(){
@@ -1724,15 +1566,23 @@ async function savePassword(){
   toast('Password changed!'); closePW();
 }
 
-// ── VERIFY ────────────────────────────────────────────────────────────────
-function openVerify(){ $('verify-overlay').classList.add('show'); closeSettings(); }
+// \u2500\u2500 VERIFY \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+function openVerify(){
+  ['blue','gold','purple'].forEach(t=>{ const el=document.getElementById('vt-'+t); if(el) el.style.borderColor=ME.verifyTier===t?'var(--green)':'var(--s3)'; });
+  $('verify-overlay').classList.add('show'); closeSettings();
+}
 function closeVerify(){ $('verify-overlay').classList.remove('show'); }
 async function buyVerify(tier){
   await api('/api/users/'+ME.id+'/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tier})});
-  ME.verified=true; ME.verifyTier=tier; updateProfileUI(); toast('Verified! '+badge(tier)); closeVerify();
+  ME.verified=true; ME.verifyTier=tier;
+  if(ME.username===CREATOR_USERNAME) ME.verifyTier='creator';
+  updateProfileUI();
+  const labels={blue:"Blue ✓",gold:"Gold ✓",purple:"Purple ✓"};
+  toast((labels[tier]||tier)+" verified! 🎉");
+  closeVerify();
 }
 
-// ── USER PROFILE ──────────────────────────────────────────────────────────
+// \u2500\u2500 USER PROFILE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function openUserProfile(userId){
   if(userId===ME.id){ switchTab('profile'); return; }
   viewingUserId=userId;
@@ -1766,16 +1616,16 @@ async function toggleFollow(){
 }
 function openChatWith(){ if(!viewingUserId) return; closeUProfile(); switchTab('messages'); openChat(viewingUserId); }
 
-// ── NOTIFICATIONS ─────────────────────────────────────────────────────────
+// \u2500\u2500 NOTIFICATIONS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function openNotifs(){ $('notifs-overlay').classList.add('show'); renderNotifs(); }
 function closeNotifs(){ $('notifs-overlay').classList.remove('show'); $('notif-dot').classList.remove('show'); }
 function addNotif(n){ notifications.unshift(n); $('notif-dot').classList.add('show'); }
 function renderNotifs(){
   $('notif-list').innerHTML=notifications.length?notifications.map(n=>`
-    <div class="notif-item"><div class="notif-av">👤</div><div class="notif-txt"><b>@${n.fromId?.slice(0,8)||'?'}</b> ${n.text||''}</div></div>`).join(''):'<div style="padding:40px;text-align:center;color:var(--g2);">No notifications</div>';
+    <div class="notif-item"><div class="notif-av">\ud83d\udc64</div><div class="notif-txt"><b>@${n.fromId?.slice(0,8)||'?'}</b> ${n.text||''}</div></div>`).join(''):'<div style="padding:40px;text-align:center;color:var(--g2);">No notifications</div>';
 }
 
-// ── STUDIO ────────────────────────────────────────────────────────────────
+// \u2500\u2500 STUDIO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function loadStudio(){
   const posts=await api('/api/posts');
   const myPosts=Array.isArray(posts)?posts.filter(p=>p.userId===ME.id):[];
@@ -1787,7 +1637,7 @@ async function loadStudio(){
     <div class="st-card"><div class="st-card-n">${ME.following?.length||0}</div><div class="st-card-l">Following</div></div>`;
 }
 
-// ── LIVE ──────────────────────────────────────────────────────────────────
+// \u2500\u2500 LIVE \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 async function startLive(){
   try{
     localStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
@@ -1807,12 +1657,12 @@ function sendLiveComment(){ const inp=$('live-inp'); const t=inp.value.trim(); i
 function openLiveBrowser(){ $('live-browser-overlay').classList.add('show'); }
 function closeLiveBrowser(){ $('live-browser-overlay').classList.remove('show'); }
 
-// ── AVATAR BUILDER ────────────────────────────────────────────────────────
-const avOpts={skin:['👤','🟤','🟡','🟠','⬛'],hair:['👱','🧑','👩','🧔','👲','🧕'],eyes:['😊','😎','🤓','😏','🥸'],acc:['none','🎩','👑','🎓','🎤','💎'],bg:['#1a1a2e','#16213e','#0f3460','#533483','#e94560','#2d6a4f']};
+// \u2500\u2500 AVATAR BUILDER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+const avOpts={skin:['\ud83d\udc64','\ud83d\udfe4','\ud83d\udfe1','\ud83d\udfe0','\u2b1b'],hair:['\ud83d\udc71','\ud83e\uddd1','\ud83d\udc69','\ud83e\uddd4','\ud83d\udc72','\ud83e\uddd5'],eyes:['\ud83d\ude0a','\ud83d\ude0e','\ud83e\udd13','\ud83d\ude0f','\ud83e\udd78'],acc:['none','\ud83c\udfa9','\ud83d\udc51','\ud83c\udf93','\ud83c\udfa4','\ud83d\udc8e'],bg:['#1a1a2e','#16213e','#0f3460','#533483','#e94560','#2d6a4f']};
 function openAvatarBuilder(){ renderAvOpts(); updateAvPreview(); $('avatar-overlay').classList.add('show'); }
 function closeAvatarBuilder(){ $('avatar-overlay').classList.remove('show'); }
 function renderAvOpts(){
-  ['skin','hair','eyes','acc'].forEach(c=>{ $('av-'+c).innerHTML=avOpts[c].map(o=>`<div class="av-opt${avatarState[c]===o?' sel':''}" onclick="setAv('${c}','${o}')">${o==='none'?'❌':o}</div>`).join(''); });
+  ['skin','hair','eyes','acc'].forEach(c=>{ $('av-'+c).innerHTML=avOpts[c].map(o=>`<div class="av-opt${avatarState[c]===o?' sel':''}" onclick="setAv('${c}','${o}')">${o==='none'?'\u274c':o}</div>`).join(''); });
   $('av-bg').innerHTML=avOpts.bg.map(c=>`<div class="av-bg-opt${avatarState.bg===c?' sel':''}" style="background:${c};" onclick="setAv('bg','${c}')"></div>`).join('');
 }
 function setAv(cat,val){ avatarState[cat]=val; renderAvOpts(); updateAvPreview(); }
@@ -1822,14 +1672,192 @@ function updateAvPreview(){
 }
 async function saveAvatar(){
   await api('/api/users/'+ME.id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avatar:JSON.stringify(avatarState)})});
-  toast('Avatar saved! 🎨'); closeAvatarBuilder();
+  toast('Avatar saved! \ud83c\udfa8'); closeAvatarBuilder();
 }
 
-// ── OTP ───────────────────────────────────────────────────────────────────
+// \u2500\u2500 OTP \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 function otpNext(idx){ const v=document.getElementById('otp'+idx).value; if(v&&idx<5) document.getElementById('otp'+(idx+1)).focus(); }
 function showOTP(msg,cb){ otpCode=Math.floor(100000+Math.random()*900000).toString(); otpCallback=cb; $('otp-msg').textContent=msg||`Demo OTP: ${otpCode}`; [0,1,2,3,4,5].forEach(i=>document.getElementById('otp'+i).value=''); $('otp-overlay').classList.add('show'); toast(`Demo OTP: ${otpCode}`,6000); }
-function verifyOTP(){ const entered=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join(''); if(entered===otpCode){ $('otp-overlay').classList.remove('show'); otpCallback?.(); } else toast('Wrong code ❌'); }
+function verifyOTP(){ const entered=[0,1,2,3,4,5].map(i=>document.getElementById('otp'+i).value).join(''); if(entered===otpCode){ $('otp-overlay').classList.remove('show'); otpCallback?.(); } else toast('Wrong code \u274c'); }
 function resendOTP(){ otpCode=Math.floor(100000+Math.random()*900000).toString(); toast(`New OTP: ${otpCode}`,6000); }
+
+// ── FOLLOWERS/FOLLOWING LIST ──────────────────────────────────────────────
+async function showFollowerList(type){
+  const title = type==='followers'?'Followers':'Following';
+  const ids = type==='followers'?(ME.followers||[]):(ME.following||[]);
+  let overlay = document.getElementById('follow-list-overlay');
+  if(!overlay){
+    overlay = document.createElement('div'); overlay.id='follow-list-overlay'; overlay.className='overlay';
+    overlay.innerHTML='<div class="ov-hdr"><button class="ov-close" onclick="document.getElementById('follow-list-overlay').classList.remove('show')">✕</button><h2 id="fl-title">Followers</h2><div style="width:36px;"></div></div><div style="flex:1;overflow-y:auto;" id="fl-body"></div>';
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('fl-title').textContent=title;
+  document.getElementById('fl-body').innerHTML='<div style="padding:20px;text-align:center;color:var(--g2);">Loading...</div>';
+  overlay.classList.add('show');
+  const users = await Promise.all(ids.map(id=>api('/api/users/'+id)));
+  document.getElementById('fl-body').innerHTML = users.map(r=>r.user?`<div class="follow-item" onclick="openUserProfile('${r.user.id}');document.getElementById('follow-list-overlay').classList.remove('show')"><div class="follow-av">${avatarEl(r.user,44)}</div><div><div style="font-weight:700;display:flex;align-items:center;gap:4px;">${r.user.name} ${badge(r.user)}</div><div style="font-size:12px;color:var(--g2);">@${r.user.username}</div></div></div>`:'').join('')||'<div style="padding:40px;text-align:center;color:var(--g2);">None yet</div>';
+}
+
+// ── CHAT CUSTOMIZATION ────────────────────────────────────────────────────
+function openChatInfo(){
+  if(!convUser) return;
+  let overlay = document.getElementById('chat-info-overlay');
+  if(!overlay){
+    overlay = document.createElement('div'); overlay.id='chat-info-overlay'; overlay.className='overlay';
+    overlay.innerHTML=`<div class="ov-hdr"><button class="ov-close" onclick="document.getElementById('chat-info-overlay').classList.remove('show')">✕</button><h2>Chat Info</h2><div style="width:36px;"></div></div><div style="flex:1;overflow-y:auto;"><div style="display:flex;flex-direction:column;align-items:center;padding:24px 16px;border-bottom:1px solid var(--s2);"><div id="ci-av" style="width:80px;height:80px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;margin-bottom:10px;"></div><div id="ci-name" style="font-size:18px;font-weight:800;display:flex;align-items:center;gap:6px;"></div><div id="ci-nick" style="font-size:13px;color:var(--g2);margin-top:4px;"></div><div id="ci-streak" style="margin-top:8px;font-size:14px;font-weight:700;"></div></div><div class="settings-sec">CUSTOMIZE</div><div class="settings-row" onclick="changeChatNickname()"><span class="settings-ico">✏️</span><span class="settings-lbl">Change Nickname</span></div><div class="settings-row" onclick="openThemePicker()"><span class="settings-ico">🎨</span><span class="settings-lbl">Chat Theme</span></div><div class="settings-row" onclick="openWallpaperPicker()"><span class="settings-ico">🖼️</span><span class="settings-lbl">Chat Wallpaper</span></div><div class="settings-sec">ACTIONS</div><div class="settings-row" onclick="openUserProfile(convUser?.id);document.getElementById('chat-info-overlay').classList.remove('show')"><span class="settings-ico">👤</span><span class="settings-lbl">View Profile</span></div><div class="settings-row" onclick="startVoiceCall();document.getElementById('chat-info-overlay').classList.remove('show')"><span class="settings-ico">📞</span><span class="settings-lbl">Voice Call</span></div><div class="settings-row" onclick="startVideoCall();document.getElementById('chat-info-overlay').classList.remove('show')"><span class="settings-ico">📹</span><span class="settings-lbl">Video Call</span></div></div>`;
+    document.body.appendChild(overlay);
+    // Theme sheet
+    let ts = document.createElement('div'); ts.id='theme-sheet'; ts.className='sheet';
+    ts.innerHTML='<div class="sheet-box"><div class="sheet-title">Chat Theme</div><div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px 0 16px;"><div class="theme-opt" style="background:linear-gradient(135deg,#38bdf8,#f472b6);" onclick="setChatTheme('grad')"></div><div class="theme-opt" style="background:linear-gradient(135deg,#4ade80,#22d3ee);" onclick="setChatTheme('ocean')"></div><div class="theme-opt" style="background:linear-gradient(135deg,#f472b6,#fbbf24);" onclick="setChatTheme('sunset')"></div><div class="theme-opt" style="background:linear-gradient(135deg,#a855f7,#6366f1);" onclick="setChatTheme('purple')"></div><div class="theme-opt" style="background:linear-gradient(135deg,#fb923c,#f87171);" onclick="setChatTheme('fire')"></div><div class="theme-opt" style="background:var(--gold);" onclick="setChatTheme('gold')"></div><div class="theme-opt" style="background:#fff;" onclick="setChatTheme('white')"></div><div class="theme-opt" style="background:#2a2a3d;" onclick="setChatTheme('dark')"></div></div><button class="sheet-opt" style="color:var(--g2);" onclick="document.getElementById('theme-sheet').classList.remove('show')">Close</button></div>';
+    document.body.appendChild(ts);
+  }
+  const cs = chatSettings[convUser.id]||{};
+  document.getElementById('ci-av').innerHTML = avatarEl(convUser,80);
+  document.getElementById('ci-name').innerHTML = convUser.name+' '+badge(convUser);
+  document.getElementById('ci-nick').textContent = cs.nickname?('Nickname: '+cs.nickname):'';
+  const s = getStreak(convUser.id);
+  document.getElementById('ci-streak').innerHTML = s.count>=3?`${streakEmoji(s.count)} ${s.count}-day streak!`:'Send texts daily to build a streak!';
+  overlay.classList.add('show');
+}
+function changeChatNickname(){
+  const cs=chatSettings[convUser.id]||{};
+  const name=prompt('Nickname (blank to reset):', cs.nickname||'');
+  if(name===null) return;
+  cs.nickname=name||''; chatSettings[convUser.id]=cs;
+  localStorage.setItem('dp_chat_settings',JSON.stringify(chatSettings));
+  const ni=$('ch-name'); if(ni) ni.innerHTML=(cs.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(convUser.id);
+  document.getElementById('ci-nick').textContent=cs.nickname?('Nickname: '+cs.nickname):'';
+  toast('Nickname updated!');
+}
+function openThemePicker(){ document.getElementById('theme-sheet')?.classList.add('show'); }
+function setChatTheme(theme){
+  if(!convUser) return;
+  const cs=chatSettings[convUser.id]||{}; cs.theme=theme; cs.wallpaper=''; chatSettings[convUser.id]=cs;
+  localStorage.setItem('dp_chat_settings',JSON.stringify(chatSettings));
+  const bg = THEMES[theme]||'';
+  $('ch-body').style.background=bg.startsWith('linear')?`radial-gradient(ellipse at bottom, ${bg.replace('linear-gradient(135deg,','').replace(')','').split(',')[0]} 0%, transparent 70%)`:bg;
+  document.getElementById('theme-sheet')?.classList.remove('show');
+  toast('Theme applied!');
+}
+function openWallpaperPicker(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.onchange=()=>{ if(!inp.files[0]) return; const url=URL.createObjectURL(inp.files[0]); const cs=chatSettings[convUser.id]||{}; cs.wallpaper=url; cs.theme=''; chatSettings[convUser.id]=cs; localStorage.setItem('dp_chat_settings',JSON.stringify(chatSettings)); $('ch-body').style.background=`url(${url}) center/cover`; toast('Wallpaper set!'); };
+  inp.click();
+}
+
+// ── GIFT PANEL ────────────────────────────────────────────────────────────
+function openGiftPanel(){
+  let gs = document.getElementById('gift-sheet');
+  if(!gs){
+    gs = document.createElement('div'); gs.id='gift-sheet'; gs.className='sheet';
+    gs.innerHTML='<div class="sheet-box"><div style="display:flex;align-items:center;margin-bottom:16px;"><div style="flex:1;font-size:16px;font-weight:800;">Send a Gift 🎁</div><div style="font-size:13px;color:var(--gold);font-weight:700;">🪙 <span id="my-coins-lbl">0</span></div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;" id="gift-grid-inner"></div><button class="auth-btn" onclick="sendGift()" style="margin-top:0;">Send Gift 🎁</button><button class="sheet-opt" style="color:var(--g2);margin-top:8px;" onclick="document.getElementById('gift-sheet').classList.remove('show')">Cancel</button></div>';
+    document.body.appendChild(gs);
+  }
+  document.getElementById('my-coins-lbl').textContent=myCoins;
+  document.getElementById('gift-grid-inner').innerHTML=GIFTS.map((g,i)=>`<div class="gift-item${selectedGift===i?' sel':''}" onclick="selectGift(${i})"><div style="font-size:32px;">${g.ico}</div><div style="font-size:11px;font-weight:700;">${g.name}</div><div class="gift-price">🪙${g.coins}</div></div>`).join('');
+  gs.classList.add('show');
+}
+function selectGift(i){ selectedGift=i; openGiftPanel(); }
+function sendGift(){
+  if(selectedGift===null){ toast('Select a gift'); return; }
+  const gift=GIFTS[selectedGift];
+  if(myCoins<gift.coins){ toast('Not enough coins! 🪙'); return; }
+  myCoins-=gift.coins; localStorage.setItem('dp_coins',myCoins);
+  socket?.emit('live_gift',{streamId:ME.id,user:ME,gift,coins:gift.coins});
+  document.getElementById('gift-sheet')?.classList.remove('show');
+  // Float animation
+  const lv=$('live-overlay')?.querySelector('.live-video');
+  if(lv){ const fl=document.createElement('div'); fl.className='live-gift-float'; fl.style.left=Math.floor(Math.random()*60+20)+'%'; fl.textContent=gift.ico; lv.appendChild(fl); setTimeout(()=>fl.remove(),2100); }
+  toast('Sent '+gift.ico+' '+gift.name+'!');
+}
+
+// ── STORY VIEWERS ─────────────────────────────────────────────────────────
+let currentStoryId = null;
+function trackCurrentStory(storyId){ currentStoryId=storyId; }
+async function openStoryViewers(){
+  if(!currentStoryId) return;
+  const viewers=await api('/api/stories/'+currentStoryId+'/viewers');
+  let sv = document.getElementById('sv-viewers-sheet');
+  if(!sv){
+    sv = document.createElement('div'); sv.id='sv-viewers-sheet'; sv.className='sheet';
+    sv.innerHTML='<div class="sheet-box"><div class="sheet-title">👁 Story Viewers</div><div id="sv-viewers-list" style="max-height:50vh;overflow-y:auto;"></div><button class="sheet-opt" style="color:var(--g2);margin-top:8px;" onclick="document.getElementById('sv-viewers-sheet').classList.remove('show')">Close</button></div>';
+    document.body.appendChild(sv);
+  }
+  const list = Array.isArray(viewers)?viewers:[];
+  document.getElementById('sv-viewers-list').innerHTML = list.length?list.map(v=>`<div class="follow-item"><div class="follow-av">${avatarEl(v,44)}</div><div><div style="font-weight:700;">${v.name||'User'}</div><div style="font-size:12px;color:var(--g2);">@${v.username||'?'}</div></div></div>`).join(''):'<div style="padding:20px;text-align:center;color:var(--g2);">No viewers yet</div>';
+  sv.classList.add('show');
+}
+
+// ── LINKED ACCOUNTS ───────────────────────────────────────────────────────
+function openLinkedAccounts(){
+  let overlay = document.getElementById('linked-overlay');
+  if(!overlay){
+    overlay=document.createElement('div'); overlay.id='linked-overlay'; overlay.className='overlay';
+    overlay.innerHTML='<div class="ov-hdr"><button class="ov-close" onclick="document.getElementById('linked-overlay').classList.remove('show')">✕</button><h2>Linked Accounts</h2><div style="width:36px;"></div></div><div style="flex:1;overflow-y:auto;padding:16px;"><p style="color:var(--g2);font-size:13px;margin-bottom:20px;">Link your email or phone to recover your account if you forget your password.</p><div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:8px;">EMAIL</div><div style="display:flex;gap:8px;margin-bottom:16px;"><input class="auth-inp" id="link-email" placeholder="your@email.com" style="flex:1;margin-bottom:0;"/><button onclick="linkEmail()" style="background:var(--grad);border:none;border-radius:12px;padding:0 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;">Link</button></div><div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:8px;">PHONE</div><div style="display:flex;gap:8px;margin-bottom:16px;"><input class="auth-inp" id="link-phone" placeholder="+1 234 567 8900" style="flex:1;margin-bottom:0;"/><button onclick="linkPhone()" style="background:var(--grad);border:none;border-radius:12px;padding:0 16px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;">Link</button></div><div id="linked-status" style="font-size:13px;color:var(--green);text-align:center;min-height:20px;"></div></div>';
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('link-email').value=ME.email||'';
+  document.getElementById('link-phone').value=ME.phone||'';
+  overlay.classList.add('show'); closeSettings();
+}
+async function linkEmail(){ const e=document.getElementById('link-email').value.trim(); if(!e){toast('Enter email');return;} const r=await api('/api/users/'+ME.id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e})}); if(r.user){ME.email=e; document.getElementById('linked-status').textContent='Email linked ✓'; toast('Email linked!');} }
+async function linkPhone(){ const p=document.getElementById('link-phone').value.trim(); if(!p){toast('Enter phone');return;} const r=await api('/api/users/'+ME.id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:p})}); if(r.user){ME.phone=p; document.getElementById('linked-status').textContent='Phone linked ✓'; toast('Phone linked!');} }
+
+// ── STREAK + FOLLOWERS IN CONV LIST (patch loadConversations) ─────────────
+const _origLoadConvs = loadConversations;
+async function loadConversations(){
+  const convs=await api('/api/conversations/'+ME.id);
+  $('conv-list').innerHTML=Array.isArray(convs)&&convs.length?convs.map(c=>{
+    const cs=chatSettings[c.userId]||{};
+    const nick=cs.nickname||c.name;
+    const sb=streakBadge(c.userId);
+    return `<div class="ms-item" onclick="openChat('${c.userId}')"><div class="ms-av">${avatarEl(c,50)}<div style="width:10px;height:10px;border-radius:50%;background:var(--green);position:absolute;bottom:2px;right:2px;border:2px solid var(--bg);display:none;" id="od-${c.userId}"></div></div><div class="ms-info"><div class="ms-name">${nick} ${badge(c)} ${sb}</div><div class="ms-last">${c.lastMsg||''}</div></div><div class="ms-time">${timeAgo(c.lastTime)}</div></div>`;
+  }).join(''):'<div style="text-align:center;padding:40px;color:var(--g2);font-size:14px;">No messages yet</div>';
+}
+
+// Patch openChat to apply streak + theme
+const _origOpenChat = openChat;
+async function openChat(userId){
+  activeConv=userId;
+  const r=await api('/api/users/'+userId); convUser=r.user||{id:userId,name:'User',username:'user'};
+  const cs=chatSettings[userId]||{};
+  const si=$('ch-name'); if(si) si.innerHTML=(cs.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(userId);
+  const st=$('ch-status'); if(st) st.textContent='@'+convUser.username;
+  $('ch-av').innerHTML=avatarEl(convUser,36);
+  $('ch-body').innerHTML=''; $('chat').style.display='flex';
+  if(cs.wallpaper) $('ch-body').style.background=`url(${cs.wallpaper}) center/cover`;
+  else if(cs.theme&&THEMES[cs.theme]) $('ch-body').style.background=`radial-gradient(ellipse at bottom, ${THEMES[cs.theme].replace('linear-gradient(135deg,','').replace(')','').split(',')[0]} 0%, transparent 70%)`;
+  else $('ch-body').style.background='';
+  aiMode=false; $('ai-btn').style.background='none'; $('ai-btn').style.color='var(--g1)';
+  $('emoji-tray').style.display='none';
+  const msgs=await api('/api/messages/'+ME.id+'/'+userId);
+  if(Array.isArray(msgs)) msgs.forEach(m=>appendMsg(m));
+  $('ch-body').scrollTop=$('ch-body').scrollHeight;
+}
+
+// Patch sendMsg to update streak
+const _origSendMsg = sendMsg;
+async function sendMsg(){
+  const inp=$('ch-inp'); const text=inp.value.trim(); if(!text) return;
+  inp.value=''; stopTyping();
+  if(aiMode){ handleAI(text); return; }
+  if(!activeConv) return;
+  appendMsg({fromId:ME.id,toId:activeConv,text});
+  updateStreak(activeConv);
+  await api('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:ME.id,toId:activeConv,text})});
+}
+
+// ── GIFT LIVE EVENT ───────────────────────────────────────────────────────
+if(typeof socket !== 'undefined' && socket) {
+  socket.on('live_gift',({user,gift,coins})=>{
+    liveCoinsEarned=(liveCoinsEarned||0)+coins;
+    const lc=$('live-coins'); if(lc) lc.textContent='🪙 '+liveCoinsEarned;
+    const lv=$('live-overlay')?.querySelector('.live-video');
+    if(lv){ const fl=document.createElement('div'); fl.className='live-gift-float'; fl.style.left=Math.floor(Math.random()*60+20)+'%'; fl.textContent=gift.ico; lv.appendChild(fl); setTimeout(()=>fl.remove(),2100); }
+    const lcomments=$('live-comments');
+    if(lcomments){ const d=document.createElement('div'); d.className='live-comment gift-msg'; d.innerHTML=`<b>${user.name}</b> sent ${gift.ico} ${gift.name}! (🪙${coins})`; lcomments.appendChild(d); lcomments.scrollTop=lcomments.scrollHeight; }
+  });
+}
 </script>
 </body>
 </html>
