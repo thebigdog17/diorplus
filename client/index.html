@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .auth-btn:disabled{opacity:.6;}
 .pw-wrap{position:relative;width:100%;margin-bottom:10px;}
 .pw-wrap .auth-inp{margin-bottom:0;padding-right:48px;}
-.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g2);font-size:18px;cursor:pointer;padding:4px;}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g2);cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;}
 .auth-link{color:var(--sky);font-size:13px;text-align:center;cursor:pointer;margin-top:12px;background:none;border:none;width:100%;}
 
 /* \u2500\u2500 SPLASH \u2500\u2500 */
@@ -330,7 +330,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
   <div id="auth-li" style="width:100%;">
     <input class="auth-inp" id="li-user" placeholder="Username or Email"/>
-    <div class="pw-wrap"><input class="auth-inp" id="li-pass" placeholder="Password" type="password"/><button class="pw-eye" onclick="togglePw('li-pass',this)">👁</button></div>
+    <div class="pw-wrap"><input class="auth-inp" id="li-pass" placeholder="Password" type="password"/><button class="pw-eye" onclick="togglePw('li-pass',this)"><span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span></button></div>
     <div class="auth-err" id="li-err"></div>
     <button class="auth-btn" id="li-btn" onclick="doLogin()">Log In</button>
     <button class="auth-link" onclick="openForgotPw()">Forgot password?</button>
@@ -340,7 +340,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <input class="auth-inp" id="su-user" placeholder="Username (no spaces)"/>
     <input class="auth-inp" id="su-email" placeholder="Email address"/>
     <input class="auth-inp" id="su-phone" placeholder="Phone number (optional)"/>
-    <div class="pw-wrap"><input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password"/><button class="pw-eye" onclick="togglePw('su-pass',this)">👁</button></div>
+    <div class="pw-wrap"><input class="auth-inp" id="su-pass" placeholder="Password (min 6 chars)" type="password"/><button class="pw-eye" onclick="togglePw('su-pass',this)"><span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span></button></div>
     <div class="auth-err" id="su-err"></div>
     <button class="auth-btn" id="su-btn" onclick="doSignup()">Create Account</button>
   </div>
@@ -611,9 +611,11 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 <div class="overlay" id="pw-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closePW()">Cancel</button><h2>Change Password</h2><button class="ov-done" onclick="savePassword()">Save</button></div>
   <div style="flex:1;overflow-y:auto;padding:16px;">
-    <input class="auth-inp" id="pw-old" placeholder="Current Password" type="password"/>
-    <input class="auth-inp" id="pw-new" placeholder="New Password" type="password"/>
-    <input class="auth-inp" id="pw-new2" placeholder="Confirm New Password" type="password"/>
+    <div class="pw-wrap"><input class="auth-inp" id="pw-old" placeholder="Current Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('pw-old',this)"><span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span></button></div>
+    <div style="height:10px;"></div>
+    <div class="pw-wrap"><input class="auth-inp" id="pw-new" placeholder="New Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('pw-new',this)"><span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span></button></div>
+    <div style="height:10px;"></div>
+    <div class="pw-wrap"><input class="auth-inp" id="pw-new2" placeholder="Confirm New Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('pw-new2',this)"><span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span></button></div>
     <div class="auth-err" id="pw-err"></div>
   </div>
 </div>
@@ -637,7 +639,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
         <input class="otp-inp" maxlength="1" id="fp-otp4" oninput="fpOtpNext(4)"/>
         <input class="otp-inp" maxlength="1" id="fp-otp5" oninput="fpOtpNext(5)"/>
       </div>
-      <div class="pw-wrap"><input class="auth-inp" id="fp-newpw" placeholder="New Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('fp-newpw',this)">&#x1F441;</button></div>
+      <div class="pw-wrap"><input class="auth-inp" id="fp-newpw" placeholder="New Password" type="password" style="margin-bottom:0;"/><button class="pw-eye" onclick="togglePw('fp-newpw',this)"><span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span></button></div>
       <div style="height:10px;"></div>
       <button class="auth-btn" onclick="confirmReset()">Reset Password</button>
     </div>
@@ -868,7 +870,18 @@ function badge(user){
 }
 
 // PASSWORD EYE TOGGLE
-function togglePw(id, btn){ const inp=$(id); if(inp.type==="password"){ inp.type="text"; btn.textContent="🙈"; } else { inp.type="password"; btn.textContent="👁"; } }
+function togglePw(id, btn){
+  // walk up in case click landed on SVG child
+  const button = (btn && btn.closest) ? btn.closest('button') : btn;
+  const inp = $(id);
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    button.innerHTML = '<span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F648;</span>';
+  } else {
+    inp.type = 'password';
+    button.innerHTML = '<span style="font-size:20px;line-height:1;pointer-events:none;">&#x1F441;&#xFE0F;</span>';
+  }
+}
 
 // STREAK HELPERS
 function getStreak(uid){ return streaks[uid]||{count:0,lastDate:null}; }
