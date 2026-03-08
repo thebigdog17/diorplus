@@ -588,10 +588,34 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 <!-- ── EDIT PROFILE ── -->
 <div class="overlay" id="ep-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closeEditProfile()">Cancel</button><h2>Edit Profile</h2><button class="ov-done" onclick="saveProfile()">Save</button></div>
-  <div style="flex:1;overflow-y:auto;padding:16px;">
-    <input class="auth-inp" id="ep-name" placeholder="Full Name"/>
-    <input class="auth-inp" id="ep-bio" placeholder="Bio"/>
-    <input class="auth-inp" id="ep-link" placeholder="Website link"/>
+  <div style="flex:1;overflow-y:auto;">
+    <!-- Photo section -->
+    <div style="display:flex;flex-direction:column;align-items:center;padding:24px 16px 16px;border-bottom:1px solid var(--s2);">
+      <label style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <input type="file" accept="image/*" style="display:none;" id="ep-photo-inp" onchange="epChangePhoto(this)"/>
+        <div id="ep-av" style="width:90px;height:90px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;overflow:hidden;border:3px solid var(--s3);"></div>
+        <div style="color:var(--sky);font-size:14px;font-weight:700;">Change Profile Photo</div>
+      </label>
+    </div>
+    <!-- Fields -->
+    <div style="padding:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">NAME</div>
+      <input class="auth-inp" id="ep-name" placeholder="Full Name" style="margin-bottom:16px;"/>
+      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">USERNAME</div>
+      <input class="auth-inp" id="ep-username" placeholder="Username" style="margin-bottom:16px;"/>
+      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">BIO</div>
+      <textarea class="auth-inp" id="ep-bio" placeholder="Write a bio..." rows="3" style="resize:none;margin-bottom:16px;"></textarea>
+      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">WEBSITE</div>
+      <input class="auth-inp" id="ep-link" placeholder="Website link" style="margin-bottom:16px;"/>
+      <div style="font-size:11px;font-weight:800;color:var(--g2);margin-bottom:6px;letter-spacing:1px;">GENDER</div>
+      <select class="auth-inp" id="ep-gender" style="margin-bottom:16px;">
+        <option value="">Prefer not to say</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+      <div class="auth-err" id="ep-err"></div>
+    </div>
   </div>
 </div>
 
@@ -673,17 +697,54 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   <div style="flex:1;overflow-y:auto;" id="live-browser-list"></div>
 </div>
 
-<!-- ── CALL ── -->
+<!-- ── INCOMING CALL ── -->
+<div id="incoming-call" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;max-width:480px;margin:0 auto;">
+  <div id="ic-av" style="width:90px;height:90px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;border:3px solid var(--sky);"></div>
+  <div id="ic-name" style="font-size:22px;font-weight:800;color:#fff;"></div>
+  <div id="ic-type" style="font-size:14px;color:rgba(255,255,255,.7);">Incoming call...</div>
+  <div style="display:flex;gap:40px;margin-top:20px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <button onclick="rejectCall()" style="width:64px;height:64px;border-radius:50%;background:var(--red);border:none;font-size:26px;cursor:pointer;">📵</button>
+      <span style="font-size:12px;color:rgba(255,255,255,.7);">Decline</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <button onclick="acceptCall()" style="width:64px;height:64px;border-radius:50%;background:var(--green);border:none;font-size:26px;cursor:pointer;">📞</button>
+      <span style="font-size:12px;color:rgba(255,255,255,.7);">Accept</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ACTIVE CALL ── -->
 <div id="call-overlay">
-  <div class="call-av" id="call-av"></div>
-  <div class="call-name" id="call-name"></div>
-  <div class="call-status" id="call-status">Calling...</div>
-  <div id="call-timer" style="font-size:20px;font-weight:700;display:none;">0:00</div>
-  <video id="call-vid" autoplay playsinline style="width:200px;height:150px;border-radius:12px;object-fit:cover;display:none;"></video>
-  <div class="call-btns">
-    <button class="call-btn" style="background:var(--s3);font-size:20px;" onclick="toggleMute()">🎤</button>
-    <button class="call-btn" style="background:var(--red);" onclick="endCall()">📵</button>
-    <button class="call-btn" style="background:var(--s3);font-size:20px;" id="vid-toggle-btn" onclick="toggleVideo()">📷</button>
+  <!-- Remote video (full screen) -->
+  <video id="remote-vid" autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111;display:none;"></video>
+  <!-- Local video (small pip) -->
+  <video id="local-vid" autoplay playsinline muted style="position:absolute;bottom:100px;right:14px;width:100px;height:140px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.3);z-index:2;display:none;"></video>
+  <!-- Voice call avatar (shown when no video) -->
+  <div id="call-bg" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--s1);">
+    <div class="call-av" id="call-av"></div>
+    <div class="call-name" id="call-name"></div>
+    <div class="call-status" id="call-status">Calling...</div>
+    <div id="call-timer" style="font-size:22px;font-weight:700;display:none;">0:00</div>
+  </div>
+  <!-- Controls -->
+  <div style="position:absolute;bottom:30px;left:0;right:0;display:flex;justify-content:center;gap:16px;z-index:3;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <button id="mute-btn" onclick="toggleMute()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:none;font-size:22px;cursor:pointer;">🎤</button>
+      <span style="font-size:11px;color:rgba(255,255,255,.8);">Mute</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <button onclick="endCall()" style="width:64px;height:64px;border-radius:50%;background:var(--red);border:none;font-size:26px;cursor:pointer;">📵</button>
+      <span style="font-size:11px;color:rgba(255,255,255,.8);">End</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <button id="vid-btn" onclick="toggleVideo()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:none;font-size:22px;cursor:pointer;">📷</button>
+      <span style="font-size:11px;color:rgba(255,255,255,.8);">Camera</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <button onclick="switchCamera()" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);border:none;font-size:22px;cursor:pointer;">🔄</button>
+      <span style="font-size:11px;color:rgba(255,255,255,.8);">Flip</span>
+    </div>
   </div>
 </div>
 
@@ -876,9 +937,11 @@ function connectSocket(){
   socket.on('viewer_joined', ({user,viewerCount})=>{ addLiveMsg(`${user.name} joined 👋`); $('live-vc').textContent=`👁 ${viewerCount}`; });
   socket.on('live_comment', ({user,text})=>{ addLiveMsg(`${user.name}: ${text}`); });
   socket.on('live_react', ({user,reaction})=>{ addLiveMsg(`${user.name} reacted ${reaction}`); });
-  socket.on('webrtc_offer', async({from,offer})=>{ await handleOffer(from,offer); });
-  socket.on('webrtc_answer', async({answer})=>{ if(peerConn) await peerConn.setRemoteDescription(answer); });
+  socket.on('webrtc_offer', async({from,offer,callType:ct,from:caller})=>{ callType=ct||'voice'; await handleOffer(from,offer,ct,caller); });
+  socket.on('webrtc_answer', async({answer})=>{ if(peerConn){await peerConn.setRemoteDescription(answer); startCallTimer();} });
   socket.on('webrtc_ice', async({candidate})=>{ if(peerConn&&candidate) await peerConn.addIceCandidate(candidate); });
+  socket.on('call_ended', ()=>{ endCall(); toast('Call ended'); });
+  socket.on('call_rejected', ()=>{ endCall(); toast('Call declined'); });
   socket.on('user_online', ({userId})=>{ updateOnlineStatus(userId,true); });
   socket.on('user_offline', ({userId})=>{ updateOnlineStatus(userId,false); });
 }
@@ -1248,40 +1311,225 @@ async function submitReport(reason){
   closeReport(); toast('Report submitted');
 }
 
-// ── VOICE/VIDEO CALLS ─────────────────────────────────────────────────────
-function startVoiceCall(){ callType='voice'; openCallUI(); }
-function startVideoCall(){ callType='video'; openCallUI(); }
-function openCallUI(){
-  if(!convUser) return;
-  logCall(convUser.id,convUser.name,callType,'outgoing');
-  $('call-av').innerHTML=avatarEl(convUser,100);
-  $('call-name').textContent=convUser.name;
-  $('call-status').textContent='Calling...';
-  $('call-timer').style.display='none';
+// ── REAL WebRTC CALLS ────────────────────────────────────────────────────
+let isMuted = false, isCamOff = false, incomingFrom = null, incomingOffer = null;
+const STUN = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+
+function startVoiceCall(){ callType='voice'; initiateCall(); }
+function startVideoCall(){ callType='video'; initiateCall(); }
+
+async function initiateCall(){
+  if(!convUser){ toast('Open a chat first'); return; }
+  try {
+    const constraints = callType==='video' ? {video:true,audio:true} : {audio:true};
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch(e){ toast('Allow camera/mic permission'); return; }
+
+  peerConn = new RTCPeerConnection(STUN);
+  localStream.getTracks().forEach(t => peerConn.addTrack(t, localStream));
+
+  peerConn.onicecandidate = e => { if(e.candidate) socket?.emit('webrtc_ice',{to:convUser.id,candidate:e.candidate}); };
+  peerConn.ontrack = e => {
+    const rv = $('remote-vid');
+    rv.srcObject = e.streams[0];
+    rv.style.display = 'block';
+    $('call-bg').style.display = 'none';
+  };
+
+  // Show local video
+  if(callType==='video'){
+    const lv = $('local-vid');
+    lv.srcObject = localStream;
+    lv.style.display = 'block';
+  }
+
+  const offer = await peerConn.createOffer();
+  await peerConn.setLocalDescription(offer);
+  socket?.emit('webrtc_offer', { to: convUser.id, offer, callType, from: ME });
+
+  // Show call UI
+  showCallUI(convUser, 'Calling...');
+  logCall(convUser.id, convUser.name, callType, 'outgoing');
+}
+
+async function handleOffer(from, offer, callType, caller){
+  incomingFrom = from;
+  incomingOffer = offer;
+  // Show incoming call screen
+  const ic = $('incoming-call');
+  $('ic-av').innerHTML = avatarEl(caller||{name:'?'},90);
+  $('ic-name').textContent = caller?.name||'Unknown';
+  $('ic-type').textContent = (callType==='video'?'📹 Video':'📞 Voice') + ' call incoming...';
+  ic.style.display = 'flex';
+}
+
+async function acceptCall(){
+  $('incoming-call').style.display = 'none';
+  try {
+    const constraints = callType==='video'?{video:true,audio:true}:{audio:true};
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch(e){ toast('Allow camera/mic permission'); return; }
+
+  peerConn = new RTCPeerConnection(STUN);
+  localStream.getTracks().forEach(t => peerConn.addTrack(t, localStream));
+
+  peerConn.onicecandidate = e => { if(e.candidate) socket?.emit('webrtc_ice',{to:incomingFrom,candidate:e.candidate}); };
+  peerConn.ontrack = e => {
+    const rv = $('remote-vid');
+    rv.srcObject = e.streams[0];
+    rv.style.display = 'block';
+    $('call-bg').style.display = 'none';
+  };
+
+  if(callType==='video'){
+    const lv = $('local-vid');
+    lv.srcObject = localStream;
+    lv.style.display = 'block';
+  }
+
+  await peerConn.setRemoteDescription(incomingOffer);
+  const answer = await peerConn.createAnswer();
+  await peerConn.setLocalDescription(answer);
+  socket?.emit('webrtc_answer', { to: incomingFrom, answer });
+
+  showCallUI({ name: $('ic-name').textContent }, 'Connected');
+  startCallTimer();
+}
+
+function rejectCall(){
+  $('incoming-call').style.display = 'none';
+  socket?.emit('call_rejected', { to: incomingFrom });
+  incomingFrom = null; incomingOffer = null;
+}
+
+function showCallUI(user, status){
+  $('call-av').innerHTML = avatarEl(user, 90);
+  $('call-name').textContent = user.name||'';
+  $('call-status').textContent = status;
+  $('call-timer').style.display = 'none';
+  $('call-bg').style.display = 'flex';
+  $('remote-vid').style.display = 'none';
+  $('local-vid').style.display = 'none';
   $('call-overlay').classList.add('show');
-  callSecs=0; callInterval=null;
-  setTimeout(()=>{ $('call-status').textContent=callType==='video'?'Video Call':'Voice Call'; startCallTimer(); },2000);
 }
-function startCallTimer(){
-  $('call-timer').style.display='block'; $('call-status').style.display='none';
-  callInterval=setInterval(()=>{ callSecs++; const m=Math.floor(callSecs/60),s=callSecs%60; $('call-timer').textContent=m+':'+(s<10?'0':'')+s; },1000);
-}
+
 function endCall(){
-  clearInterval(callInterval);
+  clearInterval(callInterval); callInterval = null;
+  localStream?.getTracks().forEach(t => t.stop()); localStream = null;
+  peerConn?.close(); peerConn = null;
   $('call-overlay').classList.remove('show');
-  localStream?.getTracks().forEach(t=>t.stop());
-  localStream=null;
+  $('remote-vid').srcObject = null; $('local-vid').srcObject = null;
+  $('remote-vid').style.display = 'none'; $('local-vid').style.display = 'none';
+  socket?.emit('call_ended', { to: convUser?.id });
   toast('Call ended');
 }
-function toggleMute(){ toast('Muted'); }
-function toggleVideo(){ toast('Camera toggled'); }
-async function handleOffer(from, offer){
-  peerConn=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
-  peerConn.onicecandidate=e=>{ if(e.candidate) socket?.emit('webrtc_ice',{to:from,candidate:e.candidate}); };
-  await peerConn.setRemoteDescription(offer);
-  const answer=await peerConn.createAnswer();
-  await peerConn.setLocalDescription(answer);
-  socket?.emit('webrtc_answer',{to:from,answer});
+
+function startCallTimer(){
+  $('call-status').style.display = 'none';
+  $('call-timer').style.display = 'block';
+  callSecs = 0;
+  callInterval = setInterval(()=>{ callSecs++; const m=Math.floor(callSecs/60),s=callSecs%60; $('call-timer').textContent=m+':'+(s<10?'0':'')+s; },1000);
+}
+
+function toggleMute(){
+  isMuted = !isMuted;
+  localStream?.getAudioTracks().forEach(t => t.enabled = !isMuted);
+  $('mute-btn').textContent = isMuted ? '🔇' : '🎤';
+  toast(isMuted ? 'Muted' : 'Unmuted');
+}
+
+function toggleVideo(){
+  isCamOff = !isCamOff;
+  localStream?.getVideoTracks().forEach(t => t.enabled = !isCamOff);
+  $('vid-btn').textContent = isCamOff ? '📵' : '📷';
+  toast(isCamOff ? 'Camera off' : 'Camera on');
+}
+
+async function switchCamera(){
+  if(!localStream) return;
+  const vt = localStream.getVideoTracks()[0];
+  if(!vt) return;
+  const facing = vt.getSettings().facingMode === 'user' ? 'environment' : 'user';
+  localStream.getVideoTracks().forEach(t => t.stop());
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
+    const newVt = newStream.getVideoTracks()[0];
+    $('local-vid').srcObject = new MediaStream([newVt]);
+    const sender = peerConn?.getSenders().find(s => s.track?.kind === 'video');
+    if(sender) sender.replaceTrack(newVt);
+    toast('Camera switched');
+  } catch(e){ toast('Cannot switch camera'); }
+}
+
+// Update socket to handle call events
+function setupCallSocket(){
+  socket?.on('webrtc_offer', async({from,offer,callType:ct,from:caller})=>{
+    callType = ct||'voice';
+    await handleOffer(from, offer, ct, caller);
+  });
+  socket?.on('webrtc_answer', async({answer})=>{ if(peerConn) { await peerConn.setRemoteDescription(answer); startCallTimer(); } });
+  socket?.on('webrtc_ice', async({candidate})=>{ if(peerConn&&candidate) await peerConn.addIceCandidate(candidate); });
+  socket?.on('call_ended', ()=>{ endCall(); toast('Call ended'); });
+  socket?.on('call_rejected', ()=>{ endCall(); toast('Call declined'); });
+}
+
+// ── EDIT PROFILE (INSTAGRAM STYLE) ───────────────────────────────────────
+let epPhotoFile = null;
+function epChangePhoto(inp){
+  epPhotoFile = inp.files[0];
+  if(epPhotoFile){
+    const url = URL.createObjectURL(epPhotoFile);
+    $('ep-av').innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+  }
+}
+function openEditProfile(){
+  epPhotoFile = null;
+  $('ep-av').innerHTML = avatarEl(ME, 90);
+  $('ep-name').value = ME.name||'';
+  $('ep-username').value = ME.username||'';
+  $('ep-bio').value = ME.bio||'';
+  $('ep-link').value = ME.link||'';
+  $('ep-gender').value = ME.gender||'';
+  $('ep-err').textContent = '';
+  $('ep-overlay').classList.add('show');
+  closeSettings();
+}
+function closeEditProfile(){ $('ep-overlay').classList.remove('show'); epPhotoFile = null; }
+async function saveProfile(){
+  const name = $('ep-name').value.trim();
+  const username = $('ep-user' + 'name').value.trim().replace(/\s/g,'').toLowerCase();
+  const bio = $('ep-bio').value.trim();
+  const link = $('ep-link').value.trim();
+  const gender = $('ep-gender').value;
+  if(!name){ $('ep-err').textContent='Name is required'; return; }
+  if(!username){ $('ep-err').textContent='Username is required'; return; }
+
+  // Upload photo first if changed
+  if(epPhotoFile){
+    const fd = new FormData(); fd.append('photo', epPhotoFile);
+    const pr = await api('/api/users/'+ME.id+'/photo', {method:'POST', body:fd});
+    if(pr.photoUrl) ME.photoUrl = pr.photoUrl;
+  }
+
+  const r = await api('/api/users/'+ME.id+'/update', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name, username, bio, link, gender})});
+  if(r.error){ $('ep-err').textContent = r.error; return; }
+  if(r.user) ME = {...ME, ...r.user};
+  updateProfileUI(); toast('Profile saved! ✓'); closeEditProfile();
+}
+
+// ── VERIFICATION (WORKING) ────────────────────────────────────────────────
+function openVerify(){ $('verify-overlay').classList.add('show'); closeSettings(); }
+function closeVerify(){ $('verify-overlay').classList.remove('show'); }
+async function buyVerify(tier){
+  const prices = {blue:'$9.99',gold:'$24.99',purple:'$49.99'};
+  const r = await api('/api/users/'+ME.id+'/verify', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({tier})});
+  if(r.ok||r.error===undefined){
+    ME.verified = true; ME.verifyTier = tier;
+    updateProfileUI();
+    const icons = {blue:'✓',gold:'✓',purple:'✓'};
+    toast(`${tier.charAt(0).toUpperCase()+tier.slice(1)} verified! ${prices[tier]}/mo`);
+    closeVerify();
+  } else { toast('Verification failed'); }
 }
 
 // ── CALL LOGS ─────────────────────────────────────────────────────────────
