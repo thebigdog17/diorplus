@@ -1195,25 +1195,23 @@ function connectSocket(){
     updateLiveRingsAll();
     if(_liveViewingStreamId===userId) closeLiveViewer();
   });
-  // Receive MediaRecorder chunks from host via server relay
-  socket.on('live_chunk', ({chunk, mimeType})=>{
+  // Receive JPEG frames from host and display as image
+  socket.on('live_frame', ({frame})=>{
     if(!_liveViewingStreamId) return;
-    const vid = $('lv-video');
-    // Init MediaSource on first chunk
-    if(!_liveMS) _initLiveMS(mimeType);
-    // Hide waiting overlay once we get data
+    // Hide the waiting overlay on first frame
     const noVid = $('lv-no-video');
-    if(noVid && noVid.style.display !== 'none'){
-      noVid.style.display='none';
-      vid.play().catch(()=>{});
+    if(noVid && noVid.style.display !== 'none') noVid.style.display='none';
+    // Show frame in the video area using an img element
+    let lv_img = document.getElementById('lv-frame-img');
+    if(!lv_img){
+      const vid = $('lv-video');
+      vid.style.display='none'; // hide the <video> element
+      lv_img = document.createElement('img');
+      lv_img.id = 'lv-frame-img';
+      lv_img.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;inset:0;';
+      vid.parentElement.appendChild(lv_img);
     }
-    // Queue the chunk
-    if(_liveReady && _liveSB){
-      _liveQueue.push(chunk);
-      _flushLiveQueue();
-    } else if(_liveMS){
-      _liveQueue.push(chunk); // will flush when sourceopen fires
-    }
+    lv_img.src = frame;
   });
   socket.on('live_viewer_count', ({viewerCount})=>{
     const vc=$('lv-vc'); if(vc) vc.textContent='👁 '+viewerCount;
@@ -2446,32 +2444,41 @@ async function loadStudio(){
 }
 
 // ── LIVE ──────────────────────────────────────────────────────────────────
-let _liveRecorder = null;
+let _liveFrameTimer = null;
+let _liveCanvas = null;
+
 async function startLive(){
   try{
-    localStream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,frameRate:15},audio:true});
-    $('live-vid').srcObject=localStream; $('live-vid').muted=true;
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video:{width:{ideal:480},height:{ideal:640},frameRate:{ideal:15}},
+      audio:true
+    });
+    $('live-vid').srcObject = localStream;
+    $('live-vid').muted = true;
     $('live-overlay').classList.add('show');
-    socket?.emit('live_start',{userId:ME.id,user:ME});
-    // Start MediaRecorder to stream chunks via socket
-    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
-      ? 'video/webm;codecs=vp8,opus'
-      : MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
-    _liveRecorder = new MediaRecorder(localStream, {mimeType, videoBitsPerSecond:400000});
-    _liveRecorder.ondataavailable = async e => {
-      if(e.data && e.data.size > 0){
-        const buf = await e.data.arrayBuffer();
-        socket?.emit('live_chunk',{streamId:ME.id, chunk: buf, mimeType});
-      }
-    };
-    _liveRecorder.start(1000); // chunk every 1 second
+    socket?.emit('live_start', {userId:ME.id, user:ME});
+    // Set up canvas for frame capture
+    _liveCanvas = document.createElement('canvas');
+    _liveCanvas.width = 360; _liveCanvas.height = 640;
+    const ctx = _liveCanvas.getContext('2d');
+    const vid = $('live-vid');
+    // Broadcast a frame every 250ms (~4fps) — enough for live feel
+    _liveFrameTimer = setInterval(()=>{
+      if(!localStream || !socket) return;
+      try{
+        ctx.drawImage(vid, 0, 0, _liveCanvas.width, _liveCanvas.height);
+        const frame = _liveCanvas.toDataURL('image/jpeg', 0.5);
+        socket.emit('live_frame', {streamId: ME.id, frame});
+      }catch(e){}
+    }, 250);
   }catch(e){ toast('Camera permission needed for live'); console.error(e); }
 }
 function endLive(){
-  _liveRecorder?.stop(); _liveRecorder = null;
-  localStream?.getTracks().forEach(t=>t.stop()); localStream=null;
+  clearInterval(_liveFrameTimer); _liveFrameTimer = null;
+  _liveCanvas = null;
+  localStream?.getTracks().forEach(t=>t.stop()); localStream = null;
   $('live-overlay').classList.remove('show');
-  socket?.emit('live_end',{userId:ME.id});
+  socket?.emit('live_end', {userId:ME.id});
 }
 function addLiveMsg(txt){ const d=document.createElement('div'); d.className='live-comment'; d.textContent=txt; $('live-comments').appendChild(d); $('live-comments').scrollTop=$('live-comments').scrollHeight; }
 function liveReact(r){ socket?.emit('live_react',{streamId:currentStreamId||ME.id,user:ME,reaction:r}); }
@@ -2783,11 +2790,6 @@ function updateLiveRingsAll(){
 }
 
 // ── LIVE VIEWER (watch live streams via WebRTC) ───────────────────────────
-let _liveMS = null; // MediaSource for viewer
-let _liveSB = null; // SourceBuffer
-let _liveQueue = []; // pending chunks
-let _liveReady = false;
-
 async function joinLive(streamId, hostName){
   _liveViewingStreamId = streamId;
   $('lv-host').textContent = hostName || '';
@@ -2798,41 +2800,12 @@ async function joinLive(streamId, hostName){
   $('live-viewer-overlay').style.display='flex';
   pushNav(closeLiveViewer);
   socket?.emit('join_live', { streamId, user: ME });
-
-  // Reset MediaSource
-  _liveMS = null; _liveSB = null; _liveQueue = []; _liveReady = false;
-  const vid = $('lv-video');
-  vid.src = '';
-}
-
-function _initLiveMS(mimeType){
-  if(_liveMS) return;
-  const vid = $('lv-video');
-  const mime = mimeType || 'video/webm;codecs=vp8,opus';
-  if(!MediaSource.isTypeSupported(mime) && !MediaSource.isTypeSupported('video/webm')){
-    // fallback: just try playing raw blob
-    console.warn('MediaSource not supported for', mime);
-    return;
-  }
-  const ms = new MediaSource();
-  _liveMS = ms;
-  vid.src = URL.createObjectURL(ms);
-  ms.addEventListener('sourceopen', ()=>{
-    try{
-      const sbMime = MediaSource.isTypeSupported(mime) ? mime : 'video/webm';
-      _liveSB = ms.addSourceBuffer(sbMime);
-      _liveSB.mode = 'sequence';
-      _liveSB.addEventListener('updateend', _flushLiveQueue);
-      _liveReady = true;
-      _flushLiveQueue();
-    }catch(e){ console.error('SourceBuffer error:', e); }
-  });
-}
-
-function _flushLiveQueue(){
-  if(!_liveSB || _liveSB.updating || !_liveQueue.length) return;
-  const chunk = _liveQueue.shift();
-  try{ _liveSB.appendBuffer(chunk); }catch(e){ console.warn('appendBuffer:', e); _liveQueue = []; }
+  // Timeout message if no frames after 10s
+  setTimeout(()=>{
+    if(!_liveViewingStreamId) return;
+    const nv=$('lv-no-video');
+    if(nv && nv.style.display!=='none') $('lv-wait-txt').textContent='Waiting for stream... (host must have live open)';
+  }, 10000);
 }
 
 async function handleLiveViewerOffer(offer, fromSocketId){
@@ -2858,10 +2831,10 @@ async function handleLiveViewerOffer(offer, fromSocketId){
 function closeLiveViewer(){
   $('live-viewer-overlay').style.display='none';
   if(_liveViewerPeer){ _liveViewerPeer.close(); _liveViewerPeer=null; }
-  // Clean up MediaSource
-  if(_liveMS){ try{ _liveMS.endOfStream(); }catch(e){} _liveMS=null; }
-  _liveSB=null; _liveQueue=[]; _liveReady=false;
-  const vid=$('lv-video'); if(vid){ vid.src=''; vid.srcObject=null; }
+  // Clean up frame img
+  const img=document.getElementById('lv-frame-img');
+  if(img){ img.src=''; img.remove(); }
+  const vid=$('lv-video'); if(vid){ vid.style.display='block'; vid.src=''; vid.srcObject=null; }
   socket?.emit('leave_live', {streamId: _liveViewingStreamId, userId: ME.id});
   _liveViewingStreamId = null;
   closeLVGiftPanel();
@@ -2948,27 +2921,10 @@ function openLiveBrowser(){
 
 // ── HOST: STREAM TO VIEWERS VIA WebRTC ───────────────────────────────────
 // When a viewer joins, host creates offer and sends stream
-socket?.on('viewer_wants_stream', async({viewerSocketId, user})=>{
-  if(!localStream) return; // not streaming
-  addLiveMsg(user.name + ' joined 👋');
-  try {
-    const pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
-    localStream.getTracks().forEach(t=>pc.addTrack(t, localStream));
-    pc.onicecandidate = e => {
-      if(e.candidate) socket?.emit('live_ice_to_viewer', {to: viewerSocketId, candidate: e.candidate});
-    };
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    socket?.emit('live_offer_to_viewer', {to: viewerSocketId, offer, fromSocketId: socket.id});
-    // Listen for answer
-    socket?.once('live_viewer_answered_'+viewerSocketId, async({answer})=>{
-      await pc.setRemoteDescription(answer);
-    });
-    // Listen for ICE
-    socket?.on('live_ice_from_viewer_'+viewerSocketId, async({candidate})=>{
-      await pc.addIceCandidate(candidate).catch(()=>{});
-    });
-  } catch(e){ console.error('Host stream error:',e); }
+socket?.on('viewer_wants_stream', ({viewerSocketId, user})=>{
+  // Canvas frame mode — frames are already broadcasting via _liveFrameTimer
+  // Just show the viewer joined message
+  addLiveMsg((user?.name || 'Someone') + ' joined 👋');
 });
 
 // ── GIFT LIVE EVENT ───────────────────────────────────────────────────────

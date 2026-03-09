@@ -557,32 +557,19 @@ app.post('/api/auth/reset', async (req, res) => {
   } catch(e) { res.json({ error: 'Server error' }); }
 });
 
-// ── AI PROXY (HuggingFace Llama 3) ────────────────────────────────────────
+// ── AI PROXY (HuggingFace router) ─────────────────────────────────────────
 app.post('/api/ai/chat', async (req, res) => {
   try {
     const { messages, userName } = req.body;
     const HF_KEY = process.env.HF_API_KEY || '';
-    const systemPrompt = `You are DIOR+ AI, a friendly and helpful assistant inside the DIOR+ social media app. You can answer any question, help with captions, hashtags, advice, motivation, creative ideas, general knowledge, and casual chat. Be concise and conversational — this is a mobile app. The user's name is ${userName || 'there'}.`;
-    const history = (messages || []).slice(-10);
-    let prompt = `<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n${systemPrompt}<|eot_id|>`;
-    for(const m of history){
-      const role = m.role === 'assistant' ? 'assistant' : 'user';
-      prompt += `<|start_header_id|>${role}<|end_header_id|>\n${m.content}<|eot_id|>`;
-    }
-    prompt += `<|start_header_id|>assistant<|end_header_id|>\n`;
-    const body = JSON.stringify({
-      inputs: prompt,
-      parameters: { max_new_tokens: 400, temperature: 0.8, return_full_text: false, stop: ['<|eot_id|>'] }
-    });
+    const systemPrompt = `You are DIOR+ AI, a helpful assistant inside the DIOR+ social media app. Answer any question clearly and helpfully. Help with captions, hashtags, advice, motivation, general knowledge, and chat. Be concise — this is a mobile app. The user's name is ${userName || 'there'}.`;
+    const hfMessages = [{ role: 'system', content: systemPrompt }, ...(messages || []).slice(-10).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }))];
+    const body = JSON.stringify({ model: 'meta-llama/Meta-Llama-3-8B-Instruct', messages: hfMessages, max_tokens: 400, temperature: 0.8 });
     const options = {
-      hostname: 'api-inference.huggingface.co',
-      path: '/models/meta-llama/Meta-Llama-3-8B-Instruct',
+      hostname: 'router.huggingface.co',
+      path: '/novita/v3/openai/chat/completions',
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + HF_KEY,
-        'Content-Length': Buffer.byteLength(body)
-      }
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + HF_KEY, 'Content-Length': Buffer.byteLength(body) }
     };
     const apiReq = https.request(options, apiRes => {
       let data = '';
@@ -590,16 +577,15 @@ app.post('/api/ai/chat', async (req, res) => {
       apiRes.on('end', () => {
         try {
           const parsed = JSON.parse(data);
-          if(parsed.error){ console.error('HF error:', parsed.error); return res.json({ content:[{text: parsed.error.includes('loading') ? 'AI is warming up, try again in 20 seconds! ⏳' : 'AI error: '+parsed.error}] }); }
-          const text = (Array.isArray(parsed) ? parsed[0]?.generated_text : parsed?.generated_text) || "Sorry, I couldn't get a response. Try again!";
+          if(parsed.error) return res.json({ content:[{text:'AI error: '+parsed.error.message}] });
+          const text = parsed.choices?.[0]?.message?.content || "Sorry, I couldn't get a response. Try again!";
           res.json({ content: [{ text: text.trim() }] });
         } catch(e) {
-          console.error('HF parse error:', e.message, data.slice(0,200));
           res.json({ content:[{text:'AI response error. Try again!'}] });
         }
       });
     });
-    apiReq.on('error', e => res.json({ content:[{text:'Could not reach AI. Check your connection.'}] }));
+    apiReq.on('error', e => res.json({ content:[{text:'Could not reach AI.'}] }));
     apiReq.write(body);
     apiReq.end();
   } catch(e) { res.json({ content:[{text:'AI error: '+e.message}] }); }
@@ -647,8 +633,10 @@ io.on('connection', socket => {
   });
   socket.on('join_live', ({ streamId, user }) => {
     socket.join('live_' + streamId);
+    // Notify everyone in the room (including host) that viewer joined
     io.to('live_' + streamId).emit('viewer_joined', { user, viewerCount: io.sockets.adapter.rooms.get('live_' + streamId)?.size || 0 });
-    io.to(streamId).emit('viewer_wants_stream', { viewerSocketId: socket.id, user });
+    // Tell host a viewer joined so they know to keep sending frames
+    socket.to('live_' + streamId).emit('viewer_wants_stream', { viewerSocketId: socket.id, user });
   });
   socket.on('leave_live', ({ streamId }) => {
     socket.leave('live_' + streamId);
