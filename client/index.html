@@ -431,8 +431,8 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
         </div>
         <div class="prof-stats">
           <div class="pstat"><div class="pstat-n" id="prof-posts-n">0</div><div class="pstat-l">Posts</div></div>
-          <div class="pstat"><div class="pstat-n" id="prof-followers-n">0</div><div class="pstat-l">Followers</div></div>
-          <div class="pstat"><div class="pstat-n" id="prof-following-n">0</div><div class="pstat-l">Following</div></div>
+          <div class="pstat" onclick="showFollowerList('followers')" style="cursor:pointer;"><div class="pstat-n" id="prof-followers-n">0</div><div class="pstat-l">Followers</div></div>
+          <div class="pstat" onclick="showFollowerList('following')" style="cursor:pointer;"><div class="pstat-n" id="prof-following-n">0</div><div class="pstat-l">Following</div></div>
         </div>
       </div>
       <div class="prof-bio">
@@ -683,8 +683,8 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <div class="prof-av-wrap"><div class="prof-av" id="up-av"></div></div>
       <div class="prof-stats">
         <div class="pstat"><div class="pstat-n" id="up-posts">0</div><div class="pstat-l">Posts</div></div>
-        <div class="pstat"><div class="pstat-n" id="up-followers">0</div><div class="pstat-l">Followers</div></div>
-        <div class="pstat"><div class="pstat-n" id="up-following">0</div><div class="pstat-l">Following</div></div>
+        <div class="pstat" onclick="showOtherFollowers('followers')" style="cursor:pointer;"><div class="pstat-n" id="up-followers">0</div><div class="pstat-l">Followers</div></div>
+        <div class="pstat" onclick="showOtherFollowers('following')" style="cursor:pointer;"><div class="pstat-n" id="up-following">0</div><div class="pstat-l">Following</div></div>
       </div>
     </div>
     <div class="prof-bio"><div class="prof-nm" id="up-name"></div><div class="prof-bio-txt" id="up-bio"></div></div>
@@ -1240,12 +1240,18 @@ async function submitPost(){
 async function exploreSearch(q){
   if(!q){ $('ex-results').innerHTML=''; loadExploreGrid(); return; }
   $('ex-grid').innerHTML='';
+  $('ex-results').innerHTML='<div style="padding:20px;text-align:center;color:var(--g2);">Searching...</div>';
   const users=await api('/api/users/search?q='+encodeURIComponent(q));
-  $('ex-results').innerHTML=Array.isArray(users)?users.map(u=>`
+  if(!Array.isArray(users)||!users.length){
+    $('ex-results').innerHTML='<div style="padding:40px;text-align:center;color:var(--g2);">No users found</div>';
+    return;
+  }
+  $('ex-results').innerHTML=users.map(u=>`
     <div class="ex-user" onclick="openUserProfile('${u.id}')">
       <div class="ex-uav">${avatarEl(u,44)}</div>
-      <div><div style="font-weight:700;">${u.name} ${badge(u)}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
-    </div>`).join(''):'';
+      <div style="flex:1;"><div style="font-weight:700;display:flex;align-items:center;gap:4px;">${u.name} ${badge(u)}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
+      <div style="color:var(--g2);font-size:20px;">›</div>
+    </div>`).join('');
 }
 async function loadExploreGrid(){
   const posts=await api('/api/posts');
@@ -1689,6 +1695,26 @@ async function showFollowerList(type){
   overlay.classList.add('show');
   const users = await Promise.all(ids.map(id=>api('/api/users/'+id)));
   document.getElementById('fl-body').innerHTML = users.map(r=>r.user?`<div class="follow-item" onclick="openUserProfile('${r.user.id}');document.getElementById('follow-list-overlay').classList.remove('show')"><div class="follow-av">${avatarEl(r.user,44)}</div><div><div style="font-weight:700;display:flex;align-items:center;gap:4px;">${r.user.name} ${badge(r.user)}</div><div style="font-size:12px;color:var(--g2);">@${r.user.username}</div></div></div>`:'').join('')||'<div style="padding:40px;text-align:center;color:var(--g2);">None yet</div>';
+}
+
+// Show followers/following for OTHER user's profile
+async function showOtherFollowers(type){
+  const u = await api('/api/users/'+viewingUserId);
+  const user = u.user; if(!user) return;
+  const ids = type==='followers'?(user.followers||[]):(user.following||[]);
+  const title = type==='followers'?'Followers':'Following';
+  let overlay = document.getElementById('follow-list-overlay');
+  if(!overlay){
+    overlay = document.createElement('div'); overlay.id='follow-list-overlay'; overlay.className='overlay';
+    overlay.innerHTML=`<div class="ov-hdr"><button class="ov-close" onclick="document.getElementById('follow-list-overlay').classList.remove('show')">✕</button><h2 id="fl-title">Followers</h2><div style="width:36px;"></div></div><div style="flex:1;overflow-y:auto;" id="fl-body"></div>`;
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('fl-title').textContent=title;
+  document.getElementById('fl-body').innerHTML=`<div style="padding:20px;text-align:center;color:var(--g2);">Loading...</div>`;
+  overlay.classList.add('show');
+  if(!ids.length){ document.getElementById('fl-body').innerHTML='<div style="padding:40px;text-align:center;color:var(--g2);">None yet</div>'; return; }
+  const users = await Promise.all(ids.map(id=>api('/api/users/'+id)));
+  document.getElementById('fl-body').innerHTML = users.map(r=>r.user?`<div class="follow-item" onclick="openUserProfile('${r.user.id}');document.getElementById('follow-list-overlay').classList.remove('show')"><div class="follow-av">${avatarEl(r.user,44)}</div><div><div style="font-weight:700;">${r.user.name} ${badge(r.user)}</div><div style="font-size:12px;color:var(--g2);">@${r.user.username}</div></div></div>`:'').join('')||'<div style="padding:40px;text-align:center;color:var(--g2);">None yet</div>';
 }
 
 // ── CHAT CUSTOMIZATION ────────────────────────────────────────────────────
