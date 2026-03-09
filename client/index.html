@@ -340,6 +340,14 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 /* ── GROUP CHAT BADGE ── */
 .gc-badge{background:var(--sky);color:#000;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;}
 
+/* ── CONV CONTEXT MENU ── */
+#conv-ctx-menu{position:fixed;background:var(--s1);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.7);z-index:9000;min-width:200px;overflow:hidden;display:none;border:1px solid var(--s3);}
+.ctx-opt{display:flex;align-items:center;gap:12px;padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;color:var(--w);border-bottom:1px solid var(--s2);}
+.ctx-opt:last-child{border-bottom:none;}
+.ctx-opt:active{background:var(--s2);}
+.ctx-opt.danger{color:var(--red);}
+.ctx-opt-ico{font-size:18px;width:24px;text-align:center;}
+
 /* ── FOLLOW LIST ── */
 .follow-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--s2);cursor:pointer;}
 .follow-av{width:44px;height:44px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;overflow:hidden;flex-shrink:0;}
@@ -403,6 +411,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <div class="hdr-r">
       <button class="ib" onclick="openLiveBrowser()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg><div class="ndot" id="live-dot"></div></button>
       <button class="ib" onclick="openCreate()"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></button>
+      <button class="ib" onclick="refreshAll()" id="refresh-btn" title="Refresh"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
       <button class="ib" onclick="openNotifs()"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="ndot" id="notif-dot"></div></button>
     </div>
   </div>
@@ -843,6 +852,17 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
+<!-- ── CONV CONTEXT MENU ── -->
+<div id="conv-ctx-menu">
+  <div class="ctx-opt" onclick="ctxOpenChat()"><span class="ctx-opt-ico">💬</span> Open Chat</div>
+  <div class="ctx-opt" onclick="ctxViewProfile()"><span class="ctx-opt-ico">👤</span> View Profile</div>
+  <div class="ctx-opt" onclick="ctxMarkUnread()"><span class="ctx-opt-ico">🔵</span> Mark as Unread</div>
+  <div class="ctx-opt" onclick="ctxClearChat()"><span class="ctx-opt-ico">🧹</span> Clear Chat</div>
+  <div class="ctx-opt" onclick="ctxMuteNotifs()"><span class="ctx-opt-ico">🔕</span> Mute Notifications</div>
+  <div class="ctx-opt danger" onclick="ctxBlock()"><span class="ctx-opt-ico">🚫</span> Block</div>
+  <div class="ctx-opt" style="color:var(--g2);" onclick="closeConvCtx()"><span class="ctx-opt-ico">✕</span> Cancel</div>
+</div>
+
 <!-- ── INCOMING CALL ── -->
 <div id="incoming-call" style="position:fixed;top:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--s1);z-index:900;display:none;flex-direction:column;align-items:center;padding:28px 20px 24px;border-bottom-left-radius:24px;border-bottom-right-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,.6);">
   <div style="font-size:12px;color:var(--g2);font-weight:700;letter-spacing:1px;margin-bottom:12px;">INCOMING CALL</div>
@@ -907,12 +927,39 @@ function popNav(){
   return false;
 }
 
+let _exitWarning = false;
 window.addEventListener('popstate', (e)=>{
+  // 1. Close context menus
+  const ctxMenu = $('conv-ctx-menu');
+  if(ctxMenu && ctxMenu.style.display !== 'none'){
+    closeConvCtx(); history.pushState({nav:_navStack.length},''); return;
+  }
+  // 2. Close open bottom sheets
+  const openSheet = document.querySelector('.sheet.show');
+  if(openSheet){ openSheet.classList.remove('show'); history.pushState({nav:_navStack.length},''); return; }
+  // 3. Pop nav stack (overlays, chats, profiles, story viewer, etc.)
   if(popNav()){
-    // Push state again to keep back button always intercepted
-    // (only if more items remain)
-    if(_navStack.length > 0){
-      history.pushState({ nav: _navStack.length }, '');
+    if(_navStack.length > 0) history.pushState({nav:_navStack.length},'');
+    return;
+  }
+  // 4. Nav stack empty
+  if(_currentTab !== 'feed'){
+    history.pushState({nav:1},'');
+    _switchingTab=true; switchTab('feed'); _switchingTab=false;
+  } else {
+    if(_exitWarning){
+      _exitWarning=false;
+      toast('See you soon! ??');
+      setTimeout(()=>{
+        try{window.close();}catch(e){}
+        try{if(navigator.app)navigator.app.exitApp();}catch(e){}
+        history.go(-(history.length+10));
+      },300);
+    } else {
+      _exitWarning=true;
+      toast('Press back again to exit DIOR+ ??',2500);
+      history.pushState({nav:1},'');
+      setTimeout(()=>{ _exitWarning=false; },3000);
     }
   }
 });
@@ -963,7 +1010,9 @@ function $(id){ return document.getElementById(id); }
 function imgSrc(url){
   if(!url) return '';
   if(url.startsWith('http')||url.startsWith('data:')) return url;
-  return API + (url.startsWith('/') ? url : '/'+url);
+  // Always force origin so /uploads/xxx.jpg works from any page context
+  const base = window.location.origin;
+  return base + (url.startsWith('/') ? url : '/'+url);
 }
 
 function avatarEl(u, size=44){
@@ -1172,6 +1221,17 @@ function connectSocket(){
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 let cmtsPostId = null;
+function refreshAll(){
+  const btn=$('refresh-btn');
+  if(btn){ btn.style.transition='transform 0.8s'; btn.style.transform='rotate(360deg)'; setTimeout(()=>{ btn.style.transition=''; btn.style.transform=''; },850); }
+  const tasks=[loadStories(),loadPosts(),loadConversations(),loadGroupChats()];
+  if(_currentTab==='reels') tasks.push(loadReels());
+  else if(_currentTab==='explore'){ _userCache=null; tasks.push(getAllUsersCache().then(()=>loadExploreGrid())); }
+  else if(_currentTab==='studio') tasks.push(loadStudio());
+  else if(_currentTab==='profile') tasks.push((async()=>{ const r=await api('/api/users/'+ME.id); if(r.user){ME=r.user;localStorage.setItem('dp_session',JSON.stringify(ME));updateProfileUI();} await loadProfilePosts(); })());
+  Promise.all(tasks).then(()=>toast('Refreshed ✓'));
+}
+
 function initApp(){
   getAllUsersCache();
   requestPushPermission();
@@ -1205,36 +1265,61 @@ function switchTab(tab){
 }
 
 // ── PULL TO REFRESH ──────────────────────────────────────────────────────
-(function initPullToRefresh(){
+// ── UNIVERSAL PULL TO REFRESH ─────────────────────────────────────────────
+function makePullToRefresh(elId, onRefresh, indId){
+  const el = document.getElementById(elId);
+  if(!el) return;
   let startY=0, pulling=false, threshold=70;
-  const feed = document.getElementById('s-feed');
-  if(!feed) return;
-  feed.addEventListener('touchstart', e=>{
-    if(feed.scrollTop===0) { startY=e.touches[0].clientY; pulling=true; }
+  el.addEventListener('touchstart', e=>{
+    if(el.scrollTop===0){ startY=e.touches[0].clientY; pulling=true; }
   }, {passive:true});
-  feed.addEventListener('touchmove', e=>{
+  el.addEventListener('touchmove', e=>{
     if(!pulling) return;
     const dy = e.touches[0].clientY - startY;
-    const ind = document.getElementById('ptr-indicator');
-    if(dy>20 && feed.scrollTop===0){
+    const ind = indId?document.getElementById(indId):null;
+    if(dy>20 && el.scrollTop===0){
       if(ind){ ind.classList.add('visible'); ind.textContent = dy>threshold ? '↑ Release to refresh' : '↓ Pull to refresh'; }
     }
   }, {passive:true});
-  feed.addEventListener('touchend', e=>{
+  el.addEventListener('touchend', e=>{
     if(!pulling) return;
     pulling=false;
     const dy = e.changedTouches[0].clientY - startY;
-    const ind = document.getElementById('ptr-indicator');
-    if(dy>threshold && feed.scrollTop===0){
-      if(ind){ ind.textContent='Refreshing...'; }
-      Promise.all([loadPosts(), loadStories()]).then(()=>{
-        if(ind){ ind.classList.remove('visible'); }
-        toast('Feed refreshed ✓');
+    const ind = indId?document.getElementById(indId):null;
+    if(dy>threshold && el.scrollTop===0){
+      if(ind) ind.textContent='Refreshing...';
+      Promise.resolve(onRefresh()).then(()=>{
+        if(ind) ind.classList.remove('visible');
       });
     } else {
       if(ind) ind.classList.remove('visible');
     }
   }, {passive:true});
+}
+
+(function initAllPTR(){
+  // Feed
+  makePullToRefresh('s-feed', ()=>Promise.all([loadPosts(),loadStories()]).then(()=>toast('Feed refreshed ✓')), 'ptr-indicator');
+  // Messages — create indicator
+  const mInd = document.createElement('div'); mInd.id='ptr-msgs'; mInd.className='ptr-indicator'; mInd.textContent='↓ Pull to refresh';
+  document.getElementById('s-messages')?.prepend(mInd);
+  makePullToRefresh('s-messages', ()=>Promise.all([loadConversations(),loadGroupChats()]).then(()=>toast('Messages refreshed ✓')), 'ptr-msgs');
+  // Explore
+  const eInd = document.createElement('div'); eInd.id='ptr-expl'; eInd.className='ptr-indicator'; eInd.textContent='↓ Pull to refresh';
+  document.getElementById('s-explore')?.prepend(eInd);
+  makePullToRefresh('s-explore', ()=>{ _userCache=null; return getAllUsersCache().then(()=>loadExploreGrid()).then(()=>toast('Explore refreshed ✓')); }, 'ptr-expl');
+  // Studio
+  const stInd = document.createElement('div'); stInd.id='ptr-studio'; stInd.className='ptr-indicator'; stInd.textContent='↓ Pull to refresh';
+  document.getElementById('s-studio')?.prepend(stInd);
+  makePullToRefresh('s-studio', ()=>loadStudio().then(()=>toast('Studio refreshed ✓')), 'ptr-studio');
+  // Profile
+  const pInd = document.createElement('div'); pInd.id='ptr-prof'; pInd.className='ptr-indicator'; pInd.textContent='↓ Pull to refresh';
+  document.getElementById('s-profile')?.prepend(pInd);
+  makePullToRefresh('s-profile', async()=>{ const r=await api('/api/users/'+ME.id); if(r.user){ME=r.user;localStorage.setItem('dp_session',JSON.stringify(ME));updateProfileUI();} await loadProfilePosts(); await loadStories(); toast('Profile refreshed ✓'); }, 'ptr-prof');
+  // Reels — swipe down from top
+  const rInd = document.createElement('div'); rInd.id='ptr-reels'; rInd.className='ptr-indicator'; rInd.textContent='↓ Pull to refresh'; rInd.style.cssText='position:absolute;top:0;left:0;right:0;z-index:10;background:var(--bg);';
+  const reelScreen = document.getElementById('screen-reels'); if(reelScreen){reelScreen.style.position='relative'; reelScreen.prepend(rInd);}
+  makePullToRefresh('screen-reels', ()=>loadReels().then(()=>toast('Reels refreshed ✓')), 'ptr-reels');
 })();
 
 // ── PROFILE UI ────────────────────────────────────────────────────────────
@@ -1415,7 +1500,7 @@ function prependPost(post, prepend=true){
     <div class="post-media">
       ${post.mediaUrls.map((u,i)=>u.endsWith('.mp4')?
         `<video class="post-vid" src="${imgSrc(u)}" controls playsinline style="display:${i===0?'block':'none'};" id="pmv-${post.id}-${i}"></video>`:
-        `<img class="post-img" src="${imgSrc(u)}" loading="lazy" style="display:${i===0?'block':'none'};" id="pmi-${post.id}-${i}"/>`).join('')}
+        `<img class="post-img" src="${imgSrc(u)}" loading="lazy" style="display:${i===0?'block':'none'};" id="pmi-${post.id}-${i}" onerror="this.style.display='none';"/>`).join('')}
       ${post.mediaUrls.length>1?`<div class="post-dot-row">${post.mediaUrls.map((_,i)=>`<div class="post-dot${i===0?' on':''}" id="pd-${post.id}-${i}"></div>`).join('')}</div>`:''}
     </div>`:'';
   div.innerHTML=`
@@ -1448,6 +1533,21 @@ function prependPost(post, prepend=true){
   `;
   if(prepend) feed.insertBefore(div,feed.firstChild); else feed.appendChild(div);
 }
+const _postSlideIdx = {};
+function postSlide(postId, dir, total){
+  const cur = _postSlideIdx[postId]||0;
+  const next = (cur+dir+total)%total;
+  _postSlideIdx[postId]=next;
+  for(let i=0;i<total;i++){
+    const img=document.getElementById('pmi-'+postId+'-'+i);
+    const vid=document.getElementById('pmv-'+postId+'-'+i);
+    const dot=document.getElementById('pd-'+postId+'-'+i);
+    if(img) img.style.display=i===next?'block':'none';
+    if(vid){ vid.style.display=i===next?'block':'none'; if(i===next)vid.play().catch(()=>{}); }
+    if(dot) dot.classList.toggle('on',i===next);
+  }
+}
+
 function updateLikes(postId, likes){
   const btn=document.getElementById('like-'+postId);
   const cnt=document.getElementById('lc-'+postId);
@@ -1616,28 +1716,27 @@ function appendMsg(m){
   setTimeout(()=>{ body.scrollTop = body.scrollHeight; }, 50);
 }
 
-let unreadCounts = {}; // { userId: count }
+let unreadCounts = JSON.parse(localStorage.getItem('dp_unread')||'{}');
+function saveUnread(){ localStorage.setItem('dp_unread', JSON.stringify(unreadCounts)); }
 
 function handleIncomingMsg(msg){
-  const isFromOther = msg.fromId !== ME.id;
-  const isCurrentChat = msg.fromId===activeConv || msg.toId===activeConv;
-  // If chat is open and it's from this person, mark read & show
-  if(isCurrentChat && isFromOther){
+  if(msg.fromId === ME.id){ loadConversations(); return; } // my own echo
+  const chatEl = $('chat');
+  const chatOpen = chatEl && chatEl.style.display !== 'none';
+  if(chatOpen && msg.fromId === activeConv){
     appendMsg(msg);
-    // Mark as read on server
     api('/api/messages/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:msg.fromId,toId:ME.id})});
-  } else if(isFromOther){
-    // Increment unread count
-    const uid = msg.fromId;
-    unreadCounts[uid] = (unreadCounts[uid]||0)+1;
-    updateUnreadBadge();
-    // Push notification
+    if(unreadCounts[msg.fromId]){ delete unreadCounts[msg.fromId]; saveUnread(); updateUnreadBadge(); }
+  } else {
+    unreadCounts[msg.fromId] = (unreadCounts[msg.fromId]||0)+1;
+    saveUnread(); updateUnreadBadge();
     showPushNotif(msg);
   }
   loadConversations();
 }
 
 function updateUnreadBadge(){
+  saveUnread();
   const total = Object.values(unreadCounts).reduce((a,b)=>a+b,0);
   const badge = $('msg-badge');
   if(!badge) return;
@@ -1653,8 +1752,8 @@ function updateUnreadBadge(){
 function clearUnread(userId){
   if(unreadCounts[userId]){
     delete unreadCounts[userId];
+    saveUnread();
     updateUnreadBadge();
-    // Mark read on server
     api('/api/messages/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:userId,toId:ME.id})});
   }
 }
@@ -2363,6 +2462,56 @@ function openLinkedAccounts(){
 async function linkEmail(){ const e=document.getElementById('link-email').value.trim(); if(!e){toast('Enter email');return;} const r=await api('/api/users/'+ME.id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e})}); if(r.user){ME.email=e; document.getElementById('linked-status').textContent='Email linked ✓'; toast('Email linked!');} }
 async function linkPhone(){ const p=document.getElementById('link-phone').value.trim(); if(!p){toast('Enter phone');return;} const r=await api('/api/users/'+ME.id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:p})}); if(r.user){ME.phone=p; document.getElementById('linked-status').textContent='Phone linked ✓'; toast('Phone linked!');} }
 
+// ── CONV CONTEXT MENU ─────────────────────────────────────────────────────
+let _ctxUserId = null, _ctxUserName = null;
+
+function showConvCtx(e, userId, userName){
+  e.preventDefault(); e.stopPropagation();
+  _ctxUserId = userId; _ctxUserName = userName;
+  const menu = $('conv-ctx-menu');
+  menu.style.display = 'block';
+  // Position near touch
+  const x = (e.touches ? e.touches[0].clientX : e.clientX);
+  const y = (e.touches ? e.touches[0].clientY : e.clientY);
+  const mw = 220, mh = 300;
+  const maxX = Math.min(window.innerWidth, 480);
+  menu.style.left = Math.min(x, maxX - mw - 8) + 'px';
+  menu.style.top = Math.min(y, window.innerHeight - mh - 8) + 'px';
+  // Close on outside tap
+  setTimeout(()=>document.addEventListener('click', closeConvCtx, {once:true}), 50);
+}
+function closeConvCtx(){ $('conv-ctx-menu').style.display='none'; }
+function ctxOpenChat(){ closeConvCtx(); if(_ctxUserId) openChat(_ctxUserId); }
+function ctxViewProfile(){ closeConvCtx(); if(_ctxUserId) openUserProfile(_ctxUserId); }
+function ctxMarkUnread(){
+  closeConvCtx();
+  if(!_ctxUserId) return;
+  unreadCounts[_ctxUserId] = (unreadCounts[_ctxUserId]||0)+1;
+  saveUnread(); updateUnreadBadge(); loadConversations();
+  toast('Marked as unread');
+}
+async function ctxClearChat(){
+  closeConvCtx();
+  if(!_ctxUserId) return;
+  if(!confirm('Clear all messages with '+(_ctxUserName||'this user')+'?')) return;
+  await api('/api/messages/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id,otherId:_ctxUserId})});
+  toast('Chat cleared 🧹'); loadConversations();
+}
+function ctxMuteNotifs(){
+  closeConvCtx();
+  const muted = JSON.parse(localStorage.getItem('dp_muted')||'{}');
+  muted[_ctxUserId] = !muted[_ctxUserId];
+  localStorage.setItem('dp_muted', JSON.stringify(muted));
+  toast(muted[_ctxUserId]?'Notifications muted 🔕':'Notifications unmuted 🔔');
+}
+async function ctxBlock(){
+  closeConvCtx();
+  if(!_ctxUserId) return;
+  if(!confirm('Block '+(_ctxUserName||'this user')+'?')) return;
+  await api('/api/users/'+_ctxUserId+'/block',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({blockerId:ME.id})});
+  toast('User blocked 🚫'); loadConversations();
+}
+
 // ── STREAK + FOLLOWERS IN CONV LIST (patch loadConversations) ─────────────
 async function loadConversations(){
   const convs=await api('/api/conversations/'+ME.id);
@@ -2378,9 +2527,11 @@ async function loadConversations(){
     const cs=chatSettings[c.userId]||{};
     const nick=cs.nickname||c.name;
     const sb=streakBadge(c.userId);
-    const unreadHtml = c.unread>0 ? `<div class="ms-unread">${c.unread>99?'99+':c.unread}</div>` : '';
-    const lastMsgStyle = c.unread>0 ? 'color:var(--w);font-weight:700;' : '';
-    return `<div class="ms-item" onclick="openChat('${c.userId}')"><div class="ms-av" data-uid="${c.userId}" style="position:relative;">${avatarEl(c,50)}<div style="width:10px;height:10px;border-radius:50%;background:var(--green);position:absolute;bottom:2px;right:2px;border:2px solid var(--bg);display:none;" id="od-${c.userId}"></div>${_liveUsers.has(c.userId)?'<div class="ms-live-dot"></div>':''}</div><div class="ms-info"><div class="ms-name">${nick} ${badge(c)} ${sb}</div><div class="ms-last" style="${lastMsgStyle}">${c.lastMsg||''}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">${unreadHtml}<div class="ms-time">${timeAgo(c.lastTime)}</div></div></div>`;
+    // Use local unread state (persistent) rather than server count which may be stale
+    const localUnread = unreadCounts[c.userId]||0;
+    const unreadHtml = localUnread>0 ? `<div class="ms-unread">${localUnread>99?'99+':localUnread}</div>` : '';
+    const lastMsgStyle = localUnread>0 ? 'color:var(--w);font-weight:700;' : '';
+    return `<div class="ms-item" onclick="openChat('${c.userId}')" oncontextmenu="showConvCtx(event,'${c.userId}','${c.name}')" ontouchstart="(function(el,uid,nm){let t=setTimeout(()=>{ showConvCtx({preventDefault:()=>{},stopPropagation:()=>{},touches:[{clientX:el.getBoundingClientRect().left+25,clientY:el.getBoundingClientRect().top+25}]},uid,nm); },500); el._lpt=t;})(this,'${c.userId}','${c.name}')" ontouchend="clearTimeout(this._lpt)" ontouchmove="clearTimeout(this._lpt)"><div class="ms-av" data-uid="${c.userId}" style="position:relative;">${avatarEl(c,50)}<div style="width:10px;height:10px;border-radius:50%;background:var(--green);position:absolute;bottom:2px;right:2px;border:2px solid var(--bg);display:none;" id="od-${c.userId}"></div>${_liveUsers.has(c.userId)?'<div class="ms-live-dot"></div>':''}</div><div class="ms-info"><div class="ms-name">${nick} ${badge(c)} ${sb}</div><div class="ms-last" style="${lastMsgStyle}">${c.lastMsg||''}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">${unreadHtml}<div class="ms-time">${timeAgo(c.lastTime)}</div></div></div>`;
   }).join(''):'');
 }
 
@@ -2664,14 +2815,12 @@ async function sendAIMsg(){
       content: m.content
     }));
     // Make sure last message is the user's (it's already in aiHistory from appendAIMsg above)
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch(API+'/api/ai/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `You are DIOR+ AI, a friendly and helpful AI assistant built into the DIOR+ social app. You help users with questions, creative ideas, writing captions, advice, and general conversation. Keep responses concise and conversational — this is a chat app. The user's name is ${ME?.name || 'there'}.`,
-        messages: contextMsgs
+        messages: contextMsgs,
+        userName: ME?.name || 'there'
       })
     });
     const d = await r.json();
