@@ -564,10 +564,10 @@ app.post('/api/ai/chat', async (req, res) => {
     const HF_KEY = process.env.HF_API_KEY || '';
     const systemPrompt = `You are DIOR+ AI, a helpful assistant inside the DIOR+ social media app. Answer any question clearly and helpfully. Help with captions, hashtags, advice, motivation, general knowledge, and chat. Be concise — this is a mobile app. The user's name is ${userName || 'there'}.`;
     const hfMessages = [{ role: 'system', content: systemPrompt }, ...(messages || []).slice(-10).map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content }))];
-    const body = JSON.stringify({ model: 'meta-llama/Meta-Llama-3-8B-Instruct', messages: hfMessages, max_tokens: 400, temperature: 0.8 });
+    const body = JSON.stringify({ model: 'meta-llama/Meta-Llama-3-8B-Instruct:auto', messages: hfMessages, max_tokens: 400, temperature: 0.8 });
     const options = {
       hostname: 'router.huggingface.co',
-      path: '/novita/v3/openai/chat/completions',
+      path: '/v1/chat/completions',
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + HF_KEY, 'Content-Length': Buffer.byteLength(body) }
     };
