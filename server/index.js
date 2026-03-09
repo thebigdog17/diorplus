@@ -67,6 +67,11 @@ app.get('/icon-512.png', (req, res) => {
 // ── STATIC
 app.use(express.static(path.join(__dirname, '../client')));
 
+// Inject TMDB key safely
+app.get('/api/config', (req, res) => {
+  res.json({ tmdbKey: process.env.TMDB_API_KEY || '' });
+});
+
 // ── HELPERS ────────────────────────────────────────────────────────────────
 function clean(doc) {
   if (!doc) return null;

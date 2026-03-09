@@ -275,17 +275,50 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .notif-txt b{font-weight:700;}
 
 /* ── REELS ── */
-#screen-reels{position:relative;height:calc(100vh - 120px);overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;}
+#screen-reels{position:relative;height:calc(100vh - 120px);overflow-y:auto;scrollbar-width:none;background:var(--bg);}
 #screen-reels::-webkit-scrollbar{display:none;}
-.reel-item{position:relative;height:calc(100vh - 120px);scroll-snap-align:start;background:#000;display:flex;align-items:center;justify-content:center;}
-.reel-vid{width:100%;height:100%;object-fit:cover;}
-.reel-overlay{position:absolute;inset:0;display:flex;}
-.reel-side{position:absolute;right:12px;bottom:100px;display:flex;flex-direction:column;gap:16px;align-items:center;}
-.reel-btn{background:none;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-size:11px;}
-.reel-btn svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;}
-.reel-info{position:absolute;left:12px;bottom:100px;right:80px;}
-.reel-user{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
-.reel-cap{font-size:13px;color:rgba(255,255,255,.9);line-height:1.5;}
+.watch-header{padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
+.watch-header h2{font-size:20px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.watch-search{display:flex;align-items:center;gap:8px;padding:0 16px 12px;}
+.watch-search input{flex:1;background:var(--s2);border:none;border-radius:20px;padding:10px 16px;color:var(--w);font-size:14px;outline:none;}
+.watch-search button{background:var(--grad);border:none;border-radius:20px;padding:10px 16px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;}
+.watch-tabs{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none;}
+.watch-tabs::-webkit-scrollbar{display:none;}
+.watch-tab-btn{background:var(--s2);border:none;border-radius:20px;padding:8px 16px;color:var(--g);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.2s;}
+.watch-tab-btn.active{background:var(--grad);color:#fff;}
+.watch-section-title{font-size:16px;font-weight:700;padding:8px 16px 10px;color:var(--w);}
+.watch-row{display:flex;gap:12px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none;}
+.watch-row::-webkit-scrollbar{display:none;}
+.watch-card{min-width:130px;cursor:pointer;border-radius:12px;overflow:hidden;background:var(--s2);flex-shrink:0;transition:transform .2s;}
+.watch-card:active{transform:scale(.96);}
+.watch-card img{width:130px;height:190px;object-fit:cover;display:block;}
+.watch-card-info{padding:6px 8px 8px;}
+.watch-card-title{font-size:12px;font-weight:700;color:var(--w);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.watch-card-year{font-size:11px;color:var(--g);}
+.watch-card-rating{font-size:11px;color:#f59e0b;font-weight:700;}
+.watch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px;}
+.watch-grid-card{cursor:pointer;border-radius:10px;overflow:hidden;background:var(--s2);transition:transform .2s;}
+.watch-grid-card:active{transform:scale(.96);}
+.watch-grid-card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;}
+.watch-grid-card-title{font-size:11px;font-weight:700;color:var(--w);padding:4px 6px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Movie detail overlay */
+#watch-detail{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;overflow-y:auto;}
+.watch-detail-backdrop{width:100%;aspect-ratio:16/9;object-fit:cover;position:relative;}
+.watch-detail-backdrop-img{width:100%;height:220px;object-fit:cover;}
+.watch-detail-grad{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(transparent,var(--bg));}
+.watch-detail-body{padding:16px;}
+.watch-detail-title{font-size:22px;font-weight:800;color:var(--w);margin-bottom:4px;}
+.watch-detail-meta{font-size:13px;color:var(--g);margin-bottom:12px;}
+.watch-detail-rating{color:#f59e0b;font-weight:700;}
+.watch-detail-overview{font-size:14px;color:var(--g);line-height:1.6;margin-bottom:16px;}
+.watch-play-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--grad);border:none;border-radius:14px;padding:14px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;width:100%;margin-bottom:10px;}
+.watch-detail-actions{display:flex;gap:10px;margin-bottom:20px;}
+.watch-detail-action{flex:1;background:var(--s2);border:none;border-radius:12px;padding:12px 8px;color:var(--w);font-size:12px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;}
+/* Player overlay */
+#watch-player{position:fixed;inset:0;background:#000;z-index:300;display:none;flex-direction:column;}
+#watch-iframe{width:100%;flex:1;border:none;}
+.watch-player-bar{background:#111;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.watch-player-title{flex:1;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 /* ── STUDIO ── */
 .st-hdr{padding:16px;text-align:center;}
@@ -430,7 +463,47 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <div id="posts-feed"></div>
     </div>
     <!-- REELS -->
-    <div class="screen" id="screen-reels" style="padding-bottom:0;"></div>
+    <div class="screen" id="screen-reels" style="padding-bottom:0;">
+  <div class="watch-header"><h2>🎬 Watch</h2><button onclick="openWatchSearch()" style="background:var(--s2);border:none;border-radius:50%;width:36px;height:36px;color:var(--w);font-size:18px;cursor:pointer;">🔍</button></div>
+  <div class="watch-search" id="watch-search-bar" style="display:none;"><input id="watch-search-inp" placeholder="Search movies & shows..." oninput="watchSearchDebounce(this.value)"/><button onclick="closeWatchSearch()">✕</button></div>
+  <div class="watch-tabs">
+    <button class="watch-tab-btn active" onclick="setWatchTab('trending',this)">🔥 Trending</button>
+    <button class="watch-tab-btn" onclick="setWatchTab('movies',this)">🎬 Movies</button>
+    <button class="watch-tab-btn" onclick="setWatchTab('tv',this)">📺 TV Shows</button>
+    <button class="watch-tab-btn" onclick="setWatchTab('watchlist',this)">🔖 Watchlist</button>
+  </div>
+  <div id="watch-content"></div>
+</div>
+<!-- Movie detail overlay -->
+<div id="watch-detail" style="display:none;flex-direction:column;">
+  <div style="position:relative;">
+    <img id="wd-backdrop" class="watch-detail-backdrop-img" src="" onerror="this.style.background='var(--s2)';this.removeAttribute('src')"/>
+    <div class="watch-detail-grad"></div>
+    <button onclick="closeWatchDetail()" style="position:absolute;top:16px;left:16px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:18px;cursor:pointer;">‹</button>
+    <button id="wd-wl-btn" onclick="toggleWatchlist()" style="position:absolute;top:16px;right:16px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:18px;cursor:pointer;">🔖</button>
+  </div>
+  <div class="watch-detail-body">
+    <div class="watch-detail-title" id="wd-title"></div>
+    <div class="watch-detail-meta" id="wd-meta"></div>
+    <div class="watch-detail-overview" id="wd-overview"></div>
+    <button class="watch-play-btn" onclick="playCurrentMovie()">▶ Watch Now</button>
+    <div class="watch-detail-actions">
+      <button class="watch-detail-action" onclick="shareWatchToFeed()">📤<span>Share</span></button>
+      <button class="watch-detail-action" onclick="toggleWatchlist()">🔖<span>Watchlist</span></button>
+      <button class="watch-detail-action" onclick="shareWatchToStory()">📖<span>Story</span></button>
+    </div>
+    <div class="watch-section-title">More Like This</div>
+    <div class="watch-row" id="wd-similar"></div>
+  </div>
+</div>
+<!-- Player overlay -->
+<div id="watch-player" style="display:none;flex-direction:column;">
+  <div class="watch-player-bar">
+    <button onclick="closeWatchPlayer()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">✕</button>
+    <div class="watch-player-title" id="wp-title"></div>
+  </div>
+  <iframe id="watch-iframe" allowfullscreen allow="autoplay; fullscreen" src=""></iframe>
+</div>
     <!-- MESSAGES -->
     <div class="screen" id="s-messages">
       <div style="display:flex;align-items:center;padding:12px 16px 0;gap:8px;">
@@ -459,7 +532,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
         <div class="st-qab" onclick="openCreate()"><div class="st-qab-ico">📸</div><div class="st-qab-lbl">New Post</div></div>
         <div class="st-qab" onclick="startLive()"><div class="st-qab-ico">🔴</div><div class="st-qab-lbl">Go Live</div></div>
         <div class="st-qab" onclick="openStoryCreate()"><div class="st-qab-ico">◎</div><div class="st-qab-lbl">Story</div></div>
-        <div class="st-qab" onclick="openReelUpload()"><div class="st-qab-ico">🎬</div><div class="st-qab-lbl">Reel</div></div>
+        <div class="st-qab" onclick="switchTab('reels')"><div class="st-qab-ico">🎬</div><div class="st-qab-lbl">Watch</div></div>
       </div>
     </div>
     <!-- PROFILE -->
@@ -503,7 +576,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   <div class="tabbar">
     <button class="tab on" id="tab-feed" onclick="switchTab('feed')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
     <button class="tab" id="tab-messages" onclick="switchTab('messages')" style="position:relative;"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span><span class="unread-badge" id="msg-badge"></span></button>
-    <button class="tab" id="tab-reels" onclick="switchTab('reels')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span>Reels</span></button>
+    <button class="tab" id="tab-reels" onclick="switchTab('reels')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg><span>Watch</span></button>
     <button class="tab" id="tab-explore" onclick="switchTab('explore')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Explore</span></button>
     <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Studio</span></button>
     <button class="tab" id="tab-profile" onclick="switchTab('profile')"><div class="tab-av" id="tab-av">?</div><span>Profile</span></button>
@@ -581,9 +654,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 </div>
 
 <!-- ── REEL UPLOAD ── -->
-<div class="sheet" id="reel-sheet">
-  <div class="sheet-box">
-    <div class="sheet-title">New Reel</div>
+</div>
     <label style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--s2);border:1px dashed var(--s3);border-radius:12px;padding:14px;cursor:pointer;margin-bottom:12px;color:var(--g1);font-size:14px;font-weight:700;">
       <input type="file" accept="video/*" style="display:none;" onchange="pickReel(this)"/> 🎥 Choose Video
     </label>
@@ -2113,43 +2184,240 @@ async function sendGCMsg(){
 function toggleGCEmoji(){ toast('Use emoji keyboard on your phone 😊'); }
 
 // ── REELS ─────────────────────────────────────────────────────────────────
+// ── WATCH TAB (Movie Streaming) ───────────────────────────────────────────
+let TMDB_KEY = '';
+// Fetch TMDB key from server on load
+fetch('/api/config').then(r=>r.json()).then(d=>{ TMDB_KEY = d.tmdbKey||''; }).catch(()=>{});
+const TMDB = 'https://api.themoviedb.org/3';
+const IMG = 'https://image.tmdb.org/t/p/w500';
+const BACKDROP = 'https://image.tmdb.org/t/p/w780';
+let _watchList = JSON.parse(localStorage.getItem('dior_watchlist')||'[]');
+let _currentWatchItem = null;
+let _currentWatchType = null;
+let _watchSearchTimer = null;
+
 async function loadReels(){
-  const reels=await api('/api/reels');
-  const screen=$('screen-reels'); screen.innerHTML='';
-  if(!Array.isArray(reels)||!reels.length){ screen.innerHTML='<div style="text-align:center;padding:80px 20px;color:var(--g2);">No reels yet. Post one!</div>'; return; }
-  reels.forEach(r=>{
-    const div=document.createElement('div'); div.className='reel-item';
-    div.innerHTML=`
-      <video class="reel-vid" src="${imgSrc(r.videoUrl)}" loop playsinline muted></video>
-      <div class="reel-overlay">
-        <div class="reel-info">
-          <div class="reel-user">@${r.user?.username||'?'} ${badge(r.user)}</div>
-          <div class="reel-cap">${r.caption||''}</div>
+  // Watch tab loads when switching to 'reels' tab
+  await loadWatchTab('trending');
+}
+
+async function loadWatchTab(type){
+  const c = $('watch-content'); if(!c) return;
+  c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Loading...</div>';
+  if(type === 'watchlist'){ return renderWatchlist(); }
+  if(type === 'trending'){ return loadTrending(); }
+  if(type === 'movies'){ return loadMovies(); }
+  if(type === 'tv'){ return loadTV(); }
+}
+
+function setWatchTab(type, btn){
+  document.querySelectorAll('.watch-tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  loadWatchTab(type);
+}
+
+async function loadTrending(){
+  const c = $('watch-content'); if(!c) return;
+  try {
+    const [trending, popular, topRated] = await Promise.all([
+      tmdbFetch('/trending/all/week'),
+      tmdbFetch('/movie/popular'),
+      tmdbFetch('/tv/top_rated')
+    ]);
+    c.innerHTML = '';
+    c.innerHTML += buildWatchRow('🔥 Trending This Week', trending.results||[], 'all');
+    c.innerHTML += buildWatchRow('🎬 Popular Movies', popular.results||[], 'movie');
+    c.innerHTML += buildWatchRow('📺 Top Rated Shows', topRated.results||[], 'tv');
+  } catch(e){ c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Could not load. Check your connection.</div>'; }
+}
+
+async function loadMovies(){
+  const c = $('watch-content'); if(!c) return;
+  try {
+    const [popular, action, comedy, horror] = await Promise.all([
+      tmdbFetch('/movie/popular'),
+      tmdbFetch('/discover/movie?with_genres=28&sort_by=popularity.desc'),
+      tmdbFetch('/discover/movie?with_genres=35&sort_by=popularity.desc'),
+      tmdbFetch('/discover/movie?with_genres=27&sort_by=popularity.desc')
+    ]);
+    c.innerHTML = '';
+    c.innerHTML += buildWatchRow('🎬 Popular', popular.results||[], 'movie');
+    c.innerHTML += buildWatchRow('💥 Action', action.results||[], 'movie');
+    c.innerHTML += buildWatchRow('😂 Comedy', comedy.results||[], 'movie');
+    c.innerHTML += buildWatchRow('😱 Horror', horror.results||[], 'movie');
+  } catch(e){ c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Could not load.</div>'; }
+}
+
+async function loadTV(){
+  const c = $('watch-content'); if(!c) return;
+  try {
+    const [popular, drama, crime] = await Promise.all([
+      tmdbFetch('/tv/popular'),
+      tmdbFetch('/discover/tv?with_genres=18&sort_by=popularity.desc'),
+      tmdbFetch('/discover/tv?with_genres=80&sort_by=popularity.desc')
+    ]);
+    c.innerHTML = '';
+    c.innerHTML += buildWatchRow('📺 Popular Shows', popular.results||[], 'tv');
+    c.innerHTML += buildWatchRow('🎭 Drama', drama.results||[], 'tv');
+    c.innerHTML += buildWatchRow('🔍 Crime', crime.results||[], 'tv');
+  } catch(e){ c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Could not load.</div>'; }
+}
+
+function buildWatchRow(title, items, type){
+  if(!items.length) return '';
+  const cards = items.slice(0,15).map(m=>{
+    const t = m.media_type||type;
+    const name = m.title||m.name||'';
+    const poster = m.poster_path ? IMG+m.poster_path : '';
+    const year = (m.release_date||m.first_air_date||'').split('-')[0];
+    const rating = m.vote_average ? '⭐ '+m.vote_average.toFixed(1) : '';
+    return `<div class="watch-card" onclick="openWatchDetail(${m.id},'${t==='all'?(m.media_type||'movie'):t}')">
+      <img src="${poster}" onerror="this.style.background='#333';this.removeAttribute('src')" loading="lazy"/>
+      <div class="watch-card-info">
+        <div class="watch-card-title">${name}</div>
+        <div style="display:flex;justify-content:space-between;">
+          <span class="watch-card-year">${year}</span>
+          <span class="watch-card-rating">${rating}</span>
         </div>
-        <div class="reel-side">
-          <button class="reel-btn" onclick="likeReel('${r.id}',this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>${r.likes?.length||0}</button>
-          <button class="reel-btn" onclick="openChat('${r.userId}')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
-        </div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="watch-section-title">${title}</div><div class="watch-row">${cards}</div>`;
+}
+
+async function tmdbFetch(path){
+  const sep = path.includes('?') ? '&' : '?';
+  const key = (typeof TMDB_KEY !== 'undefined' && TMDB_KEY !== 'PASTE_KEY_HERE') ? TMDB_KEY : '';
+  if(!key){ throw new Error('No TMDB key'); }
+  const r = await fetch(TMDB+path+sep+'api_key='+key);
+  return r.json();
+}
+
+async function openWatchDetail(id, type){
+  try {
+    const data = await tmdbFetch('/'+type+'/'+id+'?append_to_response=similar');
+    _currentWatchItem = data;
+    _currentWatchType = type;
+    const name = data.title||data.name||'';
+    const year = (data.release_date||data.first_air_date||'').split('-')[0];
+    const runtime = data.runtime ? data.runtime+'min' : (data.episode_run_time?.[0]+'min/ep')||'';
+    const genres = (data.genres||[]).map(g=>g.name).join(', ');
+    $('wd-title').textContent = name;
+    $('wd-meta').innerHTML = `<span class="watch-detail-rating">⭐ ${data.vote_average?.toFixed(1)||'N/A'}</span> · ${year} · ${runtime} · ${genres}`;
+    $('wd-overview').textContent = data.overview||'No description available.';
+    $('wd-backdrop').src = data.backdrop_path ? BACKDROP+data.backdrop_path : (data.poster_path ? IMG+data.poster_path : '');
+    // Similar
+    const similar = (data.similar?.results||[]).slice(0,10);
+    $('wd-similar').innerHTML = similar.map(m=>{
+      const poster = m.poster_path ? IMG+m.poster_path : '';
+      return `<div class="watch-card" onclick="openWatchDetail(${m.id},'${type}')">
+        <img src="${poster}" onerror="this.style.background='#333';this.removeAttribute('src')" loading="lazy"/>
+        <div class="watch-card-info"><div class="watch-card-title">${m.title||m.name||''}</div></div>
       </div>`;
-    screen.appendChild(div);
-  });
-  // IntersectionObserver for autoplay
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{ const v=e.target.querySelector('video'); if(v){ e.isIntersecting?v.play():v.pause(); } });
-  },{threshold:0.7});
-  screen.querySelectorAll('.reel-item').forEach(item=>obs.observe(item));
+    }).join('');
+    // Watchlist btn
+    const inWl = _watchList.some(w=>w.id===id);
+    $('wd-wl-btn').textContent = inWl ? '✅' : '🔖';
+    $('watch-detail').style.display='flex';
+    pushNav(closeWatchDetail);
+  } catch(e){ toast('Could not load details'); }
 }
-async function likeReel(id,btn){ await api('/api/reels/'+id+'/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id})}); }
-function openReelUpload(){ $('reel-sheet').classList.add('show'); }
-function closeReelSheet(){ $('reel-sheet').classList.remove('show'); reelFile=null; $('reel-preview').style.display='none'; }
-function pickReel(inp){ reelFile=inp.files[0]; if(reelFile){ const v=$('reel-vid');v.src=URL.createObjectURL(reelFile);$('reel-preview').style.display='block';v.play(); } }
-async function submitReel(){
-  if(!reelFile){ toast('Pick a video'); return; }
-  const fd=new FormData(); fd.append('userId',ME.id); fd.append('caption',$('reel-cap').value); fd.append('video',reelFile);
-  const r=await api('/api/reels',{method:'POST',body:fd});
-  if(r.id){ toast('Reel posted! 🎬'); closeReelSheet(); }
-  else toast('Failed');
+
+function closeWatchDetail(){ $('watch-detail').style.display='none'; }
+
+function playCurrentMovie(){
+  if(!_currentWatchItem) return;
+  const id = _currentWatchItem.id;
+  const type = _currentWatchType;
+  const name = _currentWatchItem.title||_currentWatchItem.name||'';
+  $('wp-title').textContent = name;
+  // Use vidsrc.me embed — free, no signup needed
+  const src = type==='tv'
+    ? `https://vidsrc.me/embed/tv?tmdb=${id}`
+    : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+  $('watch-iframe').src = src;
+  $('watch-player').style.display='flex';
+  pushNav(closeWatchPlayer);
 }
+
+function closeWatchPlayer(){
+  $('watch-player').style.display='none';
+  $('watch-iframe').src='';
+}
+
+function toggleWatchlist(){
+  if(!_currentWatchItem) return;
+  const id = _currentWatchItem.id;
+  const idx = _watchList.findIndex(w=>w.id===id);
+  if(idx>-1){
+    _watchList.splice(idx,1);
+    $('wd-wl-btn').textContent='🔖';
+    toast('Removed from watchlist');
+  } else {
+    _watchList.push({id, type:_currentWatchType, title:_currentWatchItem.title||_currentWatchItem.name, poster:_currentWatchItem.poster_path});
+    $('wd-wl-btn').textContent='✅';
+    toast('Added to watchlist 🔖');
+  }
+  localStorage.setItem('dior_watchlist', JSON.stringify(_watchList));
+}
+
+function renderWatchlist(){
+  const c = $('watch-content'); if(!c) return;
+  if(!_watchList.length){ c.innerHTML='<div style="padding:60px;text-align:center;color:var(--g);font-size:15px;">No saved movies yet.<br>Tap 🔖 on any movie to save it.</div>'; return; }
+  const grid = _watchList.map(m=>`
+    <div class="watch-grid-card" onclick="openWatchDetail(${m.id},'${m.type}')">
+      <img src="${m.poster?IMG+m.poster:''}" onerror="this.style.background='#333';this.removeAttribute('src')" loading="lazy"/>
+      <div class="watch-grid-card-title">${m.title||''}</div>
+    </div>`).join('');
+  c.innerHTML = `<div style="padding:8px 16px 12px;font-size:16px;font-weight:700;color:var(--w);">🔖 Saved (${_watchList.length})</div><div class="watch-grid">${grid}</div>`;
+}
+
+function openWatchSearch(){
+  $('watch-search-bar').style.display='flex';
+  $('watch-search-inp').focus();
+}
+function closeWatchSearch(){
+  $('watch-search-bar').style.display='none';
+  $('watch-search-inp').value='';
+  loadWatchTab('trending');
+}
+function watchSearchDebounce(v){
+  clearTimeout(_watchSearchTimer);
+  if(!v.trim()){ loadWatchTab('trending'); return; }
+  _watchSearchTimer = setTimeout(()=>watchSearch(v), 500);
+}
+async function watchSearch(q){
+  const c = $('watch-content'); if(!c) return;
+  c.innerHTML='<div style="padding:40px;text-align:center;color:var(--g);">Searching...</div>';
+  try {
+    const data = await tmdbFetch('/search/multi?query='+encodeURIComponent(q));
+    const results = (data.results||[]).filter(m=>m.media_type!=='person' && m.poster_path);
+    if(!results.length){ c.innerHTML='<div style="padding:40px;text-align:center;color:var(--g);">No results found.</div>'; return; }
+    const grid = results.map(m=>{
+      const type = m.media_type||'movie';
+      return `<div class="watch-grid-card" onclick="openWatchDetail(${m.id},'${type}')">
+        <img src="${IMG+m.poster_path}" loading="lazy"/>
+        <div class="watch-grid-card-title">${m.title||m.name||''}</div>
+      </div>`;
+    }).join('');
+    c.innerHTML=`<div style="padding:8px 16px 12px;font-size:16px;font-weight:700;color:var(--w);">Results for "${q}"</div><div class="watch-grid">${grid}</div>`;
+  } catch(e){ c.innerHTML='<div style="padding:40px;text-align:center;color:var(--g);">Search failed. Try again.</div>'; }
+}
+
+function shareWatchToFeed(){
+  if(!_currentWatchItem) return;
+  toast('Share to feed coming soon!');
+}
+function shareWatchToStory(){
+  if(!_currentWatchItem) return;
+  toast('Share to story coming soon!');
+}
+
+function openReelUpload(){ switchTab('reels'); }
+function closeReelSheet(){}
+function pickReel(){}
+async function submitReel(){ }
+
 
 // ── PROFILE ───────────────────────────────────────────────────────────────
 
