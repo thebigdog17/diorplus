@@ -2124,13 +2124,150 @@ async function submitReel(){
 }
 
 // ── PROFILE ───────────────────────────────────────────────────────────────
+
+// ── POST DETAIL VIEWER (Instagram-style fullscreen post) ─────────────────
+function openPostDetail(postId){
+  // Find post in feed DOM or fetch from API
+  api('/api/posts').then(posts => {
+    if(!Array.isArray(posts)) return;
+    const post = posts.find(p => p.id === postId);
+    if(!post){ openComments(postId); return; }
+
+    let overlay = document.getElementById('post-detail-overlay');
+    if(!overlay){
+      overlay = document.createElement('div');
+      overlay.id = 'post-detail-overlay';
+      overlay.className = 'overlay';
+      overlay.style.zIndex = '550';
+      overlay.innerHTML = `
+        <div class="ov-hdr" style="border-bottom:1px solid var(--s2);">
+          <button class="ov-close" onclick="closePostDetail()">&#x2190;</button>
+          <h2 id="pd-username" style="font-size:15px;"></h2>
+          <div style="width:36px;"></div>
+        </div>
+        <div style="flex:1;overflow-y:auto;">
+          <div id="pd-media" style="background:#000;min-height:200px;display:flex;align-items:center;justify-content:center;position:relative;"></div>
+          <div style="padding:10px 14px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <div id="pd-av" style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;"></div>
+              <div><div id="pd-name" style="font-size:14px;font-weight:700;"></div><div id="pd-time" style="font-size:11px;color:var(--g2);"></div></div>
+            </div>
+            <div id="pd-caption" style="font-size:14px;line-height:1.6;margin-bottom:10px;"></div>
+            <div style="display:flex;gap:16px;padding:8px 0;border-top:1px solid var(--s2);border-bottom:1px solid var(--s2);margin-bottom:10px;">
+              <button id="pd-like-btn" class="action-btn" onclick="pdLike()">
+                <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span id="pd-like-count">0</span>
+              </button>
+              <button class="action-btn" onclick="pdOpenComments()">
+                <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span id="pd-cmt-count">0</span> Comments
+              </button>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--g2);margin-bottom:8px;">COMMENTS</div>
+            <div id="pd-comments-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+            <div style="display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid var(--s2);">
+              <input id="pd-cmt-inp" class="ch-inp" style="flex:1;" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')pdSubmitComment()"/>
+              <button class="ch-send" onclick="pdSubmitComment()"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+            </div>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+    }
+
+    window._pdPostId = postId;
+    // Fill header
+    document.getElementById('pd-username').textContent = '@' + (post.user?.username || '?');
+    document.getElementById('pd-av').innerHTML = avatarEl(post.user, 36);
+    document.getElementById('pd-name').innerHTML = (post.user?.name || '?') + ' ' + badge(post.user);
+    document.getElementById('pd-time').textContent = timeAgo(post.createdAt);
+    document.getElementById('pd-caption').innerHTML = post.caption ? `<span style="font-weight:700;">@${post.user?.username}</span> ${post.caption}` : '';
+    document.getElementById('pd-like-count').textContent = post.likes?.length || 0;
+    document.getElementById('pd-cmt-count').textContent = post.comments?.length || 0;
+    const likeBtn = document.getElementById('pd-like-btn');
+    if(post.likes?.includes(ME?.id)) likeBtn.classList.add('liked'); else likeBtn.classList.remove('liked');
+
+    // Media
+    const mediaEl = document.getElementById('pd-media');
+    mediaEl.innerHTML = '';
+    if(post.mediaUrls?.length){
+      post.mediaUrls.forEach((u, i) => {
+        const src = imgSrc(u);
+        const isVid = u.startsWith('data:video') || u.endsWith('.mp4');
+        const el = document.createElement(isVid ? 'video' : 'img');
+        el.src = src;
+        el.style.cssText = 'max-width:100%;max-height:60vh;object-fit:contain;display:' + (i===0?'block':'none');
+        if(isVid){ el.controls = true; el.playsinline = true; el.preload = 'metadata'; }
+        mediaEl.appendChild(el);
+      });
+    } else {
+      mediaEl.innerHTML = '<div style="padding:40px;color:var(--g2);font-size:14px;">No media</div>';
+    }
+
+    // Load comments
+    api('/api/posts/'+postId+'/comments').then(cmts => {
+      const list = document.getElementById('pd-comments-list');
+      if(!list) return;
+      list.innerHTML = Array.isArray(cmts) && cmts.length
+        ? cmts.map(c=>`<div style="display:flex;gap:8px;"><div style="flex-shrink:0;">${avatarEl(c.user,32)}</div><div><span style="font-weight:700;font-size:13px;">@${c.user?.username||'?'}</span> <span style="font-size:13px;">${c.text}</span><div style="font-size:10px;color:var(--g2);margin-top:2px;">${timeAgo(c.createdAt)}</div></div></div>`).join('')
+        : '<div style="color:var(--g2);font-size:13px;padding:8px 0;">No comments yet</div>';
+    });
+
+    overlay.classList.add('show');
+    pushNav(closePostDetail);
+  });
+}
+
+function closePostDetail(){
+  document.getElementById('post-detail-overlay')?.classList.remove('show');
+}
+
+async function pdLike(){
+  if(!window._pdPostId) return;
+  await api('/api/posts/'+window._pdPostId+'/like',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id})});
+  // Refresh counts
+  const posts = await api('/api/posts');
+  const post = Array.isArray(posts) ? posts.find(p=>p.id===window._pdPostId) : null;
+  if(post){
+    document.getElementById('pd-like-count').textContent = post.likes?.length||0;
+    const btn = document.getElementById('pd-like-btn');
+    if(btn) btn.classList.toggle('liked', post.likes?.includes(ME?.id));
+  }
+}
+
+function pdOpenComments(){
+  closePostDetail();
+  openComments(window._pdPostId);
+}
+
+async function pdSubmitComment(){
+  const inp = document.getElementById('pd-cmt-inp');
+  const text = inp?.value.trim();
+  if(!text || !window._pdPostId) return;
+  inp.value = '';
+  await api('/api/posts/'+window._pdPostId+'/comments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:ME.id,text})});
+  const list = document.getElementById('pd-comments-list');
+  if(list){
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:8px;';
+    div.innerHTML = `<div style="flex-shrink:0;">${avatarEl(ME,32)}</div><div><span style="font-weight:700;font-size:13px;">@${ME.username}</span> <span style="font-size:13px;">${text}</span></div>`;
+    list.appendChild(div);
+  }
+}
+
 async function loadProfilePosts(userId){
   const id=userId||ME?.id;
   if(!id) return;
   const posts=await api('/api/posts');
   const myPosts=Array.isArray(posts)?posts.filter(p=>p.userId===id):[];
   $('prof-posts-n').textContent=myPosts.length;
-  $('prof-grid').innerHTML=myPosts.map(p=>p.mediaUrls?.length?`<div class="prof-item" onclick="openComments('${p.id}')">${p.mediaUrls[0].endsWith('.mp4')?`<video src="${imgSrc(p.mediaUrls[0])}" muted playsinline></video>`:`<img src="${imgSrc(p.mediaUrls[0])}" loading="lazy"/>`}</div>`:'').join('');
+  $('prof-grid').innerHTML=myPosts.map(p=>{
+    const isVid = p.mediaUrls?.[0]?.startsWith('data:video') || p.mediaUrls?.[0]?.endsWith('.mp4');
+    const thumb = p.mediaUrls?.length
+      ? (isVid ? `<video src="${imgSrc(p.mediaUrls[0])}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>`
+               : `<img src="${imgSrc(p.mediaUrls[0])}" loading="lazy" style="width:100%;height:100%;object-fit:cover;"/>`)
+      : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--g2);font-size:11px;padding:4px;text-align:center;">${p.caption?.slice(0,40)||'Post'}</div>`;
+    return `<div class="prof-item" onclick="openPostDetail('${p.id}')">${thumb}${isVid?'<div style="position:absolute;top:4px;right:4px;color:#fff;font-size:14px;">&#9654;</div>':''}</div>`;
+  }).join('');
 }
 function switchPTab(tab){
   $('ptab-posts')?.classList.toggle('on',tab==='posts');
@@ -2218,7 +2355,14 @@ async function openUserProfile(userId){
   $('up-follow-btn').textContent=following?'Following':'Follow';
   $('up-follow-btn').style.background=following?'var(--s3)':'var(--grad)';
   const posts=await api('/api/posts');
-  $('up-grid').innerHTML=Array.isArray(posts)?posts.filter(p=>p.userId===userId).map(p=>p.mediaUrls?.length?`<div class="prof-item"><img src="${imgSrc(p.mediaUrls[0])}" loading="lazy"/></div>`:'').join(''):'';
+  $('up-grid').innerHTML=Array.isArray(posts)?posts.filter(p=>p.userId===userId).map(p=>{
+    const isVid = p.mediaUrls?.[0]?.startsWith('data:video') || p.mediaUrls?.[0]?.endsWith('.mp4');
+    const thumb = p.mediaUrls?.length
+      ? (isVid ? `<video src="${imgSrc(p.mediaUrls[0])}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>`
+               : `<img src="${imgSrc(p.mediaUrls[0])}" loading="lazy" style="width:100%;height:100%;object-fit:cover;"/>`)
+      : '';
+    return p.mediaUrls?.length ? `<div class="prof-item" onclick="openPostDetail('${p.id}')">${thumb}</div>` : '';
+  }).join(''):'';
   // Show story ring on their avatar if they have a story
   const theirStory = svGroups?.find(g=>g[0].userId===userId);
   const upWrap = $('up-av-wrap');
