@@ -398,7 +398,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     </div>
     <!-- EXPLORE -->
     <div class="screen" id="s-explore">
-      <div class="ex-search"><input class="ex-inp" id="ex-inp" placeholder="Search people..." oninput="exploreSearch(this.value)"/></div>
+      <div class="ex-search"><input class="ex-inp" id="ex-inp" placeholder="Search people, names, usernames..." oninput="debounceSearch(this.value)"/></div>
       <div id="ex-results" class="ex-users"></div>
       <div id="ex-grid" class="ex-grid"></div>
     </div>
@@ -1237,10 +1237,16 @@ async function submitPost(){
 }
 
 // ── EXPLORE ───────────────────────────────────────────────────────────────
+let _searchTimer = null;
+function debounceSearch(q){
+  clearTimeout(_searchTimer);
+  if(!q){ $('ex-results').innerHTML=''; loadExploreGrid(); return; }
+  $('ex-results').innerHTML='<div style="padding:20px;text-align:center;color:var(--g2);">Searching...</div>';
+  _searchTimer = setTimeout(()=>exploreSearch(q), 300);
+}
 async function exploreSearch(q){
   if(!q){ $('ex-results').innerHTML=''; loadExploreGrid(); return; }
   $('ex-grid').innerHTML='';
-  $('ex-results').innerHTML='<div style="padding:20px;text-align:center;color:var(--g2);">Searching...</div>';
   const users=await api('/api/users/search?q='+encodeURIComponent(q));
   if(!Array.isArray(users)||!users.length){
     $('ex-results').innerHTML='<div style="padding:40px;text-align:center;color:var(--g2);">No users found</div>';
