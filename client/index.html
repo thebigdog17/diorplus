@@ -4,6 +4,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <title>DIOR+</title>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="DIOR+"/>
+<link rel="apple-touch-icon" href="/icon-192.png"/>
 <script src="/socket.io/socket.io.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -1119,7 +1126,7 @@ function prependPost(post, prepend=true){
     <div class="post-hdr">
       <div class="post-av" onclick="openUserProfile('${post.userId}')">${avatarEl(post.user,38)}</div>
       <div class="post-info">
-        <div class="post-name">${post.user?.name||'?'} ${badge(post.user?.verifyTier)}</div>
+        <div class="post-name">${post.user?.name||'?'} ${badge(post.user)}</div>
         <div class="post-time">@${post.user?.username||'?'} · ${timeAgo(post.createdAt)}</div>
       </div>
       ${mine?`<button class="post-menu" onclick="openPostMenu('${post.id}')">•••</button>`:''}
@@ -1237,7 +1244,7 @@ async function exploreSearch(q){
   $('ex-results').innerHTML=Array.isArray(users)?users.map(u=>`
     <div class="ex-user" onclick="openUserProfile('${u.id}')">
       <div class="ex-uav">${avatarEl(u,44)}</div>
-      <div><div style="font-weight:700;">${u.name} ${badge(u.verifyTier)}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
+      <div><div style="font-weight:700;">${u.name} ${badge(u)}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
     </div>`).join(''):'';
 }
 async function loadExploreGrid(){
@@ -1252,7 +1259,7 @@ async function searchUsers(q){
   $('conv-list').innerHTML=Array.isArray(users)?users.filter(u=>u.id!==ME.id).map(u=>`
     <div class="ms-item" onclick="openChat('${u.id}')">
       <div class="ms-av">${avatarEl(u,50)}</div>
-      <div class="ms-info"><div class="ms-name">${u.name} ${badge(u.verifyTier)}</div><div class="ms-last">@${u.username}</div></div>
+      <div class="ms-info"><div class="ms-name">${u.name} ${badge(u)}</div><div class="ms-last">@${u.username}</div></div>
     </div>`).join(''):'';
 }
 
@@ -1463,7 +1470,7 @@ async function loadReels(){
       <video class="reel-vid" src="${imgSrc(r.videoUrl)}" loop playsinline muted></video>
       <div class="reel-overlay">
         <div class="reel-info">
-          <div class="reel-user">@${r.user?.username||'?'} ${badge(r.user?.verifyTier)}</div>
+          <div class="reel-user">@${r.user?.username||'?'} ${badge(r.user)}</div>
           <div class="reel-cap">${r.caption||''}</div>
         </div>
         <div class="reel-side">
@@ -1576,7 +1583,7 @@ async function openUserProfile(userId){
   const u=r.user; if(!u) return;
   $('up-username').textContent='@'+u.username;
   $('up-av').innerHTML=avatarEl(u,80);
-  $('up-name').textContent=u.name+(u.verified?` ${badge(u.verifyTier)}`:'');
+  $('up-name').innerHTML=u.name+' '+badge(u);
   $('up-bio').textContent=u.bio||'';
   $('up-posts').textContent=u.posts?.length||0;
   $('up-followers').textContent=u.followers?.length||0;
@@ -1838,6 +1845,15 @@ if(typeof socket !== 'undefined' && socket) {
     if(lv){ const fl=document.createElement('div'); fl.className='live-gift-float'; fl.style.left=Math.floor(Math.random()*60+20)+'%'; fl.textContent=gift.ico; lv.appendChild(fl); setTimeout(()=>fl.remove(),2100); }
     const lcomments=$('live-comments');
     if(lcomments){ const d=document.createElement('div'); d.className='live-comment gift-msg'; d.innerHTML=`<b>${user.name}</b> sent ${gift.ico} ${gift.name}! (🪙${coins})`; lcomments.appendChild(d); lcomments.scrollTop=lcomments.scrollHeight; }
+  });
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(r => console.log('SW registered'))
+      .catch(e => console.log('SW failed:', e));
   });
 }
 </script>
