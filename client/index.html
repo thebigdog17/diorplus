@@ -59,6 +59,9 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .ib{background:none;border:none;color:var(--w);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;position:relative;}
 .ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;}
 .ndot{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--red);border-radius:50%;display:none;}
+.unread-badge{position:absolute;top:-4px;right:-6px;background:var(--red);color:#fff;font-size:10px;font-weight:900;min-width:18px;height:18px;border-radius:9px;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1;}
+.unread-badge.show{display:flex;}
+.ms-unread{width:20px;height:20px;border-radius:50%;background:var(--sky);color:#000;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ndot.show{display:block;}
 
 /* ── SCREENS ── */
@@ -159,6 +162,10 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .ch-send svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;}
 .emoji-tray{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;background:var(--s1);border-top:1px solid var(--s2);}
 .emoji-btn{background:none;border:none;font-size:22px;cursor:pointer;padding:2px;}
+.ej-cat{background:none;border:none;font-size:18px;cursor:pointer;padding:8px 10px;color:var(--g2);border-bottom:2px solid transparent;transition:.15s;flex-shrink:0;}
+.ej-cat.on{color:var(--sky);border-bottom-color:var(--sky);}
+.ej-em{background:none;border:none;font-size:24px;cursor:pointer;padding:4px;border-radius:8px;line-height:1;transition:.1s;}
+.ej-em:active{background:var(--s2);transform:scale(1.2);}
 .ai-bubble{background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;align-self:flex-start;max-width:80%;border-bottom-left-radius:4px;}
 
 /* ── PROFILE ── */
@@ -172,6 +179,10 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .prof-av-wrap.has-story::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:var(--grad);z-index:0;animation:storyPulse 2s ease-in-out infinite;}
 .prof-av-wrap.has-story .prof-av,.prof-av-wrap.has-story label{position:relative;z-index:1;}
 @keyframes storyPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(56,189,248,.4);}50%{opacity:.85;box-shadow:0 0 0 6px rgba(56,189,248,0);}}
+@keyframes liveRing{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.9);}50%{box-shadow:0 0 0 5px rgba(248,113,113,0);}}
+.is-live-ring{position:absolute;inset:-3px;border-radius:50%;border:2.5px solid var(--red);animation:liveRing 1s ease-in-out infinite;z-index:2;}
+.live-label{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:8px;font-weight:900;padding:1px 5px;border-radius:6px;letter-spacing:.5px;white-space:nowrap;z-index:3;}
+.ms-live-dot{position:absolute;top:0;right:0;width:12px;height:12px;background:var(--red);border-radius:50%;border:2px solid var(--bg);animation:liveRing 1s ease-in-out infinite;}
 .story-ring-seen{background:var(--s3)!important;}
 .prof-av{width:80px;height:80px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;overflow:hidden;border:3px solid var(--s3);}
 .prof-av img{width:100%;height:100%;object-fit:cover;}
@@ -481,7 +492,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 
   <div class="tabbar">
     <button class="tab on" id="tab-feed" onclick="switchTab('feed')"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></button>
-    <button class="tab" id="tab-messages" onclick="switchTab('messages')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span></button>
+    <button class="tab" id="tab-messages" onclick="switchTab('messages')" style="position:relative;"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span><span class="unread-badge" id="msg-badge"></span></button>
     <button class="tab" id="tab-reels" onclick="switchTab('reels')"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span>Reels</span></button>
     <button class="tab" id="tab-explore" onclick="switchTab('explore')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Explore</span></button>
     <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Studio</span></button>
@@ -498,29 +509,15 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <div class="ch-hdr-btns">
       <button class="ch-hdr-btn" onclick="startVoiceCall()">📞</button>
       <button class="ch-hdr-btn" onclick="startVideoCall()">📹</button>
-      <button class="ch-hdr-btn" id="ai-btn" onclick="toggleAI()">✨ AI</button>
       <button class="ch-hdr-btn" onclick="openReport()">⚠️</button>
     </div>
   </div>
   <div class="ch-body" id="ch-body"></div>
   <div id="ch-typing" class="ch-typing" style="padding:0 14px;display:none;">typing...</div>
-  <div id="emoji-tray" class="emoji-tray" style="display:none;">
-    <button class="emoji-btn" onclick="insertEmoji('❤️')">❤️</button>
-    <button class="emoji-btn" onclick="insertEmoji('😂')">😂</button>
-    <button class="emoji-btn" onclick="insertEmoji('😍')">😍</button>
-    <button class="emoji-btn" onclick="insertEmoji('🔥')">🔥</button>
-    <button class="emoji-btn" onclick="insertEmoji('👏')">👏</button>
-    <button class="emoji-btn" onclick="insertEmoji('😭')">😭</button>
-    <button class="emoji-btn" onclick="insertEmoji('🙏')">🙏</button>
-    <button class="emoji-btn" onclick="insertEmoji('💯')">💯</button>
-    <button class="emoji-btn" onclick="insertEmoji('🎉')">🎉</button>
-    <button class="emoji-btn" onclick="insertEmoji('😊')">😊</button>
-    <button class="emoji-btn" onclick="insertEmoji('🥰')">🥰</button>
-    <button class="emoji-btn" onclick="insertEmoji('😎')">😎</button>
-    <button class="emoji-btn" onclick="insertEmoji('🤔')">🤔</button>
-    <button class="emoji-btn" onclick="insertEmoji('👀')">👀</button>
-    <button class="emoji-btn" onclick="insertEmoji('💀')">💀</button>
-    <button class="emoji-btn" onclick="insertEmoji('🚀')">🚀</button>
+  <div id="emoji-tray" style="display:none;background:var(--s1);border-top:1px solid var(--s2);flex-direction:column;max-height:260px;">
+    <div id="emoji-cats" style="display:flex;gap:0;border-bottom:1px solid var(--s2);overflow-x:auto;scrollbar-width:none;flex-shrink:0;"></div>
+    <div id="emoji-cat-lbl" style="font-size:10px;font-weight:800;color:var(--g2);padding:4px 12px 2px;letter-spacing:1px;flex-shrink:0;"></div>
+    <div id="emoji-grid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:2px;padding:4px 8px 8px;overflow-y:auto;"></div>
   </div>
   <div class="ch-inp-row">
     <button class="ch-hdr-btn" onclick="toggleEmoji()">😊</button>
@@ -745,6 +742,28 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
+<!-- ── LIVE VIEWER (watch others live) ── -->
+<div id="live-viewer-overlay" style="position:fixed;inset:0;background:#000;z-index:700;display:none;flex-direction:column;max-width:480px;margin:0 auto;">
+  <div style="flex:1;position:relative;">
+    <video id="lv-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+    <div style="position:absolute;top:14px;left:14px;background:var(--red);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;">🔴 LIVE</div>
+    <div id="lv-host" style="position:absolute;top:14px;left:80px;color:#fff;font-size:14px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.8);padding-top:4px;"></div>
+    <div id="lv-vc" style="position:absolute;top:14px;right:50px;background:rgba(0,0,0,.5);color:#fff;font-size:12px;padding:4px 10px;border-radius:20px;">👁 1</div>
+    <button onclick="closeLiveViewer()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);border:none;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;">✕</button>
+    <div id="lv-no-video" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+      <div style="font-size:60px;">🔴</div>
+      <div style="color:#fff;font-size:16px;font-weight:700;" id="lv-wait-txt">Connecting to stream...</div>
+    </div>
+  </div>
+  <div id="lv-comments" style="height:140px;overflow-y:auto;padding:8px 14px;background:rgba(0,0,0,.6);"></div>
+  <div style="display:flex;gap:8px;padding:8px 14px;align-items:center;background:rgba(0,0,0,.8);">
+    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 12px;color:#fff;cursor:pointer;font-size:18px;" onclick="lvReact('❤️')">❤️</button>
+    <button style="background:rgba(255,255,255,.15);border:none;border-radius:20px;padding:8px 12px;color:#fff;cursor:pointer;font-size:18px;" onclick="lvReact('🔥')">🔥</button>
+    <input id="lv-inp" style="flex:1;background:rgba(255,255,255,.1);border:none;border-radius:20px;padding:10px 14px;color:#fff;font-size:13px;outline:none;" placeholder="Comment..." onkeydown="if(event.key==='Enter')sendLVComment()"/>
+    <button onclick="sendLVComment()" style="background:var(--grad);border:none;border-radius:20px;padding:10px 14px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">Send</button>
+  </div>
+</div>
+
 <!-- ── LIVE BROWSER ── -->
 <div class="overlay" id="live-browser-overlay">
   <div class="ov-hdr"><button class="ov-close" onclick="closeLiveBrowser()">✕</button><h2>Live Now 🔴</h2><div style="width:36px;"></div></div>
@@ -824,6 +843,24 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   </div>
 </div>
 
+<!-- ── INCOMING CALL ── -->
+<div id="incoming-call" style="position:fixed;top:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--s1);z-index:900;display:none;flex-direction:column;align-items:center;padding:28px 20px 24px;border-bottom-left-radius:24px;border-bottom-right-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,.6);">
+  <div style="font-size:12px;color:var(--g2);font-weight:700;letter-spacing:1px;margin-bottom:12px;">INCOMING CALL</div>
+  <div id="ic-av" style="width:80px;height:80px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;margin-bottom:10px;border:3px solid var(--green);animation:liveRing 1s infinite;"></div>
+  <div id="ic-name" style="font-size:20px;font-weight:800;margin-bottom:4px;"></div>
+  <div id="ic-type" style="font-size:13px;color:var(--g2);margin-bottom:24px;"></div>
+  <div style="display:flex;gap:32px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <button onclick="rejectCall()" style="width:64px;height:64px;border-radius:50%;background:var(--red);border:none;font-size:28px;cursor:pointer;">📵</button>
+      <span style="font-size:11px;color:var(--g2);">Decline</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <button onclick="acceptCall()" style="width:64px;height:64px;border-radius:50%;background:var(--green);border:none;font-size:28px;cursor:pointer;">📞</button>
+      <span style="font-size:11px;color:var(--g2);">Accept</span>
+    </div>
+  </div>
+</div>
+
 <!-- ── OTP ── -->
 <div id="otp-overlay">
   <div class="otp-box">
@@ -851,7 +888,6 @@ let activeConv = null, convUser = null;
 let currentGC = null;
 let svGroups = [], svGroupIdx = 0, svIdx = 0, svTimer = null;
 let pickedFiles = [], storyFile = null, reelFile = null;
-let aiMode = false;
 
 // ── BACK BUTTON NAVIGATION ───────────────────────────────────────────────
 let _navStack = []; // Stack of functions to call on back press
@@ -917,6 +953,9 @@ let darkMode = true;
 let avatarState = {skin:'👤',hair:'🧑',eyes:'😊',acc:'none',bg:'#1a1a2e'};
 let otpCode = '', otpCallback = null;
 let currentStreamId = null;
+let _liveUsers = new Set(); // set of userIds currently live
+let _liveViewerPeer = null; // WebRTC peer for watching live
+let _liveViewingStreamId = null; // whose live we're watching
 
 // ── HELPERS ──────────────────────────────────────────────────────────────
 function $(id){ return document.getElementById(id); }
@@ -1079,16 +1118,52 @@ function connectSocket(){
   socket.on('stop_typing', ({fromId})=>{ if(activeConv===fromId){ $('ch-typing').style.display='none'; } });
   socket.on('live_available', ({streamId,host})=>{
     $('live-dot').classList.add('show');
-    toast(`🔴 ${host.name} is live! Tap to watch`);
-    // Store latest live stream for browsing
+    _liveUsers.add(streamId);
     if(window._liveStreams) window._liveStreams.unshift({streamId, host});
     else window._liveStreams = [{streamId, host}];
+    updateLiveRingsAll();
+    toast(`🔴 ${host.name} is live! Tap to watch`, 4000);
   });
-  socket.on('live_ended', ()=>{ $('live-dot').classList.remove('show'); });
+  socket.on('live_ended', ({userId})=>{
+    if(userId) _liveUsers.delete(userId);
+    else _liveUsers.clear();
+    if(!_liveUsers.size) $('live-dot').classList.remove('show');
+    updateLiveRingsAll();
+    if(_liveViewingStreamId===userId) closeLiveViewer();
+  });
+  // Receive stream from host (WebRTC track for viewers)
+  socket.on('live_stream_track', async({offer, fromSocketId})=>{
+    if(!$('live-viewer-overlay') || $('live-viewer-overlay').style.display==='none') return;
+    await handleLiveViewerOffer(offer, fromSocketId);
+  });
+  // Viewer WebRTC answer from host
+  socket.on('live_viewer_answer', async({answer})=>{
+    if(_liveViewerPeer) await _liveViewerPeer.setRemoteDescription(answer);
+  });
+  socket.on('live_viewer_ice', async({candidate})=>{
+    if(_liveViewerPeer&&candidate) await _liveViewerPeer.addIceCandidate(candidate).catch(()=>{});
+  });
+  socket.on('live_viewer_count', ({viewerCount})=>{
+    const vc=$('lv-vc'); if(vc) vc.textContent='👁 '+viewerCount;
+    const lvc=$('live-vc'); if(lvc) lvc.textContent='👁 '+viewerCount;
+  });
   socket.on('viewer_joined', ({user,viewerCount})=>{ addLiveMsg(`${user.name} joined 👋`); $('live-vc').textContent=`👁 ${viewerCount}`; });
   socket.on('live_comment', ({user,text})=>{ addLiveMsg(`${user.name}: ${text}`); });
   socket.on('live_react', ({user,reaction})=>{ addLiveMsg(`${user.name} reacted ${reaction}`); });
-  socket.on('webrtc_offer', async({from,offer})=>{ await handleOffer(from,offer); });
+  socket.on('webrtc_offer', async({from,offer,callType:ct,fromUser})=>{ await handleOffer(from,offer,ct,fromUser); });
+  socket.on('call_invite', ({fromUser, callType:ct})=>{
+    // Show incoming call even before offer arrives
+    callType=ct||'voice';
+    _incomingCallFrom=fromUser?.id;
+    const ic=$('incoming-call');
+    if(ic.style.display!=='none') return; // already showing
+    $('ic-av').innerHTML=avatarEl(fromUser||{},80);
+    $('ic-name').textContent=fromUser?.name||'Incoming Call';
+    $('ic-type').textContent=ct==='video'?'📹 Video Call':'📞 Voice Call';
+    ic.style.display='flex';
+  });
+  socket.on('call_ended', ()=>{ if($('call-overlay').classList.contains('show')) endCall(); $('incoming-call').style.display='none'; });
+  socket.on('call_rejected', ()=>{ toast('Call declined ❌'); endCall(); });
   socket.on('webrtc_answer', async({answer})=>{ if(peerConn) await peerConn.setRemoteDescription(answer); });
   socket.on('webrtc_ice', async({candidate})=>{ if(peerConn&&candidate) await peerConn.addIceCandidate(candidate); });
   socket.on('user_online', ({userId})=>{ updateOnlineStatus(userId,true); });
@@ -1098,8 +1173,8 @@ function connectSocket(){
 // ── INIT ──────────────────────────────────────────────────────────────────
 let cmtsPostId = null;
 function initApp(){
-  // Preload all users into cache for instant search
   getAllUsersCache();
+  requestPushPermission();
   updateProfileUI();
   loadStories();
   loadPosts();
@@ -1214,8 +1289,14 @@ async function loadStories(){
     if(uid === ME?.id) return; // skip self, already handled
     const u=grp[0].user;
     const div=document.createElement('div'); div.className='story-item';
+    div.dataset.uid = uid;
     div.onclick=()=>openSV(svGroups, svGroups.findIndex(g=>g[0].userId===uid));
-    div.innerHTML=`<div class="story-ring"><div class="story-av">${avatarEl(u,56)}</div></div><div class="story-nm">${u.username}</div>`;
+    div.innerHTML=`<div class="story-ring" style="position:relative;"><div class="story-av">${avatarEl(u,56)}</div></div><div class="story-nm">${u.username}</div>`;
+    // Add live ring if user is live
+    if(_liveUsers.has(uid)){
+      const ring=div.querySelector('.story-ring');
+      ring.innerHTML+=`<div class="is-live-ring"></div><div class="live-label">LIVE</div>`;
+    }
     bar.appendChild(div);
   });
 }
@@ -1535,11 +1616,75 @@ function appendMsg(m){
   setTimeout(()=>{ body.scrollTop = body.scrollHeight; }, 50);
 }
 
+let unreadCounts = {}; // { userId: count }
+
 function handleIncomingMsg(msg){
-  if(msg.fromId===activeConv||msg.toId===activeConv){
-    if(msg.fromId!==ME.id) appendMsg(msg);
+  const isFromOther = msg.fromId !== ME.id;
+  const isCurrentChat = msg.fromId===activeConv || msg.toId===activeConv;
+  // If chat is open and it's from this person, mark read & show
+  if(isCurrentChat && isFromOther){
+    appendMsg(msg);
+    // Mark as read on server
+    api('/api/messages/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:msg.fromId,toId:ME.id})});
+  } else if(isFromOther){
+    // Increment unread count
+    const uid = msg.fromId;
+    unreadCounts[uid] = (unreadCounts[uid]||0)+1;
+    updateUnreadBadge();
+    // Push notification
+    showPushNotif(msg);
   }
   loadConversations();
+}
+
+function updateUnreadBadge(){
+  const total = Object.values(unreadCounts).reduce((a,b)=>a+b,0);
+  const badge = $('msg-badge');
+  if(!badge) return;
+  if(total > 0){
+    badge.textContent = total > 99 ? '99+' : total;
+    badge.classList.add('show');
+    $('notif-dot')?.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+function clearUnread(userId){
+  if(unreadCounts[userId]){
+    delete unreadCounts[userId];
+    updateUnreadBadge();
+    // Mark read on server
+    api('/api/messages/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:userId,toId:ME.id})});
+  }
+}
+
+async function requestPushPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'default'){
+    await Notification.requestPermission();
+  }
+}
+
+function showPushNotif(msg){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  // Find sender name from cache
+  const sender = _userCache?.find(u=>u.id===msg.fromId);
+  const name = sender?.name || 'Someone';
+  try {
+    const n = new Notification('DIOR+ · ' + name, {
+      body: msg.text,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: 'msg-' + msg.fromId, // replace same sender's notif
+      silent: false
+    });
+    n.onclick = ()=>{
+      window.focus();
+      if(n) n.close();
+      openChat(msg.fromId);
+    };
+  } catch(e){}
 }
 function onTyping(){
   if(!activeConv) return;
@@ -1548,34 +1693,54 @@ function onTyping(){
   typingTimer=setTimeout(stopTyping,2000);
 }
 function stopTyping(){ socket?.emit('stop_typing',{toId:activeConv,fromId:ME.id}); }
-function toggleEmoji(){ const t=$('emoji-tray'); t.style.display=t.style.display==='none'?'flex':'none'; }
-function insertEmoji(e){ $('ch-inp').value+= e; $('emoji-tray').style.display='none'; }
+// ── EMOJI PICKER ─────────────────────────────────────────────────────────
+const EMOJI_CATS = [
+  { ico:'😀', lbl:'SMILEYS', emojis:['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','☺️','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','💫','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖'] },
+  { ico:'👋', lbl:'PEOPLE', emojis:['👋','🤚','🖐','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦵','🦿','🦶','👂','🦻','👃','🫀','🫁','🧠','🦷','🦴','👁','👀','👤','👥','🫂','👣'] },
+  { ico:'🐶', lbl:'ANIMALS', emojis:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐽','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🪱','🐛','🦋','🐌','🐞','🐜','🪲','🦟','🦗','🕷','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🦭','🐊','🐅','🐆','🦓','🦍','🦧','🦣','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐕‍🦺','🐈','🐈‍⬛','🐓','🦃','🦤','🦚','🦜','🦢','🦩','🕊','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐁','🐀','🐿','🦔'] },
+  { ico:'🍔', lbl:'FOOD', emojis:['🍇','🍈','🍉','🍊','🍋','🍌','🍍','🥭','🍎','🍏','🍐','🍑','🍒','🍓','🫐','🥝','🍅','🫒','🥥','🥑','🍆','🥔','🥕','🌽','🌶','🫑','🥒','🥬','🥦','🧄','🧅','🍄','🥜','🌰','🍞','🥐','🥖','🫓','🥨','🥯','🧀','🥚','🍳','🧈','🥞','🧇','🥓','🥩','🍗','🍖','🌭','🍔','🍟','🍕','🫔','🌮','🌯','🥙','🧆','🥚','🍿','🥫','🍱','🍘','🍙','🍚','🍛','🍜','🍝','🍠','🍢','🍣','🍤','🍥','🥮','🍡','🥟','🥠','🥡','🦀','🦞','🦐','🦑','🦪','🍦','🍧','🍨','🍩','🍪','🎂','🍰','🧁','🥧','🍫','🍬','🍭','🍮','🍯','🍼','🥛','☕','🫖','🍵','🧃','🥤','🧋','🍶','🍾','🍷','🍸','🍹','🍺','🍻','🥂','🥃','🫗'] },
+  { ico:'⚽', lbl:'ACTIVITY', emojis:['⚽','🏀','🏈','⚾','🥎','🎾','🏐','🏉','🥏','🎱','🏓','🏸','🏒','🏑','🥍','🏏','🪃','🥅','⛳','🪁','🎣','🤿','🎽','🎿','🛷','🥌','🎯','🪀','🪆','🎱','🎮','🎲','🎭','🎨','🎬','🎤','🎧','🎼','🎵','🎶','🎷','🎸','🎹','🎺','🎻','🪕','🥁','🪘','🎙','🎚','🎛','📻','📺','📠'] },
+  { ico:'🌍', lbl:'TRAVEL', emojis:['🚗','🚕','🚙','🚌','🚎','🏎','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍','🛵','🛺','🚲','🛴','🛹','🛼','🚏','🛣','🛤','⛽','🚨','🚥','🚦','🛑','⚓','🛟','⛵','🚤','🛥','🛳','⛴','🚢','✈️','🛩','🛫','🛬','🪂','💺','🚁','🚟','🚠','🚡','🛰','🚀','🛸','🌍','🌎','🌏','🗺','🧭','🏔','⛰','🌋','🏝','🏖','🏜','🏕','🏞','🏟','🏛','🏗','🏘','🏚','🏠','🏡','🏢','🏣','🏤','🏥','🏦','🏨','🏩','🏪','🏫','🏬','🏭','🏯','🏰','💒','🗼','🗽','⛩','🕌','🛕','⛪','🕍','🕋'] },
+  { ico:'💡', lbl:'OBJECTS', emojis:['⌚','📱','📲','💻','⌨️','🖥','🖨','🖱','🖲','💽','💾','💿','📀','📷','📸','📹','🎥','📞','☎️','📟','📠','📺','📻','🧭','⏱','⏲','⏰','🕰','⌛','⏳','📡','🔋','🔌','💡','🔦','🕯','🪔','🗑','💰','💴','💵','💶','💷','💸','💳','🪙','💎','⚖️','🔑','🗝','🔐','🔏','🔒','🔓','🔨','🪓','⛏','⚒','🛠','🗡','⚔️','🔫','🪃','🛡','🪚','🔧','🪛','🔩','⚙️','🗜','🔗','⛓','🪝','🧲','🔭','🔬','🩺','💉','🩸','💊','🩹','🩻','🪞','🛋','🚪','🪑','🚽','🪠','🚿','🛁','🪤','🧴','🧷','🧹','🧺','🧻','🧼','🫧','🪥','🧽','🧯','🛒','🪣'] },
+  { ico:'❤️', lbl:'SYMBOLS', emojis:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','❤️‍🔥','❤️‍🩹','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉','☸️','✡️','🔯','🕎','☯️','☦️','🛐','⛎','♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','🆔','⚛️','🈳','🈹','☢️','☣️','📴','📳','🈶','🈚','🈸','🈺','🈷','✴️','🆚','💮','🉐','㊙️','㊗️','🈴','🈵','🈹','🅰️','🅱️','🆎','🆑','🅾️','🆘','❌','⭕','🛑','⛔','📛','🚫','💯','‼️','⁉️','🔅','🔆','〽️','⚠️','🚸','🔱','⚜️','🔰','♻️','✅','🈯','💹','❎','🌐','💠','Ⓜ️','🌀','💤','🏧','🚾','🅿️','🈳','🈹'] },
+];
+let _emojiCat = 0;
 
-// ── AI CHAT ───────────────────────────────────────────────────────────────
-function toggleAI(){
-  aiMode=!aiMode;
-  const btn=$('ai-btn');
-  btn.style.background=aiMode?'var(--grad)':'none';
-  btn.style.color=aiMode?'#fff':'var(--g1)';
-  toast(aiMode?'AI Mode ON ✨':'AI Mode OFF');
+function buildEmojiPicker(){
+  const cats = $('emoji-cats'); const grid = $('emoji-grid'); const lbl = $('emoji-cat-lbl');
+  if(!cats||!grid) return;
+  if(cats.children.length) return; // already built
+  EMOJI_CATS.forEach((c,i)=>{
+    const btn=document.createElement('button');
+    btn.className='ej-cat'+(i===0?' on':'');
+    btn.textContent=c.ico; btn.title=c.lbl;
+    btn.onclick=()=>showEmojiCat(i);
+    cats.appendChild(btn);
+  });
+  showEmojiCat(0);
 }
-async function handleAI(text){
-  const body=$('ch-body');
-  const thinking=document.createElement('div');
-  thinking.style.cssText='display:flex;justify-content:flex-start;margin-bottom:4px;';
-  thinking.innerHTML='<div class="ai-bubble">Thinking...</div>';
-  body.appendChild(thinking); body.scrollTop=body.scrollHeight;
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:text}]})
-    });
-    const d=await r.json();
-    thinking.innerHTML=`<div class="ai-bubble">${d.content?.[0]?.text||'No response'}</div>`;
-  }catch(e){ thinking.innerHTML='<div class="ai-bubble">AI unavailable right now</div>'; }
-  body.scrollTop=body.scrollHeight;
+
+function showEmojiCat(idx){
+  _emojiCat=idx;
+  const cat=EMOJI_CATS[idx];
+  $('emoji-cat-lbl').textContent=cat.lbl;
+  $('emoji-grid').innerHTML=cat.emojis.map(e=>`<button class="ej-em" onclick="insertEmoji('${e}')">${e}</button>`).join('');
+  document.querySelectorAll('.ej-cat').forEach((b,i)=>b.classList.toggle('on',i===idx));
 }
+
+function toggleEmoji(){
+  const t=$('emoji-tray');
+  const isShown = t.style.display==='flex';
+  t.style.display=isShown?'none':'flex';
+  if(!isShown){ t.style.flexDirection='column'; buildEmojiPicker(); }
+}
+function insertEmoji(e){
+  const inp = document.activeElement.id==='ai-chat-inp' ? $('ai-chat-inp') : $('ch-inp');
+  inp.value += e;
+  inp.focus();
+}
+
+
 
 // ── REPORT ────────────────────────────────────────────────────────────────
 function openReport(){ $('report-sheet').classList.add('show'); }
@@ -1585,40 +1750,147 @@ async function submitReport(reason){
   closeReport(); toast('Report submitted');
 }
 
-// ── VOICE/VIDEO CALLS ─────────────────────────────────────────────────────
-function startVoiceCall(){ callType='voice'; openCallUI(); }
-function startVideoCall(){ callType='video'; openCallUI(); }
-function openCallUI(){
-  if(!convUser) return;
-  logCall(convUser.id,convUser.name,callType,'outgoing');
-  $('call-av').innerHTML=avatarEl(convUser,100);
-  $('call-name').textContent=convUser.name;
-  $('call-status').textContent='Calling...';
-  $('call-timer').style.display='none';
+// ── REAL WebRTC CALLS ────────────────────────────────────────────────────
+let _callTargetSocketId = null; // socket id of person we're calling
+
+function startVoiceCall(){ if(!convUser){ toast('Open a chat first'); return; } callType='voice'; initiateCall(); }
+function startVideoCall(){ if(!convUser){ toast('Open a chat first'); return; } callType='video'; initiateCall(); }
+
+async function initiateCall(){
+  try {
+    const constraints = callType==='video' ? {video:true,audio:true} : {audio:true};
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch(e){
+    toast('Microphone/camera permission needed for calls ❌'); return;
+  }
+  logCall(convUser.id, convUser.name, callType, 'outgoing');
+  $('call-av').innerHTML = avatarEl(convUser, 100);
+  $('call-name').textContent = convUser.name;
+  $('call-status').textContent = 'Calling...';
+  $('call-status').style.display = 'block';
+  $('call-timer').style.display = 'none';
+  $('call-vid').style.display = 'none';
   $('call-overlay').classList.add('show');
-  callSecs=0; callInterval=null;
-  setTimeout(()=>{ $('call-status').textContent=callType==='video'?'Video Call':'Voice Call'; startCallTimer(); },2000);
+  callSecs = 0;
+  // Send call invite via socket
+  socket?.emit('call_invite', { toUserId: convUser.id, fromUser: ME, callType });
+  // Set up peer connection
+  peerConn = new RTCPeerConnection({iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'},
+    {urls:'stun:stun2.l.google.com:19302'}
+  ]});
+  localStream.getTracks().forEach(t => peerConn.addTrack(t, localStream));
+  peerConn.onicecandidate = e => {
+    if(e.candidate) socket?.emit('webrtc_ice', {to: convUser.id, candidate: e.candidate});
+  };
+  peerConn.ontrack = e => {
+    const vid = $('call-vid');
+    vid.srcObject = e.streams[0];
+    if(callType==='video') vid.style.display='block';
+  };
+  peerConn.onconnectionstatechange = () => {
+    if(peerConn.connectionState==='connected'){
+      $('call-status').style.display='none';
+      startCallTimer();
+    }
+    if(['disconnected','failed','closed'].includes(peerConn.connectionState)) endCall();
+  };
+  // Create and send offer
+  const offer = await peerConn.createOffer();
+  await peerConn.setLocalDescription(offer);
+  socket?.emit('webrtc_offer', { to: convUser.id, offer, callType, from: ME.id });
 }
+
 function startCallTimer(){
-  $('call-timer').style.display='block'; $('call-status').style.display='none';
-  callInterval=setInterval(()=>{ callSecs++; const m=Math.floor(callSecs/60),s=callSecs%60; $('call-timer').textContent=m+':'+(s<10?'0':'')+s; },1000);
+  $('call-timer').style.display='block';
+  callInterval = setInterval(()=>{
+    callSecs++;
+    const m=Math.floor(callSecs/60), s=callSecs%60;
+    $('call-timer').textContent = m+':'+(s<10?'0':'')+s;
+  },1000);
 }
+
 function endCall(){
-  clearInterval(callInterval);
+  clearInterval(callInterval); callInterval=null;
+  peerConn?.close(); peerConn=null;
+  localStream?.getTracks().forEach(t=>t.stop()); localStream=null;
   $('call-overlay').classList.remove('show');
-  localStream?.getTracks().forEach(t=>t.stop());
-  localStream=null;
-  toast('Call ended');
+  $('call-vid').style.display='none';
+  $('incoming-call').style.display='none';
+  if(convUser) socket?.emit('call_ended', {to: convUser.id});
+  if(callSecs>0) toast('Call ended · '+ Math.floor(callSecs/60)+'m '+callSecs%60+'s');
+  callSecs=0;
 }
-function toggleMute(){ toast('Muted'); }
-function toggleVideo(){ toast('Camera toggled'); }
-async function handleOffer(from, offer){
-  peerConn=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
-  peerConn.onicecandidate=e=>{ if(e.candidate) socket?.emit('webrtc_ice',{to:from,candidate:e.candidate}); };
-  await peerConn.setRemoteDescription(offer);
-  const answer=await peerConn.createAnswer();
-  await peerConn.setLocalDescription(answer);
-  socket?.emit('webrtc_answer',{to:from,answer});
+
+let _muteOn=false, _videoOff=false;
+function toggleMute(){
+  _muteOn=!_muteOn;
+  localStream?.getAudioTracks().forEach(t=>t.enabled=!_muteOn);
+  toast(_muteOn?'Muted 🔇':'Unmuted 🎤');
+}
+function toggleVideo(){
+  _videoOff=!_videoOff;
+  localStream?.getVideoTracks().forEach(t=>t.enabled=!_videoOff);
+  toast(_videoOff?'Camera off 📷':'Camera on 📷');
+}
+function rejectCall(){
+  $('incoming-call').style.display='none';
+  socket?.emit('call_rejected', {to: _callTargetSocketId||_incomingCallFrom});
+}
+let _incomingCallFrom = null;
+async function acceptCall(){
+  $('incoming-call').style.display='none';
+  const fromUserId = _incomingCallFrom;
+  // Get media
+  try {
+    const constraints = callType==='video'?{video:true,audio:true}:{audio:true};
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch(e){ toast('Mic/camera permission needed ❌'); return; }
+  // Show call screen
+  $('call-status').textContent='Connecting...';
+  $('call-status').style.display='block';
+  $('call-timer').style.display='none';
+  $('call-vid').style.display='none';
+  $('call-overlay').classList.add('show');
+  callSecs=0;
+  // Set up peer connection (answerer side)
+  peerConn = new RTCPeerConnection({iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'}
+  ]});
+  localStream.getTracks().forEach(t=>peerConn.addTrack(t, localStream));
+  peerConn.onicecandidate=e=>{ if(e.candidate) socket?.emit('webrtc_ice',{to:fromUserId,candidate:e.candidate}); };
+  peerConn.ontrack=e=>{
+    const vid=$('call-vid'); vid.srcObject=e.streams[0];
+    if(callType==='video') vid.style.display='block';
+  };
+  peerConn.onconnectionstatechange=()=>{
+    if(peerConn.connectionState==='connected'){ $('call-status').style.display='none'; startCallTimer(); }
+    if(['disconnected','failed','closed'].includes(peerConn.connectionState)) endCall();
+  };
+  // Wait for offer from caller (should already be in _pendingOffer)
+  if(window._pendingOffer){
+    await peerConn.setRemoteDescription(window._pendingOffer);
+    const answer = await peerConn.createAnswer();
+    await peerConn.setLocalDescription(answer);
+    socket?.emit('webrtc_answer', {to: fromUserId, answer});
+    window._pendingOffer=null;
+  }
+}
+
+async function handleOffer(fromUserId, offer, inCallType, fromUserObj){
+  window._pendingOffer = offer;
+  _incomingCallFrom = fromUserId;
+  callType = inCallType || 'voice';
+  // Show incoming call UI
+  const ic = $('incoming-call');
+  $('ic-av').innerHTML = avatarEl(fromUserObj||{id:fromUserId,name:'?',username:'?'}, 80);
+  $('ic-name').textContent = fromUserObj?.name || 'Incoming Call';
+  $('ic-type').textContent = callType==='video'?'📹 Video Call':'📞 Voice Call';
+  ic.style.display='flex';
+  // Auto-reject after 30s
+  setTimeout(()=>{ if(ic.style.display!=='none') rejectCall(); }, 30000);
 }
 
 // ── CALL LOGS ─────────────────────────────────────────────────────────────
@@ -2094,17 +2366,28 @@ async function linkPhone(){ const p=document.getElementById('link-phone').value.
 // ── STREAK + FOLLOWERS IN CONV LIST (patch loadConversations) ─────────────
 async function loadConversations(){
   const convs=await api('/api/conversations/'+ME.id);
-  $('conv-list').innerHTML=Array.isArray(convs)&&convs.length?convs.map(c=>{
+  // AI Chat pinned at top
+  const aiEntry = `<div class="ms-item" onclick="openAIChat()" style="border-left:3px solid var(--purple);">
+    <div class="ms-av" style="background:linear-gradient(135deg,#a855f7,#6366f1);font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✦</div>
+    <div class="ms-info">
+      <div class="ms-name" style="color:var(--purple);">DIOR+ AI <span style="background:var(--purple);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;margin-left:4px;">AI</span></div>
+      <div class="ms-last">Ask me anything...</div>
+    </div>
+  </div>`;
+  $('conv-list').innerHTML=aiEntry+(Array.isArray(convs)&&convs.length?convs.map(c=>{
     const cs=chatSettings[c.userId]||{};
     const nick=cs.nickname||c.name;
     const sb=streakBadge(c.userId);
-    return `<div class="ms-item" onclick="openChat('${c.userId}')"><div class="ms-av">${avatarEl(c,50)}<div style="width:10px;height:10px;border-radius:50%;background:var(--green);position:absolute;bottom:2px;right:2px;border:2px solid var(--bg);display:none;" id="od-${c.userId}"></div></div><div class="ms-info"><div class="ms-name">${nick} ${badge(c)} ${sb}</div><div class="ms-last">${c.lastMsg||''}</div></div><div class="ms-time">${timeAgo(c.lastTime)}</div></div>`;
-  }).join(''):'<div style="text-align:center;padding:40px;color:var(--g2);font-size:14px;">No messages yet</div>';
+    const unreadHtml = c.unread>0 ? `<div class="ms-unread">${c.unread>99?'99+':c.unread}</div>` : '';
+    const lastMsgStyle = c.unread>0 ? 'color:var(--w);font-weight:700;' : '';
+    return `<div class="ms-item" onclick="openChat('${c.userId}')"><div class="ms-av" data-uid="${c.userId}" style="position:relative;">${avatarEl(c,50)}<div style="width:10px;height:10px;border-radius:50%;background:var(--green);position:absolute;bottom:2px;right:2px;border:2px solid var(--bg);display:none;" id="od-${c.userId}"></div>${_liveUsers.has(c.userId)?'<div class="ms-live-dot"></div>':''}</div><div class="ms-info"><div class="ms-name">${nick} ${badge(c)} ${sb}</div><div class="ms-last" style="${lastMsgStyle}">${c.lastMsg||''}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">${unreadHtml}<div class="ms-time">${timeAgo(c.lastTime)}</div></div></div>`;
+  }).join(''):'');
 }
 
 // ── OPEN CHAT
 async function openChat(userId){
   activeConv=userId;
+  clearUnread(userId);
   pushNav(closeChat);
   const r=await api('/api/users/'+userId); convUser=r.user||{id:userId,name:'User',username:'user'};
   const cs=chatSettings[userId]||{};
@@ -2115,7 +2398,6 @@ async function openChat(userId){
   if(cs.wallpaper) $('ch-body').style.background=`url(${cs.wallpaper}) center/cover`;
   else if(cs.theme&&THEMES[cs.theme]) $('ch-body').style.background=`radial-gradient(ellipse at bottom, ${THEMES[cs.theme].replace('linear-gradient(135deg,','').replace(')','').split(',')[0]} 0%, transparent 70%)`;
   else $('ch-body').style.background='';
-  aiMode=false; $('ai-btn').style.background='none'; $('ai-btn').style.color='var(--g1)';
   $('emoji-tray').style.display='none';
   const msgs=await api('/api/messages/'+ME.id+'/'+userId);
   if(Array.isArray(msgs)) msgs.forEach(m=>appendMsg(m));
@@ -2125,12 +2407,142 @@ async function openChat(userId){
 async function sendMsg(){
   const inp=$('ch-inp'); const text=inp.value.trim(); if(!text) return;
   inp.value=''; stopTyping();
-  if(aiMode){ handleAI(text); return; }
   if(!activeConv) return;
   appendMsg({fromId:ME.id,toId:activeConv,text});
   updateStreak(activeConv);
   await api('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fromId:ME.id,toId:activeConv,text})});
 }
+
+// ── LIVE RING BLINKING ────────────────────────────────────────────────────
+function updateLiveRingsAll(){
+  // Update story bar rings
+  document.querySelectorAll('.story-item').forEach(el=>{
+    const uid = el.dataset.uid;
+    if(!uid) return;
+    const ring = el.querySelector('.story-ring');
+    if(!ring) return;
+    let lr = el.querySelector('.is-live-ring');
+    let ll = el.querySelector('.live-label');
+    if(_liveUsers.has(uid)){
+      if(!lr){ lr=document.createElement('div'); lr.className='is-live-ring'; el.querySelector('.story-ring').style.position='relative'; el.querySelector('.story-ring').appendChild(lr); }
+      if(!ll){ ll=document.createElement('div'); ll.className='live-label'; ll.textContent='LIVE'; el.querySelector('.story-ring').appendChild(ll); }
+    } else {
+      lr?.remove(); ll?.remove();
+    }
+  });
+  // Update message list live dots
+  document.querySelectorAll('.ms-av').forEach(el=>{
+    const uid = el.dataset.uid;
+    if(!uid) return;
+    let ld = el.querySelector('.ms-live-dot');
+    if(_liveUsers.has(uid)){
+      if(!ld){ ld=document.createElement('div'); ld.className='ms-live-dot'; el.appendChild(ld); }
+    } else {
+      ld?.remove();
+    }
+  });
+}
+
+// ── LIVE VIEWER (watch live streams via WebRTC) ───────────────────────────
+async function joinLive(streamId, hostName){
+  _liveViewingStreamId = streamId;
+  $('lv-host').textContent = hostName || '';
+  $('lv-comments').innerHTML = '';
+  $('lv-video').srcObject = null;
+  const noVid = $('lv-no-video');
+  noVid.style.display='flex'; $('lv-wait-txt').textContent='Connecting to stream...';
+  $('live-viewer-overlay').style.display='flex';
+  pushNav(closeLiveViewer);
+  // Tell server we want to join this live
+  socket?.emit('join_live', { streamId, user: ME });
+  // Wait for offer from host (host sends stream via WebRTC)
+  // Fallback: show waiting state after 8s
+  setTimeout(()=>{
+    if($('lv-video').srcObject) return;
+    $('lv-wait-txt').textContent='Stream is live — waiting for video feed...';
+  }, 8000);
+}
+
+async function handleLiveViewerOffer(offer, fromSocketId){
+  if(_liveViewerPeer){ _liveViewerPeer.close(); }
+  const pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
+  _liveViewerPeer = pc;
+  pc.ontrack = e => {
+    const video = $('lv-video');
+    if(video){
+      video.srcObject = e.streams[0];
+      $('lv-no-video').style.display='none';
+    }
+  };
+  pc.onicecandidate = e => {
+    if(e.candidate) socket?.emit('live_viewer_ice_to_host', {to: fromSocketId, candidate: e.candidate});
+  };
+  await pc.setRemoteDescription(offer);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  socket?.emit('live_viewer_answer_to_host', {to: fromSocketId, answer, streamId: _liveViewingStreamId});
+}
+
+function closeLiveViewer(){
+  $('live-viewer-overlay').style.display='none';
+  if(_liveViewerPeer){ _liveViewerPeer.close(); _liveViewerPeer=null; }
+  socket?.emit('leave_live', {streamId: _liveViewingStreamId, userId: ME.id});
+  _liveViewingStreamId = null;
+}
+
+function sendLVComment(){
+  const inp=$('lv-inp'); const t=inp.value.trim(); if(!t||!_liveViewingStreamId) return;
+  socket?.emit('live_comment',{streamId:_liveViewingStreamId,user:ME,text:t}); inp.value='';
+}
+function lvReact(r){ socket?.emit('live_react',{streamId:_liveViewingStreamId,user:ME,reaction:r}); }
+socket?.on('live_comment',({user,text})=>{
+  const el=document.getElementById('lv-comments');
+  if(el){ const d=document.createElement('div'); d.style.cssText='font-size:12px;color:#fff;margin-bottom:4px;'; d.innerHTML=`<b style="color:var(--sky);">${user.name}:</b> ${text}`; el.appendChild(d); el.scrollTop=el.scrollHeight; }
+});
+
+// ── LIVE BROWSER (updated to show live users) ─────────────────────────────
+function openLiveBrowser(){
+  $('live-browser-overlay').classList.add('show');
+  const list = $('live-browser-list');
+  if(!list) return;
+  if(window._liveStreams && window._liveStreams.length){
+    list.innerHTML = window._liveStreams.map(s=>`
+      <div class="ms-item" onclick="joinLive('${s.streamId}','${s.host?.name}');closeLiveBrowser();">
+        <div class="ms-av" style="position:relative;">${avatarEl(s.host,50)}<div class="ms-live-dot"></div></div>
+        <div class="ms-info">
+          <div class="ms-name">${s.host?.name||'?'} ${badge(s.host||{})}</div>
+          <div class="ms-last" style="color:var(--red);font-weight:700;">🔴 Live now · tap to watch</div>
+        </div>
+      </div>`).join('');
+  } else {
+    list.innerHTML='<div style="padding:40px;text-align:center;color:var(--g2);">No one is live right now.<br><br>Go to your profile and tap 🔴 Go Live!</div>';
+  }
+}
+
+// ── HOST: STREAM TO VIEWERS VIA WebRTC ───────────────────────────────────
+// When a viewer joins, host creates offer and sends stream
+socket?.on('viewer_wants_stream', async({viewerSocketId, user})=>{
+  if(!localStream) return; // not streaming
+  addLiveMsg(user.name + ' joined 👋');
+  try {
+    const pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]});
+    localStream.getTracks().forEach(t=>pc.addTrack(t, localStream));
+    pc.onicecandidate = e => {
+      if(e.candidate) socket?.emit('live_ice_to_viewer', {to: viewerSocketId, candidate: e.candidate});
+    };
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket?.emit('live_offer_to_viewer', {to: viewerSocketId, offer, fromSocketId: socket.id});
+    // Listen for answer
+    socket?.once('live_viewer_answered_'+viewerSocketId, async({answer})=>{
+      await pc.setRemoteDescription(answer);
+    });
+    // Listen for ICE
+    socket?.on('live_ice_from_viewer_'+viewerSocketId, async({candidate})=>{
+      await pc.addIceCandidate(candidate).catch(()=>{});
+    });
+  } catch(e){ console.error('Host stream error:',e); }
+});
 
 // ── GIFT LIVE EVENT ───────────────────────────────────────────────────────
 if(typeof socket !== 'undefined' && socket) {
@@ -2144,6 +2556,24 @@ if(typeof socket !== 'undefined' && socket) {
   });
 }
 </script>
+<!-- ── AI CHAT ── -->
+<div id="ai-chat-overlay" style="position:fixed;inset:0;background:var(--bg);z-index:300;display:none;flex-direction:column;max-width:480px;margin:0 auto;">
+  <div class="ch-hdr" style="background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(99,102,241,.2));border-bottom:1px solid var(--purple);">
+    <button class="ch-back" onclick="closeAIChat()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✦</div>
+    <div class="ch-info">
+      <div class="ch-name" style="color:var(--purple);">DIOR+ AI</div>
+      <div class="ch-status" style="color:var(--purple);opacity:.7;">Powered by Claude · Always online</div>
+    </div>
+    <button onclick="clearAIHistory()" style="background:none;border:none;color:var(--g2);font-size:12px;cursor:pointer;padding:6px;">Clear</button>
+  </div>
+  <div id="ai-chat-body" style="flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;"></div>
+  <div class="ch-inp-row">
+    <input class="ch-inp" id="ai-chat-inp" placeholder="Ask DIOR+ AI anything..." onkeydown="if(event.key==='Enter')sendAIMsg()"/>
+    <button class="ch-send" onclick="sendAIMsg()" style="background:linear-gradient(135deg,#a855f7,#6366f1);"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
+</div>
+
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
@@ -2153,5 +2583,119 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+
+<script>
+// ── DEDICATED AI CHAT ─────────────────────────────────────────────────────
+let aiHistory = JSON.parse(localStorage.getItem('dp_ai_history') || '[]');
+
+function openAIChat(){
+  pushNav(closeAIChat);
+  const overlay = $('ai-chat-overlay');
+  overlay.style.display = 'flex';
+  renderAIHistory();
+  // Welcome message if first time
+  if(!aiHistory.length){
+    appendAIMsg('ai', "Hey! I'm DIOR+ AI, powered by Claude. Ask me anything — questions, advice, help with captions, creative ideas, or just chat! 👋");
+  }
+}
+
+function closeAIChat(){
+  $('ai-chat-overlay').style.display = 'none';
+}
+
+function renderAIHistory(){
+  const body = $('ai-chat-body');
+  body.innerHTML = '';
+  aiHistory.forEach(m => appendAIMsg(m.role, m.content, false));
+  setTimeout(()=>{ body.scrollTop = body.scrollHeight; }, 50);
+}
+
+function appendAIMsg(role, text, save=true){
+  const body = $('ai-chat-body');
+  const mine = role === 'user';
+  const div = document.createElement('div');
+  div.style.cssText = `display:flex;justify-content:${mine?'flex-end':'flex-start'};margin-bottom:6px;width:100%;`;
+  div.innerHTML = mine
+    ? `<div class="ch-msg mine" style="display:inline-block;">${text}</div>`
+    : `<div style="display:flex;gap:8px;align-items:flex-start;max-width:85%;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">✦</div>
+        <div class="ch-msg theirs" style="display:inline-block;border-bottom-left-radius:4px;">${text}</div>
+       </div>`;
+  body.appendChild(div);
+  if(save){
+    aiHistory.push({role, content: text});
+    // Keep last 40 messages to avoid context bloat
+    if(aiHistory.length > 40) aiHistory = aiHistory.slice(-40);
+    localStorage.setItem('dp_ai_history', JSON.stringify(aiHistory));
+  }
+  setTimeout(()=>{ body.scrollTop = body.scrollHeight; }, 50);
+}
+
+async function sendAIMsg(){
+  const inp = $('ai-chat-inp');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  inp.disabled = true;
+
+  appendAIMsg('user', text);
+
+  // Typing indicator
+  const body = $('ai-chat-body');
+  const typing = document.createElement('div');
+  typing.style.cssText = 'display:flex;justify-content:flex-start;margin-bottom:6px;width:100%;';
+  typing.innerHTML = `<div style="display:flex;gap:8px;align-items:flex-start;">
+    <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">✦</div>
+    <div class="ch-msg theirs" style="display:inline-block;">
+      <span style="display:inline-flex;gap:4px;">
+        <span style="animation:typingDot .8s infinite .0s both;">●</span>
+        <span style="animation:typingDot .8s infinite .2s both;">●</span>
+        <span style="animation:typingDot .8s infinite .4s both;">●</span>
+      </span>
+    </div>
+  </div>`;
+  body.appendChild(typing);
+  body.scrollTop = body.scrollHeight;
+
+  try {
+    // Build messages array from history (last 20 for context)
+    const contextMsgs = aiHistory.slice(-20).map(m => ({
+      role: m.role === 'ai' ? 'assistant' : 'user',
+      content: m.content
+    }));
+    // Make sure last message is the user's (it's already in aiHistory from appendAIMsg above)
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are DIOR+ AI, a friendly and helpful AI assistant built into the DIOR+ social app. You help users with questions, creative ideas, writing captions, advice, and general conversation. Keep responses concise and conversational — this is a chat app. The user's name is ${ME?.name || 'there'}.`,
+        messages: contextMsgs
+      })
+    });
+    const d = await r.json();
+    typing.remove();
+    const reply = d.content?.[0]?.text || "Sorry, I couldn't get a response right now. Try again!";
+    appendAIMsg('ai', reply);
+  } catch(e) {
+    typing.remove();
+    appendAIMsg('ai', "I'm having trouble connecting right now. Please try again in a moment.");
+  }
+  inp.disabled = false;
+  inp.focus();
+}
+
+function clearAIHistory(){
+  aiHistory = [];
+  localStorage.removeItem('dp_ai_history');
+  $('ai-chat-body').innerHTML = '';
+  appendAIMsg('ai', "Chat cleared! How can I help you? 😊");
+}
+</script>
+
+<style>
+@keyframes typingDot{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+</style>
 </body>
 </html>
