@@ -166,6 +166,11 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .prof-hdr button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;}
 .prof-info{display:flex;align-items:center;padding:0 16px 16px;gap:20px;}
 .prof-av-wrap{position:relative;}
+.prof-av-wrap.has-story .prof-av{border:3px solid transparent;}
+.prof-av-wrap.has-story::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:var(--grad);z-index:0;animation:storyPulse 2s ease-in-out infinite;}
+.prof-av-wrap.has-story .prof-av,.prof-av-wrap.has-story label{position:relative;z-index:1;}
+@keyframes storyPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(56,189,248,.4);}50%{opacity:.85;box-shadow:0 0 0 6px rgba(56,189,248,0);}}
+.story-ring-seen{background:var(--s3)!important;}
 .prof-av{width:80px;height:80px;border-radius:50%;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;overflow:hidden;border:3px solid var(--s3);}
 .prof-av img{width:100%;height:100%;object-fit:cover;}
 .prof-av-edit{position:absolute;bottom:0;right:0;background:var(--sky);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;}
@@ -374,8 +379,8 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <!-- FEED -->
     <div class="screen on" id="s-feed">
       <div class="stories-bar" id="stories-bar">
-        <div class="story-item" onclick="openStoryCreate()">
-          <div class="story-ring"><div class="story-av story-add" style="font-size:26px;">+</div></div>
+        <div class="story-item" id="my-story-btn" onclick="onProfileAvatarClick()">
+          <div class="story-ring" id="my-story-ring"><div class="story-av story-add" id="my-story-av" style="font-size:26px;">+</div></div>
           <div class="story-nm">Your Story</div>
         </div>
       </div>
@@ -423,11 +428,11 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       </div>
       <div class="prof-info">
         <div class="prof-av-wrap">
-          <label style="cursor:pointer;">
-            <input type="file" accept="image/*" style="display:none;" onchange="changeAvatar(this)"/>
+          <div onclick="onProfileAvatarClick()" style="cursor:pointer;position:relative;">
             <div class="prof-av" id="prof-av"></div>
-            <div class="prof-av-edit">✏️</div>
-          </label>
+            <div class="prof-av-edit" onclick="event.stopPropagation();document.getElementById('av-file-inp').click()">✏️</div>
+          </div>
+          <input type="file" accept="image/*" id="av-file-inp" style="display:none;" onchange="changeAvatar(this)"/>
         </div>
         <div class="prof-stats">
           <div class="pstat"><div class="pstat-n" id="prof-posts-n">0</div><div class="pstat-l">Posts</div></div>
@@ -680,7 +685,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   <div class="ov-hdr"><button class="ov-close" onclick="closeUProfile()">✕</button><h2 id="up-username">@user</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;">
     <div class="prof-info">
-      <div class="prof-av-wrap"><div class="prof-av" id="up-av"></div></div>
+      <div class="prof-av-wrap" id="up-av-wrap" onclick="onOtherAvatarClick()" style="cursor:pointer;"><div class="prof-av" id="up-av"></div></div>
       <div class="prof-stats">
         <div class="pstat"><div class="pstat-n" id="up-posts">0</div><div class="pstat-l">Posts</div></div>
         <div class="pstat" onclick="showOtherFollowers('followers')" style="cursor:pointer;"><div class="pstat-n" id="up-followers">0</div><div class="pstat-l">Followers</div></div>
@@ -825,6 +830,30 @@ let currentGC = null;
 let svGroups = [], svGroupIdx = 0, svIdx = 0, svTimer = null;
 let pickedFiles = [], storyFile = null, reelFile = null;
 let aiMode = false;
+
+// ── SESSION RESTORE (survive minimize/back button) ─────────────────────
+(function tryRestoreSession(){
+  try {
+    const saved = localStorage.getItem('dp_session');
+    if(!saved) return;
+    const user = JSON.parse(saved);
+    if(!user || !user.id) return;
+    // Re-validate with server quickly
+    fetch(API+'/api/users/'+user.id).then(r=>r.json()).then(data=>{
+      if(data.user){
+        ME = data.user;
+        localStorage.setItem('dp_session', JSON.stringify(ME));
+        launchApp();
+      } else {
+        localStorage.removeItem('dp_session');
+      }
+    }).catch(()=>{
+      // Offline - use cached session
+      ME = user;
+      launchApp();
+    });
+  } catch(e) { localStorage.removeItem('dp_session'); }
+})();
 let typingTimer = null;
 let notifications = [];
 let callLogs = JSON.parse(localStorage.getItem('dp_call_logs')||'[]');
@@ -955,6 +984,8 @@ async function confirmReset(){
   if(r.ok){ toast('Password reset! Log in now ✓'); closeForgotPw(); } else toast('Reset failed');
 }
 function launchApp(){
+  // Save session so app survives minimize/back button
+  if(ME) localStorage.setItem('dp_session', JSON.stringify(ME));
   $('auth').style.display='none';
   $('splash').style.display='flex';
   connectSocket();
@@ -1034,17 +1065,63 @@ async function loadStories(){
   const bar=$('stories-bar');
   const addBtn=bar.children[0];
   bar.innerHTML=''; bar.appendChild(addBtn);
+
   // Group by user
   const groups={};
   stories.forEach(s=>{ if(!groups[s.userId]) groups[s.userId]=[]; groups[s.userId].push(s); });
-  Object.values(groups).forEach(grp=>{
+  svGroups = Object.values(groups);
+
+  // Update "Your Story" button
+  const myStory = groups[ME?.id];
+  const myAvEl = $('my-story-av');
+  const myRing = $('my-story-ring');
+  if(myAvEl && ME){
+    myAvEl.innerHTML = avatarEl(ME, 56);
+    myAvEl.style.fontSize = '';
+    // Add a small + badge over it
+    myAvEl.style.position = 'relative';
+  }
+  if(myRing){
+    myRing.style.background = myStory ? 'var(--grad)' : 'var(--s2)';
+    myRing.style.border = myStory ? 'none' : '2px dashed var(--s3)';
+  }
+  // Update profile avatar ring
+  const profWrap = document.querySelector('#s-profile .prof-av-wrap');
+  if(profWrap){
+    if(myStory) profWrap.classList.add('has-story');
+    else profWrap.classList.remove('has-story');
+  }
+
+  // Show other users' stories in bar
+  Object.entries(groups).forEach(([uid, grp])=>{
+    if(uid === ME?.id) return; // skip self, already handled
     const u=grp[0].user;
     const div=document.createElement('div'); div.className='story-item';
-    div.onclick=()=>openSV(Object.values(groups), Object.keys(groups).indexOf(grp[0].userId));
-    div.innerHTML=`<div class="story-ring"><div class="story-av">${avatarEl(u,56)}</div></div><div class="story-nm">@${u.username}</div>`;
+    div.onclick=()=>openSV(svGroups, svGroups.findIndex(g=>g[0].userId===uid));
+    div.innerHTML=`<div class="story-ring"><div class="story-av">${avatarEl(u,56)}</div></div><div class="story-nm">${u.username}</div>`;
     bar.appendChild(div);
   });
-  svGroups = Object.values(groups);
+}
+
+// Called when tapping YOUR profile avatar
+function onProfileAvatarClick(){
+  const myStory = svGroups?.find(g=>g[0].userId===ME?.id);
+  if(myStory){
+    openSV(svGroups, svGroups.indexOf(myStory));
+  } else {
+    openStoryCreate();
+  }
+}
+
+// Called when tapping OTHER user's profile avatar
+function onOtherAvatarClick(){
+  if(!viewingUserId) return;
+  const grp = svGroups?.find(g=>g[0].userId===viewingUserId);
+  if(grp){
+    openSV(svGroups, svGroups.indexOf(grp));
+  } else {
+    toast('No story yet');
+  }
 }
 function openSV(groups, groupIdx){
   svGroups=groups; svGroupIdx=groupIdx; svIdx=0;
@@ -1238,33 +1315,43 @@ async function submitPost(){
 
 // ── EXPLORE ───────────────────────────────────────────────────────────────
 let _searchTimer = null;
+let _userCache = null;
+
+async function getAllUsersCache(){
+  if(_userCache) return _userCache;
+  const users = await api('/api/users/search?q=all');
+  _userCache = Array.isArray(users) ? users.filter(u=>u.id&&u.username) : [];
+  setTimeout(()=>{ _userCache = null; }, 60000);
+  return _userCache;
+}
+
 function debounceSearch(q){
   clearTimeout(_searchTimer);
   if(!q){ $('ex-results').innerHTML=''; loadExploreGrid(); return; }
-  $('ex-results').innerHTML='<div style="padding:20px;text-align:center;color:var(--g2);">Searching...</div>';
-  _searchTimer = setTimeout(()=>exploreSearch(q), 300);
+  _searchTimer = setTimeout(()=>exploreSearch(q), 150);
 }
+
 async function exploreSearch(q){
-  if(!q){ $('ex-results').innerHTML=''; loadExploreGrid(); return; }
   $('ex-grid').innerHTML='';
-  const users=await api('/api/users/search?q='+encodeURIComponent(q));
-  if(!Array.isArray(users)||!users.length){
-    $('ex-results').innerHTML='<div style="padding:40px;text-align:center;color:var(--g2);">No users found</div>';
+  const all = await getAllUsersCache();
+  const lq = q.toLowerCase();
+  const users = all.filter(u=>
+    (u.username||'').toLowerCase().includes(lq)||
+    (u.name||'').toLowerCase().includes(lq)
+  );
+  if(!users.length){
+    $('ex-results').innerHTML=`<div style="padding:40px;text-align:center;color:var(--g2);">No users found for "${q}"</div>`;
     return;
   }
   $('ex-results').innerHTML=users.map(u=>`
     <div class="ex-user" onclick="openUserProfile('${u.id}')">
       <div class="ex-uav">${avatarEl(u,44)}</div>
-      <div style="flex:1;"><div style="font-weight:700;display:flex;align-items:center;gap:4px;">${u.name} ${badge(u)}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
+      <div style="flex:1;"><div style="font-weight:700;">${u.name||u.username} ${badge(u)}</div><div style="font-size:12px;color:var(--g2);">@${u.username}</div></div>
       <div style="color:var(--g2);font-size:20px;">›</div>
     </div>`).join('');
 }
-async function loadExploreGrid(){
-  const posts=await api('/api/posts');
-  $('ex-grid').innerHTML=Array.isArray(posts)?posts.map(p=>p.mediaUrls?.length?`<div class="ex-item" onclick="openUserProfile('${p.userId}')">${p.mediaUrls[0].endsWith('.mp4')?`<video src="${imgSrc(p.mediaUrls[0])}" muted playsinline></video>`:`<img src="${imgSrc(p.mediaUrls[0])}" loading="lazy"/>`}</div>`:'').join(''):'';
-}
 
-// ── MESSAGES ──────────────────────────────────────────────────────────────
+
 async function searchUsers(q){
   if(!q){ loadConversations(); return; }
   const users=await api('/api/users/search?q='+encodeURIComponent(q));
@@ -1548,7 +1635,7 @@ function toggleDark(){
   $('dark-lbl').textContent=darkMode?'Dark Mode':'Light Mode';
   $('dark-val').textContent=darkMode?'On':'Off';
 }
-function doLogout(){ ME=null; socket?.disconnect(); socket=null; $('settings-overlay').classList.remove('show'); $('app').classList.remove('show'); $('auth').style.display='flex'; $('li-user').value=''; $('li-pass').value=''; }
+function doLogout(){ ME=null; localStorage.removeItem('dp_session'); socket?.disconnect(); socket=null; $('settings-overlay').classList.remove('show'); $('app').classList.remove('show'); $('auth').style.display='flex'; $('li-user').value=''; $('li-pass').value=''; }
 
 // ── EDIT PROFILE ──────────────────────────────────────────────────────────
 function openEditProfile(){ $('ep-name').value=ME.name||''; $('ep-bio').value=ME.bio||''; $('ep-link').value=ME.link||''; $('ep-overlay').classList.add('show'); closeSettings(); }
@@ -1556,7 +1643,7 @@ function closeEditProfile(){ $('ep-overlay').classList.remove('show'); }
 async function saveProfile(){
   const name=$('ep-name').value.trim(), bio=$('ep-bio').value.trim(), link=$('ep-link').value.trim();
   const r=await api('/api/users/'+ME.id+'/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,bio,link})});
-  if(r.user){ ME=r.user; updateProfileUI(); toast('Profile saved!'); closeEditProfile(); }
+  if(r.user){ ME=r.user; localStorage.setItem('dp_session',JSON.stringify(ME)); updateProfileUI(); toast('Profile saved!'); closeEditProfile(); }
 }
 
 // ── CHANGE PASSWORD ───────────────────────────────────────────────────────
@@ -1605,6 +1692,13 @@ async function openUserProfile(userId){
   $('up-follow-btn').style.background=following?'var(--s3)':'var(--grad)';
   const posts=await api('/api/posts');
   $('up-grid').innerHTML=Array.isArray(posts)?posts.filter(p=>p.userId===userId).map(p=>p.mediaUrls?.length?`<div class="prof-item"><img src="${imgSrc(p.mediaUrls[0])}" loading="lazy"/></div>`:'').join(''):'';
+  // Show story ring on their avatar if they have a story
+  const theirStory = svGroups?.find(g=>g[0].userId===userId);
+  const upWrap = $('up-av-wrap');
+  if(upWrap){
+    if(theirStory) upWrap.classList.add('has-story');
+    else upWrap.classList.remove('has-story');
+  }
   $('uprofile-overlay').classList.add('show');
 }
 function closeUProfile(){ $('uprofile-overlay').classList.remove('show'); viewingUserId=null; }
