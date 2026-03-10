@@ -2000,7 +2000,15 @@ function updateOnlineStatus(userId, online){
 
 // ── CHAT ──────────────────────────────────────────────────────────────────
 
-function closeChat(){ $('chat').style.display='none'; activeConv=null; convUser=null; $('emoji-tray').style.display='none'; }
+function closeChat(){
+  $('chat').style.display='none';
+  activeConv=null; convUser=null;
+  const inp=$('ch-inp'); if(inp) inp.value='';
+  $('ch-body').innerHTML='';
+  _msgMap={};
+  $('emoji-tray').style.display='none';
+  const _rb=$('ch-reply-bar');if(_rb)_rb.style.display='none';
+}
 // ── CHAT STATE ───────────────────────────────────────────────────────────
 let _replyTo = null;
 let _ctxMsgId = null;
@@ -4139,24 +4147,48 @@ async function loadConversations(){
 // ── OPEN CHAT
 async function openChat(userId){
   activeConv=userId;
+  convUser=null; // always reset so we never show stale previous person
   _msgMap={};_replyTo=null;
-  // Reset reply bar directly (cancelReply may not be defined yet)
   const _rb=$('ch-reply-bar');if(_rb)_rb.style.display='none';
+  // Clear input immediately so typed text doesn't bleed between chats
+  const inp=$('ch-inp'); if(inp) inp.value='';
   clearUnread(userId);
   pushNav(closeChat);
-  // Try from conversation list cache first (fastest, already loaded)
+  // Show chat screen immediately with loading state
+  $('ch-name').innerHTML='...';
+  $('ch-status').textContent='';
+  $('ch-av').innerHTML='<div style="width:36px;height:36px;border-radius:50%;background:var(--s2);"></div>';
+  $('ch-body').innerHTML='';
+  $('chat').style.display='flex';
+  // Initialize voice/send button state (input is empty on open → show mic)
+  const vb=$('ch-voice-btn'); if(vb) vb.style.display='flex';
+  const sb=$('ch-send-btn'); if(sb) sb.style.display='none';
+  // Try conv cache first for instant name
   const cachedConv = Array.isArray(window._convCache) ? window._convCache.find(c=>c.userId===userId) : null;
-  if(cachedConv){ convUser={id:userId, name:cachedConv.name, username:cachedConv.username, photoUrl:cachedConv.photoUrl, verified:cachedConv.verified, verifyTier:cachedConv.verifyTier}; }
-  // Also fetch full profile in background
-  api('/api/users/'+userId).then(r=>{ if(r?.user?.name){ convUser=r.user; const cs2=chatSettings[userId]||{}; const si=$('ch-name'); if(si&&activeConv===userId) si.innerHTML=(cs2.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(userId); const st=$('ch-status'); if(st&&activeConv===userId) st.textContent=convUser.username?('@'+convUser.username):''; $('ch-av').innerHTML=avatarEl(convUser,36); } });
-  if(!convUser){ const r=await api('/api/users/'+userId); convUser=r?.user||{id:userId,name:'',username:''}; }
+  if(cachedConv){
+    convUser={id:userId,name:cachedConv.name,username:cachedConv.username,photoUrl:cachedConv.photoUrl,verified:cachedConv.verified,verifyTier:cachedConv.verifyTier};
+  } else {
+    // New person — must await the fetch
+    const r = await api('/api/users/'+userId);
+    convUser = r?.user || {id:userId,name:'',username:''};
+  }
+  // If cache gave us a name, also fetch full profile silently in background
+  if(cachedConv){
+    api('/api/users/'+userId).then(r=>{
+      if(r?.user?.name && activeConv===userId){
+        convUser=r.user;
+        const cs2=chatSettings[userId]||{};
+        const si=$('ch-name'); if(si) si.innerHTML=(cs2.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(userId);
+        const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
+        $('ch-av').innerHTML=avatarEl(convUser,36);
+      }
+    });
+  }
   const cs=chatSettings[userId]||{};
-  const displayName=cs.nickname||convUser.name||convUser.username||'Chat';
+  const displayName=cs.nickname||convUser.name||convUser.username||'';
   const si=$('ch-name'); if(si) si.innerHTML=displayName+' '+badge(convUser)+' '+streakBadge(userId);
   const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
   $('ch-av').innerHTML=avatarEl(convUser,36);
-  $('ch-body').innerHTML='';
-  $('chat').style.display='flex';
   $('emoji-tray').style.display='none';
   $('ch-voice-bar').style.display='none';
   $('ch-inp-row').style.display='flex';
