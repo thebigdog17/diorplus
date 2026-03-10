@@ -727,8 +727,8 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;color:var(--g);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
     </label>
     <input class="ch-inp" id="ch-inp" placeholder="Message..." onkeydown="if(event.key==='Enter')sendMsg()" oninput="onTyping();toggleSendVoice()"/>
-    <button class="ch-send" id="ch-send-btn" onclick="sendMsg()" style="display:none;"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-    <button id="ch-voice-btn" onclick="startVoiceNote()" style="display:flex;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:50%;width:38px;height:38px;color:#fff;font-size:16px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">🎤</button>
+    <button id="ch-send-btn" onclick="sendMsg()" style="background:var(--grad);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff"/></svg></button>
+    <button id="ch-voice-btn" onclick="startVoiceNote()" style="background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;font-size:16px;">🎤</button>
   </div>
   <!-- Message context menu -->
   <div id="ch-ctx-menu" style="display:none;position:fixed;background:var(--s1);border:1px solid var(--s2);border-radius:14px;padding:6px;z-index:9999;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);" onclick="event.stopPropagation()">
@@ -4161,40 +4161,31 @@ async function openChat(userId){
   const inp=$('ch-inp'); if(inp) inp.value='';
   clearUnread(userId);
   pushNav(closeChat);
-  $('ch-name').innerHTML='...';
-  $('ch-status').textContent='';
-  $('ch-av').innerHTML='<div style="width:36px;height:36px;border-radius:50%;background:var(--s2);"></div>';
   $('ch-body').innerHTML='';
   $('chat').style.display='flex';
-  toggleSendVoice();
-  // Priority: registry (from search/explore) → conv cache → API fetch
-  const regUser = _userReg[userId];
-  const cachedConv = Array.isArray(window._convCache) ? window._convCache.find(c=>c.userId===userId) : null;
-  if(regUser && regUser.name){
-    convUser = regUser;
-  } else if(cachedConv && cachedConv.name){
-    convUser = {id:userId,name:cachedConv.name,username:cachedConv.username,photoUrl:cachedConv.photoUrl,verified:cachedConv.verified,verifyTier:cachedConv.verifyTier};
-  } else {
-    // Must fetch — wait for it
-    const r = await api('/api/users/'+userId);
-    convUser = r?.user || {id:userId,name:'',username:''};
-  }
-  // Always refresh full profile silently in background
+  // Always fetch real profile — update header when it arrives
   api('/api/users/'+userId).then(r=>{
-    if(r?.user?.name && activeConv===userId){
-      convUser=r.user;
-      _userReg[userId]=r.user;
-      const cs2=chatSettings[userId]||{};
-      const si=$('ch-name'); if(si) si.innerHTML=(cs2.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(userId);
-      const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
-      $('ch-av').innerHTML=avatarEl(convUser,36);
+    const u = r?.user;
+    if(!u) return;
+    convUser = u;
+    _userReg[userId] = u;
+    const cs2 = chatSettings[userId]||{};
+    const name = cs2.nickname || u.name || u.username || u.id;
+    if(activeConv===userId){
+      $('ch-name').innerHTML = name+' '+badge(u)+' '+streakBadge(userId);
+      $('ch-status').textContent = u.username ? ('@'+u.username) : '';
+      $('ch-av').innerHTML = avatarEl(u, 36);
     }
   });
-  const cs=chatSettings[userId]||{};
-  const displayName=cs.nickname||convUser?.name||convUser?.username||'Unknown';
-  const si=$('ch-name'); if(si) si.innerHTML=displayName+' '+badge(convUser)+' '+streakBadge(userId);
-  const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
-  $('ch-av').innerHTML=avatarEl(convUser,36);
+  // Show immediately with best available name while fetch loads
+  const quick = _userReg[userId]
+    || (Array.isArray(window._convCache) && window._convCache.find(c=>c.userId===userId))
+    || null;
+  const cs = chatSettings[userId]||{};
+  const qname = cs.nickname || quick?.name || quick?.username || '';
+  $('ch-name').innerHTML = qname ? (qname+' '+badge(quick||{})+' '+streakBadge(userId)) : '...';
+  $('ch-status').textContent = quick?.username ? ('@'+quick.username) : '';
+  $('ch-av').innerHTML = quick ? avatarEl(quick, 36) : '<div style="width:36px;height:36px;border-radius:50%;background:var(--s2);"></div>';
   $('emoji-tray').style.display='none';
   $('ch-voice-bar').style.display='none';
   $('ch-inp-row').style.display='flex';
@@ -4268,14 +4259,7 @@ async function sendMediaMsg(input){
   input.value='';
 }
 
-function toggleSendVoice(){
-  const inp=$('ch-inp');
-  const hasText=(inp?.value||'').trim().length>0;
-  const sb=$('ch-send-btn');
-  const vb=$('ch-voice-btn');
-  if(sb) sb.style.display=hasText?'flex':'none';
-  if(vb) vb.style.display=hasText?'none':'flex';
-}
+function toggleSendVoice(){} // disabled - both buttons always visible
 
 // ── VOICE NOTES ───────────────────────────────────────────────────────────
 async function startVoiceNote(){
