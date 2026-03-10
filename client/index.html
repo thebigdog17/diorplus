@@ -2186,8 +2186,8 @@ function toggleGCEmoji(){ toast('Use emoji keyboard on your phone 😊'); }
 // ── REELS ─────────────────────────────────────────────────────────────────
 // ── WATCH TAB (Movie Streaming) ───────────────────────────────────────────
 let TMDB_KEY = '';
-// Fetch TMDB key from server on load
-fetch('/api/config').then(r=>r.json()).then(d=>{ TMDB_KEY = d.tmdbKey||''; }).catch(()=>{});
+let _tmdbKeyReady = false;
+let _tmdbKeyPromise = fetch('/api/config').then(r=>r.json()).then(d=>{ TMDB_KEY = d.tmdbKey||''; _tmdbKeyReady=true; }).catch(()=>{ _tmdbKeyReady=true; });
 const TMDB = 'https://api.themoviedb.org/3';
 const IMG = 'https://image.tmdb.org/t/p/w500';
 const BACKDROP = 'https://image.tmdb.org/t/p/w780';
@@ -2228,7 +2228,7 @@ async function loadTrending(){
     c.innerHTML += buildWatchRow('🔥 Trending This Week', trending.results||[], 'all');
     c.innerHTML += buildWatchRow('🎬 Popular Movies', popular.results||[], 'movie');
     c.innerHTML += buildWatchRow('📺 Top Rated Shows', topRated.results||[], 'tv');
-  } catch(e){ c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Could not load. Check your connection.</div>'; }
+  } catch(e){ c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">'+( e.message.includes('TMDB key') ? '⚠️ TMDB API key missing.<br>Add TMDB_API_KEY in Render environment.' : '⚠️ Could not load movies.<br>Check your connection and try again.' )+'</div>'; }
 }
 
 async function loadMovies(){
@@ -2286,10 +2286,11 @@ function buildWatchRow(title, items, type){
 }
 
 async function tmdbFetch(path){
+  if(!_tmdbKeyReady) await _tmdbKeyPromise;
   const sep = path.includes('?') ? '&' : '?';
-  const key = (typeof TMDB_KEY !== 'undefined' && TMDB_KEY !== 'PASTE_KEY_HERE') ? TMDB_KEY : '';
-  if(!key){ throw new Error('No TMDB key'); }
-  const r = await fetch(TMDB+path+sep+'api_key='+key);
+  if(!TMDB_KEY){ throw new Error('No TMDB key — add TMDB_API_KEY to Render environment vars'); }
+  const r = await fetch(TMDB+path+sep+'api_key='+TMDB_KEY);
+  if(!r.ok) throw new Error('TMDB error '+r.status);
   return r.json();
 }
 
