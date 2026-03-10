@@ -600,72 +600,79 @@ app.post('/api/ai/chat', async (req, res) => {
 app.get('/api/music/search', async (req, res) => {
   try {
     const q = req.query.q || 'trending music';
-    // Use iTunes Search API — completely free, no key needed, has real popular music
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=25&sort=recent`;
-    const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-    if(!r.ok) throw new Error('iTunes error '+r.status);
-    const data = await r.json();
-    const tracks = (data.results||[]).map(t => ({
-      id: t.trackId,
-      title: t.trackName || 'Unknown',
-      artist: t.artistName || 'Unknown',
-      album: t.collectionName || '',
-      art: t.artworkUrl100 ? t.artworkUrl100.replace('100x100','300x300') : '',
-      preview: t.previewUrl || '',
-      url: t.trackViewUrl || '',
-      duration: t.trackTimeMillis ? Math.floor(t.trackTimeMillis/60000)+':'+(Math.floor((t.trackTimeMillis%60000)/1000)).toString().padStart(2,'0') : ''
-    })).filter(t => t.preview);
+    // Search YouTube for full songs
+    const searchUrl = 'https://www.youtube.com/results?search_query='+encodeURIComponent(q+' official audio');
+    const r = await fetch(searchUrl, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/91.0.4472.120 Mobile Safari/537.36', 'Accept-Language': 'en-US,en;q=0.9' }
+    });
+    const html = await r.text();
+    // Extract ytInitialData
+    const match = html.match(/var ytInitialData = ({.*?});/s);
+    if(!match) throw new Error('No YT data');
+    const data = JSON.parse(match[1]);
+    const contents = data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents || [];
+    const tracks = [];
+    for(const item of contents){
+      const v = item.videoRenderer;
+      if(!v) continue;
+      const videoId = v.videoId;
+      const title = v.title?.runs?.[0]?.text || '';
+      const artist = v.ownerText?.runs?.[0]?.text || v.shortBylineText?.runs?.[0]?.text || '';
+      const thumb = v.thumbnail?.thumbnails?.slice(-1)[0]?.url || '';
+      const duration = v.lengthText?.simpleText || '';
+      if(videoId && title){
+        tracks.push({ id: videoId, title, artist, art: thumb, youtubeId: videoId, duration, url: 'https://youtube.com/watch?v='+videoId });
+      }
+      if(tracks.length >= 20) break;
+    }
     res.json({ tracks });
   } catch(e) {
     console.error('Music search error:', e.message);
-    res.json({ tracks: [] });
+    // Fallback to iTunes for metadata at least
+    try {
+      const url = 'https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=music&entity=song&limit=20';
+      const r2 = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      const data2 = await r2.json();
+      const tracks = (data2.results||[]).map(t => ({
+        id: t.trackId, title: t.trackName||'Unknown', artist: t.artistName||'Unknown',
+        album: t.collectionName||'', art: t.artworkUrl100?t.artworkUrl100.replace('100x100','300x300'):'',
+        preview: t.previewUrl||'', duration: t.trackTimeMillis ? Math.floor(t.trackTimeMillis/60000)+':'+(Math.floor((t.trackTimeMillis%60000)/1000)).toString().padStart(2,'0') : ''
+      })).filter(t => t.preview);
+      res.json({ tracks, fallback: true });
+    } catch(e2){ res.json({ tracks: [] }); }
   }
 });
 
-// ── MUSIC: Genius lyrics proxy ─────────────────────────────────────────────
+// ── MUSIC: Lyrics proxy (lyrics.ovh + Genius fallback) ───────────────────
 app.get('/api/music/lyrics', async (req, res) => {
   try {
     const { title, artist } = req.query;
+    if(!title) return res.json({ lyrics: 'No song title provided.' });
+    // Try lyrics.ovh first — completely free, no key, reliable
+    try {
+      const ovhRes = await fetch('https://api.lyrics.ovh/v1/'+encodeURIComponent(artist||'unknown')+'/'+encodeURIComponent(title), {
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      const ovhData = await ovhRes.json();
+      if(ovhData.lyrics && ovhData.lyrics.length > 50){
+        return res.json({ lyrics: ovhData.lyrics.trim() });
+      }
+    } catch(e1){ console.log('lyrics.ovh failed:', e1.message); }
+    // Fallback: Genius API
     const GENIUS_KEY = process.env.GENIUS_API_KEY || 'NNTS_YJ0HhnT1B-OFeIYKRqgRT6PryvLh9jLdmYeyJYblYRSdlezfD-TGTy0tHJR';
     const q = encodeURIComponent((title||'')+' '+(artist||''));
-    // Search Genius API
-    const searchRes = await fetch('https://api.genius.com/search?q='+q, {
-      headers: { 'Authorization': 'Bearer '+GENIUS_KEY, 'User-Agent': 'Mozilla/5.0' }
-    });
+    const searchRes = await fetch('https://api.genius.com/search?q='+q, { headers: { 'Authorization': 'Bearer '+GENIUS_KEY } });
     const searchData = await searchRes.json();
     const hit = searchData.response?.hits?.[0]?.result;
-    if(!hit) return res.json({ lyrics: 'Lyrics not found for: '+title });
-    // Fetch lyrics page with better headers
-    const pageRes = await fetch(hit.url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/91.0.4472.120 Mobile Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5'
-      }
-    });
+    if(!hit) return res.json({ lyrics: 'Lyrics not found for "'+title+'"' });
+    const pageRes = await fetch(hit.url, { headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/91.0.4472.120 Mobile Safari/537.36', 'Accept': 'text/html' } });
     const html = await pageRes.text();
-    // Try multiple extraction patterns
-    let lyrics = '';
-    // Pattern 1: data-lyrics-container
     const containers = html.match(/data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g);
     if(containers && containers.length){
-      lyrics = containers.map(c => c.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#x2F;/g,'/')).join('\n').trim();
+      const lyrics = containers.map(c => c.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#x2F;/g,'/')).join('\n').trim();
+      if(lyrics) return res.json({ lyrics });
     }
-    // Pattern 2: __NEXT_DATA__ JSON
-    if(!lyrics){
-      const nextData = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
-      if(nextData){
-        try {
-          const json = JSON.parse(nextData[1]);
-          const lyricsHtml = json?.props?.pageProps?.songPage?.lyricsData?.body?.html || '';
-          if(lyricsHtml){
-            lyrics = lyricsHtml.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').trim();
-          }
-        } catch(e2){}
-      }
-    }
-    if(!lyrics) return res.json({ lyrics: 'Lyrics found but could not be extracted. Try: '+hit.url });
-    res.json({ lyrics, title: hit.title, artist: hit.primary_artist?.name });
+    return res.json({ lyrics: 'Lyrics not available for this song.' });
   } catch(e) {
     console.error('Lyrics error:', e.message);
     res.json({ lyrics: 'Could not load lyrics. Try again.' });

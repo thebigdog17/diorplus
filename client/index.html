@@ -617,9 +617,12 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
           <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:1px;">NOW PLAYING</div>
           <div style="width:36px;"></div>
         </div>
-        <!-- Artwork -->
-        <div style="display:flex;justify-content:center;padding:16px 0 28px;">
-          <img id="mfs-art" style="width:240px;height:240px;border-radius:20px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.6);" src="" onerror="this.style.background='linear-gradient(135deg,#a855f7,#ec4899)';this.removeAttribute('src')"/>
+        <!-- Artwork / YouTube Player -->
+        <div style="padding:8px 0 16px;">
+          <div id="mfs-yt-wrap" style="display:none;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;margin-bottom:8px;"></div>
+          <div style="display:flex;justify-content:center;">
+            <img id="mfs-art" style="width:220px;height:220px;border-radius:20px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.6);" src="" onerror="this.style.background='linear-gradient(135deg,#a855f7,#ec4899)';this.removeAttribute('src')"/>
+          </div>
         </div>
         <!-- Title + artist -->
         <div style="display:flex;align-items:center;margin-bottom:20px;">
@@ -3025,35 +3028,37 @@ let _lyricsLoaded = false;
 function playTrack(track, idx){
   _currentTrack = track;
   if(idx !== undefined) _currentTrackIdx = idx;
-  // Update mini bar
   $('np-title').textContent = track.title;
   $('np-artist').textContent = track.artist || track.album || '';
   if($('np-art-mini')) $('np-art-mini').src = track.art || '';
   $('now-playing-bar').style.display = 'flex';
-  // Update fullscreen if open
+  _musicPlaying = true;
+  _lyricsLoaded = false;
+  setPlayBtns('⏸');
   updateFullscreenUI();
-  // Stop previous
-  if(_musicAudio){ _musicAudio.pause(); _musicAudio = null; }
-  clearInterval(_musicProgressTimer);
-  if(track.preview){
-    _musicAudio = new Audio(track.preview);
-    _musicAudio.volume = 1.0;
-    _musicAudio.play().catch(()=>{});
-    _musicAudio.onended = ()=>{ setPlayBtns('▶'); _musicPlaying=false; nextTrack(); };
-    _musicPlaying = true;
-    setPlayBtns('⏸');
-    _lyricsLoaded = false;
-    // Progress updates
-    _musicProgressTimer = setInterval(()=>{
-      if(!_musicAudio) return;
-      const pct = (_musicAudio.currentTime / (_musicAudio.duration||30)) * 100;
-      const prog = $('mfs-progress'); if(prog) prog.value = pct;
-      const cur = $('mfs-current'); if(cur) cur.textContent = fmtTime(_musicAudio.currentTime);
-      const dur = $('mfs-duration'); if(dur) dur.textContent = fmtTime(_musicAudio.duration||30);
-    }, 500);
-  } else {
-    toast('No preview available');
+  // If fullscreen is open, update the YouTube iframe
+  if($('music-fullscreen').style.display !== 'none'){
+    loadYouTubePlayer(track);
   }
+  toast('▶ ' + track.title + ' — ' + (track.artist||''));
+}
+
+function loadYouTubePlayer(track){
+  // Remove old iframe if exists
+  const old = document.getElementById('yt-music-iframe');
+  if(old) old.remove();
+  if(!track.youtubeId) return;
+  const wrap = document.getElementById('mfs-yt-wrap');
+  if(!wrap) return;
+  const iframe = document.createElement('iframe');
+  iframe.id = 'yt-music-iframe';
+  iframe.src = 'https://www.youtube.com/embed/'+track.youtubeId+'?autoplay=1&controls=1&rel=0&modestbranding=1';
+  iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:12px;';
+  iframe.allow = 'autoplay; fullscreen';
+  wrap.appendChild(iframe);
+  wrap.style.display = 'block';
+  // Hide static art when YouTube loads
+  const art = $('mfs-art'); if(art) art.style.display='none';
 }
 
 function fmtTime(s){ s=Math.floor(s||0); return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0'); }
@@ -3087,6 +3092,14 @@ function openMusicFullscreen(){
   $('mfs-lyrics-view').style.display='none';
   $('mfs-lyrics-btn').textContent='🎤 Show Lyrics';
   $('music-fullscreen').style.display='flex';
+  // Load YouTube player
+  if(_currentTrack?.youtubeId){
+    loadYouTubePlayer(_currentTrack);
+  } else {
+    // iTunes fallback - show art
+    const art=$('mfs-art'); if(art) art.style.display='block';
+    const wrap=$('mfs-yt-wrap'); if(wrap) wrap.style.display='none';
+  }
   pushNav(closeMusicFullscreen);
 }
 
@@ -3095,9 +3108,19 @@ function closeMusicFullscreen(){
 }
 
 function toggleMusicPlay(){
-  if(!_musicAudio) return;
-  if(_musicPlaying){ _musicAudio.pause(); setPlayBtns('▶'); _musicPlaying=false; }
-  else { _musicAudio.play(); setPlayBtns('⏸'); _musicPlaying=true; }
+  if(_musicAudio){
+    if(_musicPlaying){ _musicAudio.pause(); setPlayBtns('▶'); _musicPlaying=false; }
+    else { _musicAudio.play(); setPlayBtns('⏸'); _musicPlaying=true; }
+  } else if(_currentTrack?.youtubeId){
+    // YouTube controls are inside the iframe — toggle by reloading with/without autoplay
+    _musicPlaying = !_musicPlaying;
+    setPlayBtns(_musicPlaying ? '⏸' : '▶');
+    const iframe = document.getElementById('yt-music-iframe');
+    if(iframe){
+      const base = 'https://www.youtube.com/embed/'+_currentTrack.youtubeId;
+      iframe.src = base + (_musicPlaying ? '?autoplay=1&controls=1&rel=0&modestbranding=1' : '?autoplay=0&controls=1&rel=0&modestbranding=1');
+    }
+  }
 }
 
 function seekMusic(val){
@@ -3132,6 +3155,8 @@ function prevTrack(){
 function closeMusic(){
   if(_musicAudio){ _musicAudio.pause(); _musicAudio=null; }
   clearInterval(_musicProgressTimer);
+  const ytIframe = document.getElementById('yt-music-iframe');
+  if(ytIframe) ytIframe.remove();
   $('now-playing-bar').style.display = 'none';
   $('music-fullscreen').style.display = 'none';
   _currentTrack = null; _musicPlaying = false;
