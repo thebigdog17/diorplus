@@ -382,13 +382,35 @@ app.get('/api/messages/:userId/:otherId', async (req, res) => {
 
 app.post('/api/messages', async (req, res) => {
   try {
-    const { fromId, toId, text } = req.body;
-    const msg = { id: uuidv4(), fromId, toId, text, read: false, createdAt: Date.now() };
+    const { fromId, toId, text, type, media, duration, replyTo } = req.body;
+    const msg = { id: uuidv4(), fromId, toId, text: text||'', type: type||'text', media: media||null, duration: duration||null, replyTo: replyTo||null, read: false, createdAt: Date.now() };
     await db.collection('messages').insertOne(msg);
     const clean = cleanNoPass(msg);
     io.to(toId).emit('new_message', clean);
-    io.to(fromId).emit('new_message', clean);
+    // Don't echo back to sender — client shows it instantly
     res.json(clean);
+  } catch(e) { res.json({ error: 'Server error' }); }
+});
+
+app.post('/api/messages/react', async (req, res) => {
+  try {
+    const { msgId, reaction, fromId, toId } = req.body;
+    await db.collection('messages').updateOne({ id: msgId }, { $set: { reaction } });
+    io.to(toId).emit('msg_reaction', { msgId, reaction, fromId });
+    io.to(fromId).emit('msg_reaction', { msgId, reaction, fromId });
+    res.json({ ok: true });
+  } catch(e) { res.json({ error: 'Server error' }); }
+});
+
+app.delete('/api/messages/:id', async (req, res) => {
+  try {
+    const msg = await db.collection('messages').findOne({ id: req.params.id });
+    if(!msg) return res.json({ error: 'Not found' });
+    if(msg.fromId !== req.body?.userId) return res.json({ error: 'Not yours' });
+    await db.collection('messages').deleteOne({ id: req.params.id });
+    io.to(msg.toId).emit('msg_deleted', { msgId: req.params.id });
+    io.to(msg.fromId).emit('msg_deleted', { msgId: req.params.id });
+    res.json({ ok: true });
   } catch(e) { res.json({ error: 'Server error' }); }
 });
 
