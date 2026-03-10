@@ -314,6 +314,14 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .watch-play-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--grad);border:none;border-radius:14px;padding:14px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;width:100%;margin-bottom:10px;}
 .watch-detail-actions{display:flex;gap:10px;margin-bottom:20px;}
 .watch-detail-action{flex:1;background:var(--s2);border:none;border-radius:12px;padding:12px 8px;color:var(--w);font-size:12px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;}
+/* Games Tab */
+.game-card{display:flex;align-items:center;gap:14px;background:var(--s2);border-radius:16px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.2s;border:2px solid transparent;}
+.game-card:active{transform:scale(.98);border-color:var(--accent);}
+.game-card-ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.game-card-info{flex:1;}
+.game-card-name{font-size:15px;font-weight:800;color:var(--w);margin-bottom:2px;}
+.game-card-desc{font-size:12px;color:var(--g);}
+.game-card-badge{background:var(--grad);border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;color:#fff;}
 /* Seasons/Episodes */
 .wd-seasons-bar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 0 12px;}
 .wd-seasons-bar::-webkit-scrollbar{display:none;}
@@ -573,93 +581,24 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <div id="ex-grid" class="ex-grid"></div>
     </div>
     <!-- STUDIO -->
-    <div class="screen" id="s-studio" style="overflow-y:auto;padding-bottom:80px;">
-      <!-- Music Header -->
-      <div style="padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between;">
-        <h2 style="font-size:20px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎵 Music</h2>
+    <div class="screen" id="s-studio" style="overflow-y:auto;padding-bottom:80px;background:var(--bg);">
+      <!-- Games Header -->
+      <div style="padding:16px 16px 4px;display:flex;align-items:center;justify-content:space-between;">
+        <h2 style="font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎮 Games</h2>
       </div>
-      <!-- Search bar -->
-      <div style="padding:0 16px 12px;display:flex;gap:8px;">
-        <input id="music-search-inp" placeholder="Search songs, artists..." style="flex:1;background:var(--s2);border:none;border-radius:20px;padding:11px 16px;color:var(--w);font-size:14px;outline:none;" oninput="musicSearchDebounce(this.value)" onkeydown="if(event.key==='Enter')musicSearch(this.value)"/>
-        <button onclick="musicSearch($('music-search-inp').value)" style="background:var(--grad);border:none;border-radius:20px;padding:11px 18px;color:#fff;font-weight:700;cursor:pointer;">Go</button>
-      </div>
-      <!-- Genre tabs -->
-      <div style="display:flex;gap:8px;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none;">
-        <button class="watch-tab-btn active" onclick="loadMusicGenre('trending',this)">🔥 Trending</button>
-        <button class="watch-tab-btn" onclick="loadMusicGenre('hiphop',this)">🎤 Hip Hop</button>
-        <button class="watch-tab-btn" onclick="loadMusicGenre('afrobeats',this)">🌍 Afrobeats</button>
-        <button class="watch-tab-btn" onclick="loadMusicGenre('rnb',this)">💜 R&B</button>
-        <button class="watch-tab-btn" onclick="loadMusicGenre('pop',this)">⭐ Pop</button>
-        <button class="watch-tab-btn" onclick="loadMusicGenre('amapiano',this)">🎹 Amapiano</button>
-      </div>
-      <!-- Music content -->
-      <div id="music-content"></div>
-      <!-- Mini now-playing bar (tap to open fullscreen) -->
-      <div id="now-playing-bar" onclick="openMusicFullscreen()" style="display:none;position:fixed;bottom:60px;left:0;right:0;max-width:480px;margin:0 auto;background:linear-gradient(135deg,#1a1a2e,#16213e);border-top:1px solid rgba(255,255,255,.15);padding:10px 16px;z-index:100;align-items:center;gap:10px;cursor:pointer;">
-        <img id="np-art-mini" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--grad);" src="" onerror="this.style.background='var(--grad)';this.removeAttribute('src')"/>
-        <div style="flex:1;min-width:0;">
-          <div id="np-title" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-          <div id="np-artist" style="font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      <!-- Game List -->
+      <div id="game-list" style="padding:8px 16px 16px;"></div>
+      <!-- Active Game Area -->
+      <div id="game-area" style="display:none;padding:0 16px 16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <button onclick="closeGame()" style="background:var(--s2);border:none;border-radius:50%;width:36px;height:36px;color:var(--w);font-size:18px;cursor:pointer;">‹</button>
+          <div id="game-title" style="font-size:17px;font-weight:800;color:var(--w);"></div>
+          <button id="game-restart-btn" onclick="restartGame()" style="margin-left:auto;background:var(--s2);border:none;border-radius:10px;padding:6px 14px;color:var(--w);font-size:13px;font-weight:700;cursor:pointer;">↺ Restart</button>
         </div>
-        <button id="np-play-btn" onclick="event.stopPropagation();toggleMusicPlay()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;">▶</button>
-        <button onclick="event.stopPropagation();closeMusic()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:20px;cursor:pointer;flex-shrink:0;">✕</button>
+        <div id="game-content"></div>
       </div>
     </div>
 
-    <!-- Fullscreen Music Player (Apple Music style) -->
-    <div id="music-fullscreen" style="display:none;position:fixed;inset:0;z-index:250;flex-direction:column;overflow:hidden;">
-      <!-- Blurred background -->
-      <div id="mfs-bg" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(40px) brightness(.4);transform:scale(1.1);"></div>
-      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;padding:0 24px 32px;">
-        <!-- Top bar -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:52px 0 16px;">
-          <button onclick="closeMusicFullscreen()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:20px;cursor:pointer;">‹</button>
-          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:1px;">NOW PLAYING</div>
-          <div style="width:36px;"></div>
-        </div>
-        <!-- Artwork / YouTube Player -->
-        <div style="padding:8px 0 16px;">
-          <div id="mfs-yt-wrap" style="display:none;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;margin-bottom:8px;"></div>
-          <div style="display:flex;justify-content:center;">
-            <img id="mfs-art" style="width:220px;height:220px;border-radius:20px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.6);" src="" onerror="this.style.background='linear-gradient(135deg,#a855f7,#ec4899)';this.removeAttribute('src')"/>
-          </div>
-        </div>
-        <!-- Title + artist -->
-        <div style="display:flex;align-items:center;margin-bottom:20px;">
-          <div style="flex:1;">
-            <div id="mfs-title" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;"></div>
-            <div id="mfs-artist" style="font-size:15px;color:rgba(255,255,255,.7);"></div>
-          </div>
-          <button onclick="toggleMusicLike()" id="mfs-like-btn" style="background:none;border:none;font-size:26px;cursor:pointer;">🤍</button>
-        </div>
-        <!-- Progress bar -->
-        <div style="margin-bottom:8px;">
-          <input id="mfs-progress" type="range" min="0" max="100" value="0" oninput="seekMusic(this.value)" style="width:100%;accent-color:#a855f7;height:4px;cursor:pointer;"/>
-          <div style="display:flex;justify-content:space-between;margin-top:4px;">
-            <span id="mfs-current" style="font-size:12px;color:rgba(255,255,255,.5);">0:00</span>
-            <span id="mfs-duration" style="font-size:12px;color:rgba(255,255,255,.5);">0:30</span>
-          </div>
-        </div>
-        <!-- Controls -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 20px;">
-          <button onclick="prevTrack()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:28px;cursor:pointer;">⏮</button>
-          <button id="mfs-play-btn" onclick="toggleMusicPlay()" style="background:#fff;border:none;border-radius:50%;width:64px;height:64px;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;">▶</button>
-          <button onclick="nextTrack()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:28px;cursor:pointer;">⏭</button>
-        </div>
-        <!-- Volume -->
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-          <span style="font-size:16px;">🔈</span>
-          <input id="mfs-volume" type="range" min="0" max="100" value="100" oninput="setMusicVolume(this.value)" style="flex:1;accent-color:#a855f7;height:4px;cursor:pointer;"/>
-          <span style="font-size:16px;">🔊</span>
-        </div>
-        <!-- Lyrics toggle -->
-        <button onclick="toggleLyricsView()" id="mfs-lyrics-btn" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;width:100%;">🎤 Show Lyrics</button>
-        <!-- Lyrics view (hidden by default) -->
-        <div id="mfs-lyrics-view" style="display:none;flex:1;overflow-y:auto;margin-top:16px;scrollbar-width:none;">
-          <div id="mfs-lyrics-content" style="font-size:15px;color:rgba(255,255,255,.85);line-height:2;white-space:pre-wrap;text-align:center;padding-bottom:20px;">Loading lyrics...</div>
-        </div>
-      </div>
-    </div>
     <!-- PROFILE -->
     <div class="screen" id="s-profile">
       <div class="prof-hdr">
@@ -703,7 +642,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <button class="tab" id="tab-messages" onclick="switchTab('messages')" style="position:relative;"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span><span class="unread-badge" id="msg-badge"></span></button>
     <button class="tab" id="tab-reels" onclick="switchTab('reels')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg><span>Watch</span></button>
     <button class="tab" id="tab-explore" onclick="switchTab('explore')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Explore</span></button>
-    <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></button>
+    <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Games</span></button>
     <button class="tab" id="tab-profile" onclick="switchTab('profile')"><div class="tab-av" id="tab-av">?</div><span>Profile</span></button>
   </div>
 </div>
@@ -2942,250 +2881,530 @@ function renderNotifs(){
 }
 
 // ── STUDIO ────────────────────────────────────────────────────────────────
-// ── MUSIC TAB ─────────────────────────────────────────────────────────────
-let _currentTrack = null;
-let _musicSearchTimer = null;
+// ── GAMES TAB ─────────────────────────────────────────────────────────────
+const GAMES_LIST = [
+  {id:'2048',     name:'2048',          desc:'Slide tiles to reach 2048',        ico:'🔢', bg:'#f59e0b', badge:'Classic'},
+  {id:'snake',    name:'Snake',         desc:'Eat food, avoid the walls',        ico:'🐍', bg:'#22c55e', badge:'Retro'},
+  {id:'flappy',   name:'Flappy Bird',   desc:'Tap to fly through the pipes',     ico:'🐦', bg:'#3b82f6', badge:'Hard'},
+  {id:'bricks',   name:'Brick Breaker', desc:'Break all the bricks',             ico:'🧱', bg:'#a855f7', badge:'Arcade'},
+  {id:'memory',   name:'Memory Match',  desc:'Find all matching pairs',          ico:'🧠', bg:'#ec4899', badge:'Brain'},
+  {id:'trivia',   name:'Trivia Quiz',   desc:'Test your general knowledge',      ico:'❓', bg:'#f97316', badge:'Quiz'},
+  {id:'word',     name:'Word Scramble', desc:'Unscramble the word before time',  ico:'🔤', bg:'#06b6d4', badge:'Word'},
+  {id:'tictactoe',name:'Tic Tac Toe',   desc:'Play against the AI',              ico:'✖️', bg:'#8b5cf6', badge:'AI'},
+];
+
+let _activeGame = null;
+let _gameInstances = {};
 
 async function loadStudio(){
-  await loadMusicGenre('trending', document.querySelector('.watch-tab-btn'));
+  renderGameList();
 }
 
-async function loadMusicGenre(genre, btn){
-  document.querySelectorAll('#s-studio .watch-tab-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  const c = $('music-content'); if(!c) return;
-  c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Loading...</div>';
-  const queries = {
-    trending: 'trending music 2024',
-    hiphop: 'hip hop rap 2024',
-    afrobeats: 'afrobeats 2024',
-    rnb: 'rnb soul 2024',
-    pop: 'pop hits 2024',
-    amapiano: 'amapiano 2024'
-  };
-  const q = queries[genre] || 'trending music';
-  renderSoundCloudSearch(q, c);
+function renderGameList(){
+  const el = $('game-list'); if(!el) return;
+  $('game-area').style.display = 'none';
+  $('game-list').style.display = 'block';
+  el.innerHTML = GAMES_LIST.map(g => `
+    <div class="game-card" onclick="openGame('${g.id}')">
+      <div class="game-card-ico" style="background:${g.bg}22;">${g.ico}</div>
+      <div class="game-card-info">
+        <div class="game-card-name">${g.name}</div>
+        <div class="game-card-desc">${g.desc}</div>
+      </div>
+      <div class="game-card-badge">${g.badge}</div>
+    </div>`).join('');
 }
 
-function musicSearchDebounce(v){
-  clearTimeout(_musicSearchTimer);
-  if(!v.trim()) return;
-  _musicSearchTimer = setTimeout(()=>musicSearch(v), 600);
+function openGame(id){
+  _activeGame = id;
+  const g = GAMES_LIST.find(x=>x.id===id);
+  $('game-title').textContent = g.ico + ' ' + g.name;
+  $('game-list').style.display = 'none';
+  $('game-area').style.display = 'block';
+  $('game-content').innerHTML = '';
+  buildGame(id);
+  pushNav(closeGame);
 }
 
-function musicSearch(q){
-  if(!q.trim()) return;
-  const c = $('music-content'); if(!c) return;
-  c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Searching...</div>';
-  renderSoundCloudSearch(q, c);
+function closeGame(){
+  _activeGame = null;
+  $('game-content').innerHTML = '';
+  $('game-area').style.display = 'none';
+  $('game-list').style.display = 'block';
 }
 
-function renderSoundCloudSearch(query, container){
-  // Use SoundCloud widget embed with search
-  const encodedQ = encodeURIComponent(query);
-  const src = `https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks&q=${encodedQ}&auto_play=false&buying=false&liking=false&download=false&sharing=false&show_artwork=true&show_comments=false&show_playcount=false&show_user=true&hide_related=false&visual=false&color=%23a855f7`;
-  
-  // Instead build track cards using oEmbed approach via our server proxy
-  container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Loading tracks...</div>';
-  fetch('/api/music/search?q='+encodedQ)
-    .then(r=>r.json())
-    .then(data=>{
-      if(!data.tracks||!data.tracks.length){
-        container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">No tracks found. Try another search.</div>';
-        return;
-      }
-      _allTracks = data.tracks;
-      container.innerHTML = data.tracks.map((t,i) => `
-        <div onclick="playTrack(_allTracks[${i}],${i})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);transition:.2s;" onmousedown="this.style.background='rgba(255,255,255,.05)'" onmouseup="this.style.background=''" ontouchstart="this.style.background='rgba(255,255,255,.05)'" ontouchend="this.style.background=''">
-          <img src="${t.art||''}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--s2);" onerror="this.style.background='var(--grad)';this.removeAttribute('src')" loading="lazy"/>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:var(--w);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div>
-            <div style="font-size:12px;color:var(--g);margin-top:2px;">${t.artist}</div>
-            <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;">${t.duration} · ${t.album||''}</div>
-          </div>
-          <div style="color:var(--accent);font-size:22px;">▶</div>
-        </div>`).join('');
-    })
-    .catch(()=>{
-      // Fallback: embed SoundCloud widget directly
-      container.innerHTML = `<div style="padding:16px;">
-        <iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay"
-          src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/search%3Fq%3D${encodedQ}&color=%23a855f7&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">
-        </iframe>
-        <p style="text-align:center;color:var(--g);font-size:12px;margin-top:8px;">Powered by SoundCloud</p>
-      </div>`;
+function restartGame(){
+  if(_activeGame) buildGame(_activeGame);
+}
+
+function buildGame(id){
+  const c = $('game-content');
+  if(id==='2048'){
+    c.innerHTML = '<div id="g2048" style="background:var(--s2);border-radius:16px;padding:14px;"></div>';
+    init2048();
+  } else if(id==='snake'){
+    c.innerHTML = `<div style="text-align:center;"><div style="display:flex;justify-content:space-between;padding:0 4px 10px;"><span style="font-weight:800;font-size:15px;">Snake</span><span id="snake-score" style="color:#a855f7;font-weight:700;">Score: 0</span></div><canvas id="snake-canvas" width="320" height="400" style="border-radius:12px;touch-action:none;max-width:100%;"></canvas><p style="color:var(--g);font-size:12px;margin-top:8px;">Swipe to change direction</p></div>`;
+    initSnake('snake-canvas');
+  } else if(id==='flappy'){
+    c.innerHTML = `<div style="text-align:center;"><canvas id="flappy-canvas" width="320" height="420" style="border-radius:12px;touch-action:none;max-width:100%;"></canvas><p style="color:var(--g);font-size:12px;margin-top:8px;">Tap to flap</p></div>`;
+    initFlappy('flappy-canvas');
+  } else if(id==='bricks'){
+    c.innerHTML = `<div style="text-align:center;"><canvas id="bricks-canvas" width="320" height="420" style="border-radius:12px;touch-action:none;max-width:100%;"></canvas><p style="color:var(--g);font-size:12px;margin-top:8px;">Slide finger to move paddle</p></div>`;
+    initBrickBreaker('bricks-canvas');
+  } else if(id==='memory'){
+    c.innerHTML = '<div id="gmem" style="background:var(--s2);border-radius:16px;padding:14px;"></div>';
+    initMemory();
+  } else if(id==='trivia'){
+    c.innerHTML = '<div id="gtriv" style="background:var(--s2);border-radius:16px;padding:16px;"></div>';
+    initTrivia();
+  } else if(id==='word'){
+    c.innerHTML = '<div id="gword" style="background:var(--s2);border-radius:16px;padding:16px;"></div>';
+    initWordScramble();
+  } else if(id==='tictactoe'){
+    c.innerHTML = '<div id="gttt" style="background:var(--s2);border-radius:16px;padding:16px;"></div>';
+    initTicTacToe();
+  }
+}
+
+// ── 2048 ───────────────────────────────────────────────────────────────────
+function init2048(){
+  const SIZE=4;
+  let board=Array(SIZE).fill(null).map(()=>Array(SIZE).fill(0));
+  let score=0;
+  function addRandom(){
+    const empty=[];
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(!board[r][c])empty.push([r,c]);
+    if(!empty.length)return;
+    const[r,c]=empty[Math.floor(Math.random()*empty.length)];
+    board[r][c]=Math.random()<0.9?2:4;
+  }
+  function slide(row){
+    let arr=row.filter(x=>x);
+    for(let i=0;i<arr.length-1;i++){if(arr[i]===arr[i+1]){arr[i]*=2;score+=arr[i];arr.splice(i+1,1);}}
+    while(arr.length<SIZE)arr.push(0);
+    return arr;
+  }
+  function transpose(m){return m[0].map((_,i)=>m.map(r=>r[i]));}
+  function move(dir){
+    const old=board.map(r=>[...r]);
+    if(dir==='left')board=board.map(r=>slide(r));
+    if(dir==='right')board=board.map(r=>slide([...r].reverse()).reverse());
+    if(dir==='up'){board=transpose(board).map(r=>slide(r));board=transpose(board);}
+    if(dir==='down'){board=transpose(board).map(r=>slide([...r].reverse()).reverse());board=transpose(board);}
+    let moved=false;
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++)if(board[r][c]!==old[r][c])moved=true;
+    if(moved){addRandom();render2048();}
+    if(isOver())setTimeout(()=>toast('Game Over! Score: '+score),100);
+  }
+  function isOver(){
+    for(let r=0;r<SIZE;r++)for(let c=0;c<SIZE;c++){
+      if(!board[r][c])return false;
+      if(c<SIZE-1&&board[r][c]===board[r][c+1])return false;
+      if(r<SIZE-1&&board[r][c]===board[r+1][c])return false;
+    }return true;
+  }
+  const colors={0:'#2a2a3e',2:'#eee4da',4:'#ede0c8',8:'#f2b179',16:'#f59563',32:'#f67c5f',64:'#f65e3b',128:'#edcf72',256:'#edcc61',512:'#edc850',1024:'#edc53f',2048:'#edc22e'};
+  function render2048(){
+    const el=document.getElementById('g2048');if(!el)return;
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span style="font-size:18px;font-weight:800;">2048</span><span style="font-size:15px;font-weight:700;color:#f59e0b;">Score: ${score}</span><button onclick="restartGame()" style="background:#f59e0b;border:none;border-radius:8px;padding:6px 12px;color:#000;font-weight:700;font-size:12px;">New</button></div>`+
+    board.map(row=>`<div style="display:flex;gap:6px;margin-bottom:6px;">`+
+      row.map(v=>`<div style="flex:1;aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${v>512?14:v>128?16:18}px;background:${colors[v]||'#3c3a32'};color:${v<=4?'#776e65':'#f9f6f2'};">${v||''}</div>`).join('')+
+    '</div>').join('');
+    // Swipe
+    const el2=document.getElementById('g2048');
+    let tx,ty;
+    el2.ontouchstart=e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;};
+    el2.ontouchend=e=>{
+      const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+      if(Math.abs(dx)>Math.abs(dy)){move(dx>0?'right':'left');}else{move(dy>0?'down':'up');}
+    };
+  }
+  addRandom();addRandom();render2048();
+  _gameInstances['2048']={restart:()=>{board=Array(SIZE).fill(null).map(()=>Array(SIZE).fill(0));score=0;addRandom();addRandom();render2048();}};
+}
+
+// ── SNAKE ──────────────────────────────────────────────────────────────────
+function initSnake(canvasId){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const SZ=20,COLS=Math.floor(canvas.width/SZ),ROWS=Math.floor(canvas.height/SZ);
+  let snake=[{x:Math.floor(COLS/2),y:Math.floor(ROWS/2)}],dir={x:1,y:0},food={},score=0,loop,alive=true;
+  function placeFood(){food={x:Math.floor(Math.random()*COLS),y:Math.floor(Math.random()*ROWS)};}
+  function step(){
+    if(!alive)return;
+    const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){
+      alive=false;clearInterval(loop);
+      ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
+      ctx.fillText('Game Over! Score: '+score,canvas.width/2,canvas.height/2);
+      ctx.fillText('Tap Restart ↺',canvas.width/2,canvas.height/2+28);
+      return;
+    }
+    snake.unshift(head);
+    if(head.x===food.x&&head.y===food.y){score++;placeFood();const sc=document.getElementById('snake-score');if(sc)sc.textContent='Score: '+score;}
+    else snake.pop();
+    draw();
+  }
+  function draw(){
+    ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.arc(food.x*SZ+SZ/2,food.y*SZ+SZ/2,SZ/2-2,0,Math.PI*2);ctx.fill();
+    snake.forEach((s,i)=>{
+      ctx.fillStyle=i===0?'#a855f7':'#7c3aed';
+      ctx.beginPath();ctx.roundRect(s.x*SZ+1,s.y*SZ+1,SZ-2,SZ-2,4);ctx.fill();
     });
-}
-
-let _musicAudio = null;
-let _musicPlaying = false;
-let _musicLiked = false;
-let _musicProgressTimer = null;
-let _allTracks = [];
-let _currentTrackIdx = 0;
-let _lyricsLoaded = false;
-
-function playTrack(track, idx){
-  _currentTrack = track;
-  if(idx !== undefined) _currentTrackIdx = idx;
-  $('np-title').textContent = track.title;
-  $('np-artist').textContent = track.artist || track.album || '';
-  if($('np-art-mini')) $('np-art-mini').src = track.art || '';
-  $('now-playing-bar').style.display = 'flex';
-  _musicPlaying = true;
-  _lyricsLoaded = false;
-  setPlayBtns('⏸');
-  updateFullscreenUI();
-  // If fullscreen is open, update the YouTube iframe
-  if($('music-fullscreen').style.display !== 'none'){
-    loadYouTubePlayer(track);
   }
-  toast('▶ ' + track.title + ' — ' + (track.artist||''));
+  placeFood();draw();loop=setInterval(step,130);
+  let sx,sy;
+  canvas.ontouchstart=e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;e.preventDefault();};
+  canvas.ontouchend=e=>{
+    const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>Math.abs(dy)){if(dx>0&&dir.x!==-1)dir={x:1,y:0};else if(dx<0&&dir.x!==1)dir={x:-1,y:0};}
+    else{if(dy>0&&dir.y!==-1)dir={x:0,y:1};else if(dy<0&&dir.y!==1)dir={x:0,y:-1};}
+    e.preventDefault();
+  },{passive:false};
+  _gameInstances['snake']={restart:()=>{clearInterval(loop);snake=[{x:Math.floor(COLS/2),y:Math.floor(ROWS/2)}];dir={x:1,y:0};score=0;alive=true;placeFood();draw();loop=setInterval(step,130);const sc=document.getElementById('snake-score');if(sc)sc.textContent='Score: 0';}};
 }
 
-function loadYouTubePlayer(track){
-  // Remove old iframe if exists
-  const old = document.getElementById('yt-music-iframe');
-  if(old) old.remove();
-  if(!track.youtubeId) return;
-  const wrap = document.getElementById('mfs-yt-wrap');
-  if(!wrap) return;
-  const iframe = document.createElement('iframe');
-  iframe.id = 'yt-music-iframe';
-  iframe.src = 'https://www.youtube.com/embed/'+track.youtubeId+'?autoplay=1&controls=1&rel=0&modestbranding=1';
-  iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:12px;';
-  iframe.allow = 'autoplay; fullscreen';
-  wrap.appendChild(iframe);
-  wrap.style.display = 'block';
-  // Hide static art when YouTube loads
-  const art = $('mfs-art'); if(art) art.style.display='none';
-}
-
-function fmtTime(s){ s=Math.floor(s||0); return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0'); }
-
-function setPlayBtns(icon){
-  const b1=$('np-play-btn'); if(b1) b1.textContent=icon;
-  const b2=$('mfs-play-btn'); if(b2) b2.textContent=icon;
-}
-
-function updateFullscreenUI(){
-  if(!_currentTrack) return;
-  const t = _currentTrack;
-  const mfsEl = $('music-fullscreen');
-  if(!mfsEl || mfsEl.style.display==='none') return;
-  if($('mfs-title')) $('mfs-title').textContent = t.title;
-  if($('mfs-artist')) $('mfs-artist').textContent = t.artist||t.album||'';
-  if($('mfs-art')) $('mfs-art').src = t.art||'';
-  if($('mfs-bg')) $('mfs-bg').style.backgroundImage = t.art ? `url(${t.art})` : '';
-}
-
-function openMusicFullscreen(){
-  if(!_currentTrack) return;
-  const t = _currentTrack;
-  $('mfs-title').textContent = t.title;
-  $('mfs-artist').textContent = t.artist||t.album||'';
-  $('mfs-art').src = t.art||'';
-  $('mfs-bg').style.backgroundImage = t.art ? `url(${t.art})` : 'linear-gradient(135deg,#1a1a2e,#a855f7)';
-  $('mfs-like-btn').textContent = _musicLiked ? '❤️' : '🤍';
-  setPlayBtns(_musicPlaying ? '⏸' : '▶');
-  // Reset lyrics view
-  $('mfs-lyrics-view').style.display='none';
-  $('mfs-lyrics-btn').textContent='🎤 Show Lyrics';
-  $('music-fullscreen').style.display='flex';
-  // Load YouTube player
-  if(_currentTrack?.youtubeId){
-    loadYouTubePlayer(_currentTrack);
-  } else {
-    // iTunes fallback - show art
-    const art=$('mfs-art'); if(art) art.style.display='block';
-    const wrap=$('mfs-yt-wrap'); if(wrap) wrap.style.display='none';
-  }
-  pushNav(closeMusicFullscreen);
-}
-
-function closeMusicFullscreen(){
-  $('music-fullscreen').style.display='none';
-}
-
-function toggleMusicPlay(){
-  if(_musicAudio){
-    if(_musicPlaying){ _musicAudio.pause(); setPlayBtns('▶'); _musicPlaying=false; }
-    else { _musicAudio.play(); setPlayBtns('⏸'); _musicPlaying=true; }
-  } else if(_currentTrack?.youtubeId){
-    // YouTube controls are inside the iframe — toggle by reloading with/without autoplay
-    _musicPlaying = !_musicPlaying;
-    setPlayBtns(_musicPlaying ? '⏸' : '▶');
-    const iframe = document.getElementById('yt-music-iframe');
-    if(iframe){
-      const base = 'https://www.youtube.com/embed/'+_currentTrack.youtubeId;
-      iframe.src = base + (_musicPlaying ? '?autoplay=1&controls=1&rel=0&modestbranding=1' : '?autoplay=0&controls=1&rel=0&modestbranding=1');
+// ── FLAPPY BIRD ───────────────────────────────────────────────────────────
+function initFlappy(canvasId){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  let bird={x:70,y:H/2,vy:0},pipes=[],score=0,alive=true,started=false,rafId,frames=0;
+  const GRAVITY=0.45,JUMP=-8,PIPE_W=52,GAP=150,SPEED=2.5;
+  function reset(){bird={x:70,y:H/2,vy:0};pipes=[];score=0;alive=true;started=false;frames=0;cancelAnimationFrame(rafId);draw();rafId=requestAnimationFrame(loop);}
+  function jump(){if(!alive){reset();return;}if(!started)started=true;bird.vy=JUMP;}
+  function addPipe(){const top=60+Math.random()*(H-GAP-100);pipes.push({x:W,top,bottom:top+GAP,passed:false});}
+  function loop(){
+    if(started&&alive){
+      bird.vy+=GRAVITY;bird.y+=bird.vy;frames++;
+      if(frames%95===0)addPipe();
+      pipes.forEach(p=>p.x-=SPEED);
+      pipes=pipes.filter(p=>p.x>-PIPE_W);
+      pipes.forEach(p=>{if(!p.passed&&p.x+PIPE_W<bird.x){p.passed=true;score++;}});
+      if(bird.y<0||bird.y>H-18)alive=false;
+      pipes.forEach(p=>{if(bird.x+14>p.x&&bird.x-4<p.x+PIPE_W&&(bird.y-4<p.top||bird.y+14>p.bottom))alive=false;});
+    }
+    draw();
+    if(alive)rafId=requestAnimationFrame(loop);
+    else if(started){
+      ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText('Score: '+score,W/2,H/2-12);ctx.fillText('Tap to restart',W/2,H/2+18);
     }
   }
-}
-
-function seekMusic(val){
-  if(!_musicAudio) return;
-  _musicAudio.currentTime = (val/100)*(_musicAudio.duration||30);
-}
-
-function setMusicVolume(val){
-  if(_musicAudio) _musicAudio.volume = val/100;
-}
-
-function toggleMusicLike(){
-  _musicLiked = !_musicLiked;
-  $('mfs-like-btn').textContent = _musicLiked ? '❤️' : '🤍';
-  toast(_musicLiked ? '❤️ Liked!' : 'Removed from likes');
-}
-
-function nextTrack(){
-  if(!_allTracks.length) return;
-  _currentTrackIdx = (_currentTrackIdx+1) % _allTracks.length;
-  playTrack(_allTracks[_currentTrackIdx], _currentTrackIdx);
-  updateFullscreenUI();
-}
-
-function prevTrack(){
-  if(!_allTracks.length) return;
-  _currentTrackIdx = (_currentTrackIdx-1+_allTracks.length) % _allTracks.length;
-  playTrack(_allTracks[_currentTrackIdx], _currentTrackIdx);
-  updateFullscreenUI();
-}
-
-function closeMusic(){
-  if(_musicAudio){ _musicAudio.pause(); _musicAudio=null; }
-  clearInterval(_musicProgressTimer);
-  const ytIframe = document.getElementById('yt-music-iframe');
-  if(ytIframe) ytIframe.remove();
-  $('now-playing-bar').style.display = 'none';
-  $('music-fullscreen').style.display = 'none';
-  _currentTrack = null; _musicPlaying = false;
-}
-
-async function toggleLyricsView(){
-  const view = $('mfs-lyrics-view');
-  const btn = $('mfs-lyrics-btn');
-  if(view.style.display !== 'none'){
-    view.style.display='none';
-    btn.textContent='🎤 Show Lyrics';
-    return;
+  function draw(){
+    // Sky gradient
+    const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#1a1a3e');grad.addColorStop(1,'#0f0f1a');
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    // Pipes
+    ctx.fillStyle='#22c55e';
+    pipes.forEach(p=>{
+      ctx.beginPath();ctx.roundRect(p.x,0,PIPE_W,p.top,4);ctx.fill();
+      ctx.beginPath();ctx.roundRect(p.x,p.bottom,PIPE_W,H-p.bottom,4);ctx.fill();
+    });
+    // Bird
+    ctx.save();ctx.translate(bird.x,bird.y);ctx.rotate(Math.min(Math.max(bird.vy*0.06,-0.5),1));
+    ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.ellipse(0,0,12,9,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(5,-2,4,3,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.arc(6,-2,1.5,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    // Score / start
+    ctx.fillStyle='#fff';ctx.font='bold 18px sans-serif';ctx.textAlign='center';
+    if(!started)ctx.fillText('Tap to start!',W/2,H/2);
+    else ctx.fillText(score,W/2,28);
   }
-  view.style.display='block';
-  btn.textContent='🎵 Hide Lyrics';
-  if(_lyricsLoaded) return;
-  $('mfs-lyrics-content').textContent='Searching for lyrics...';
-  try {
-    const r = await fetch('/api/music/lyrics?title='+encodeURIComponent(_currentTrack.title)+'&artist='+encodeURIComponent(_currentTrack.artist||''));
-    const d = await r.json();
-    _lyricsLoaded = true;
-    $('mfs-lyrics-content').textContent = d.lyrics || 'Lyrics not found for this song.';
-  } catch(e){
-    $('mfs-lyrics-content').textContent = 'Could not load lyrics. Try again.';
-  }
+  canvas.ontouchstart=e=>{jump();e.preventDefault();};
+  canvas.onclick=jump;
+  draw();rafId=requestAnimationFrame(loop);
+  _gameInstances['flappy']={restart:reset};
 }
 
-// Keep getLyrics for backward compat
-async function getLyrics(){ toggleLyricsView(); }
+// ── BRICK BREAKER ─────────────────────────────────────────────────────────
+function initBrickBreaker(canvasId){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const ROWS=5,COLS=7;
+  const BW=Math.floor((W-24)/COLS),BH=18;
+  let bricks,ball,paddle,score,lives,alive,rafId;
+  function initState(){
+    bricks=[];
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)
+      bricks.push({x:12+c*(BW+2),y:44+r*(BH+6),alive:true,color:`hsl(${r*40+200},70%,60%)`});
+    ball={x:W/2,y:H-70,vx:3*(Math.random()>.5?1:-1),vy:-4};
+    paddle={x:W/2-45,w:90,h:10};
+    score=0;lives=3;alive=true;
+  }
+  function resetBall(){ball={x:W/2,y:H-70,vx:3*(Math.random()>.5?1:-1),vy:-4};}
+  function loop(){
+    ball.x+=ball.vx;ball.y+=ball.vy;
+    if(ball.x<8||ball.x>W-8){ball.vx*=-1;ball.x=Math.max(8,Math.min(W-8,ball.x));}
+    if(ball.y<8){ball.vy=Math.abs(ball.vy);}
+    // Paddle
+    if(ball.y>H-paddle.h-20&&ball.y<H-paddle.h+ball.vy&&ball.x>paddle.x&&ball.x<paddle.x+paddle.w){
+      ball.vy=-Math.abs(ball.vy);
+      ball.vx+=((ball.x-(paddle.x+paddle.w/2))/paddle.w)*4;
+      ball.vx=Math.max(-6,Math.min(6,ball.vx));
+    }
+    if(ball.y>H+10){lives--;if(lives<=0){alive=false;}else resetBall();}
+    // Bricks
+    for(const b of bricks){
+      if(!b.alive)continue;
+      if(ball.x>b.x&&ball.x<b.x+BW&&ball.y>b.y&&ball.y<b.y+BH){
+        b.alive=false;ball.vy*=-1;score+=10;break;
+      }
+    }
+    if(bricks.every(b=>!b.alive)){
+      for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)
+        bricks.push({x:12+c*(BW+2),y:44+r*(BH+6),alive:true,color:`hsl(${r*40+200},70%,60%)`});
+      bricks=bricks.filter(b=>!bricks.slice(0,ROWS*COLS).includes(b)||b.alive);
+      score+=100;
+    }
+    draw();
+    if(alive)rafId=requestAnimationFrame(loop);
+    else{
+      ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';
+      ctx.fillText('Game Over! Score: '+score,W/2,H/2);
+    }
+  }
+  function draw(){
+    ctx.fillStyle='#0f0f1a';ctx.fillRect(0,0,W,H);
+    bricks.forEach(b=>{if(!b.alive)return;ctx.fillStyle=b.color;ctx.beginPath();ctx.roundRect(b.x,b.y,BW-2,BH,3);ctx.fill();});
+    ctx.fillStyle='#a855f7';ctx.beginPath();ctx.roundRect(paddle.x,H-paddle.h-8,paddle.w,paddle.h,5);ctx.fill();
+    ctx.fillStyle='#f59e0b';ctx.beginPath();ctx.arc(ball.x,ball.y,8,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='14px sans-serif';ctx.textAlign='left';ctx.fillText('Score: '+score,10,22);
+    ctx.textAlign='right';ctx.fillText('❤️'.repeat(lives),W-10,22);
+  }
+  canvas.ontouchmove=e=>{
+    const rect=canvas.getBoundingClientRect();
+    const scale=canvas.width/rect.width;
+    const tx=(e.touches[0].clientX-rect.left)*scale;
+    paddle.x=Math.max(0,Math.min(W-paddle.w,tx-paddle.w/2));
+    e.preventDefault();
+  },{passive:false};
+  canvas.onmousemove=e=>{
+    const rect=canvas.getBoundingClientRect();
+    const scale=canvas.width/rect.width;
+    paddle.x=Math.max(0,Math.min(W-paddle.w,(e.clientX-rect.left)*scale-paddle.w/2));
+  };
+  initState();draw();rafId=requestAnimationFrame(loop);
+  _gameInstances['bricks']={restart:()=>{cancelAnimationFrame(rafId);initState();draw();rafId=requestAnimationFrame(loop);}};
+}
+
+// ── MEMORY MATCH ──────────────────────────────────────────────────────────
+function initMemory(){
+  const emojis=['🍎','🍊','🍋','🍇','🍓','🍒','🥝','🍑','🍍','🥭','🍈','🫐'];
+  let cards=[...emojis,...emojis].sort(()=>Math.random()-.5).map((e,i)=>({id:i,emoji:e,flipped:false,matched:false}));
+  let first=null,second=null,lock=false,moves=0,matched=0;
+  function render(){
+    const el=document.getElementById('gmem');if(!el)return;
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><span style="font-size:15px;font-weight:800;">Memory Match</span><span style="color:#a855f7;font-weight:700;">Moves: ${moves}</span></div>`+
+    `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">`+
+    cards.map(c=>`<div onclick="memFlip(${c.id})" style="aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:${c.flipped||c.matched?26:22}px;cursor:pointer;background:${c.flipped||c.matched?'rgba(168,85,247,.15)':'#1a1a2e'};border:2px solid ${c.matched?'#a855f7':c.flipped?'rgba(168,85,247,.5)':'#2a2a3e'};transition:.3s;">${c.flipped||c.matched?c.emoji:'❓'}</div>`).join('')+
+    '</div>';
+  }
+  window.memFlip=function(id){
+    if(lock)return;const c=cards[id];if(c.flipped||c.matched)return;
+    c.flipped=true;render();
+    if(!first){first=c;return;}
+    second=c;lock=true;moves++;
+    if(first.emoji===second.emoji){
+      first.matched=second.matched=true;matched+=2;first=second=null;lock=false;
+      if(matched===cards.length){setTimeout(()=>{toast('You won in '+moves+' moves! 🎉');initMemory();},400);}
+      render();
+    } else {
+      setTimeout(()=>{first.flipped=second.flipped=false;first=second=null;lock=false;render();},900);
+    }
+  };
+  render();
+  _gameInstances['memory']={restart:initMemory};
+}
+
+// ── TRIVIA ────────────────────────────────────────────────────────────────
+function initTrivia(){
+  const questions=[
+    {q:"What is the capital of France?",a:"Paris",o:["London","Berlin","Paris","Madrid"]},
+    {q:"How many sides does a hexagon have?",a:"6",o:["5","6","7","8"]},
+    {q:"What planet is called the Red Planet?",a:"Mars",o:["Venus","Mars","Jupiter","Saturn"]},
+    {q:"Who painted the Mona Lisa?",a:"Leonardo da Vinci",o:["Picasso","Van Gogh","Leonardo da Vinci","Rembrandt"]},
+    {q:"What is the largest ocean?",a:"Pacific",o:["Atlantic","Indian","Pacific","Arctic"]},
+    {q:"How many bones in the adult body?",a:"206",o:["186","196","206","216"]},
+    {q:"What year did WW2 end?",a:"1945",o:["1943","1944","1945","1946"]},
+    {q:"Chemical symbol for gold?",a:"Au",o:["Go","Gd","Ag","Au"]},
+    {q:"Who wrote Romeo and Juliet?",a:"Shakespeare",o:["Dickens","Shakespeare","Hemingway","Tolstoy"]},
+    {q:"Fastest land animal?",a:"Cheetah",o:["Lion","Horse","Cheetah","Leopard"]},
+    {q:"How many continents are there?",a:"7",o:["5","6","7","8"]},
+    {q:"Longest river in the world?",a:"Nile",o:["Amazon","Nile","Yangtze","Mississippi"]},
+    {q:"What is 15% of 200?",a:"30",o:["25","30","35","40"]},
+    {q:"Element symbol O stands for?",a:"Oxygen",o:["Osmium","Oxygen","Ozone","Oxide"]},
+    {q:"Most native speakers language?",a:"Mandarin",o:["English","Spanish","Hindi","Mandarin"]},
+    {q:"Adult human teeth count?",a:"32",o:["28","30","32","34"]},
+    {q:"Smallest country in the world?",a:"Vatican City",o:["Monaco","Liechtenstein","Vatican City","San Marino"]},
+    {q:"Who invented the telephone?",a:"Alexander Graham Bell",o:["Edison","Tesla","Marconi","Alexander Graham Bell"]},
+    {q:"Hardest natural substance?",a:"Diamond",o:["Quartz","Sapphire","Diamond","Emerald"]},
+    {q:"Players in a basketball team?",a:"5",o:["4","5","6","7"]},
+    {q:"What is the capital of Japan?",a:"Tokyo",o:["Beijing","Seoul","Tokyo","Bangkok"]},
+    {q:"How many colors in a rainbow?",a:"7",o:["5","6","7","8"]},
+    {q:"What does DNA stand for?",a:"Deoxyribonucleic Acid",o:["Deoxyribonucleic Acid","Digital Nucleic Acid","Double Neutral Atom","Dense Nuclear Array"]},
+    {q:"Speed of light (km/s approx)?",a:"300,000",o:["150,000","300,000","450,000","600,000"]},
+    {q:"How many strings on a guitar?",a:"6",o:["4","5","6","7"]},
+  ];
+  let qIdx=0,score=0,answered=false;
+  const shuffled=[...questions].sort(()=>Math.random()-.5);
+  function render(){
+    const el=document.getElementById('gtriv');if(!el)return;
+    if(qIdx>=shuffled.length){
+      el.innerHTML=`<div style="text-align:center;padding:30px 0;"><div style="font-size:52px;margin-bottom:12px;">🏆</div><div style="font-size:20px;font-weight:800;margin-bottom:6px;">Quiz Complete!</div><div style="font-size:17px;color:#a855f7;font-weight:700;margin-bottom:20px;">${score}/${shuffled.length} correct</div><button onclick="initTrivia()" style="background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px 28px;color:#fff;font-size:15px;font-weight:800;">Play Again</button></div>`;
+      return;
+    }
+    const q=shuffled[qIdx];
+    const opts=[...q.o].sort(()=>Math.random()-.5);
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:14px;"><span style="color:#a855f7;font-weight:700;font-size:13px;">Q ${qIdx+1}/${shuffled.length}</span><span style="color:#f59e0b;font-weight:700;font-size:13px;">Score: ${score}</span></div>`+
+    `<div style="font-size:15px;font-weight:700;line-height:1.5;margin-bottom:18px;">${q.q}</div>`+
+    opts.map(o=>`<button data-opt="${o}" onclick="trivAns(this,'${o.replace(/'/g,"\'").replace(/"/g,"&quot;")}','${q.a.replace(/'/g,"\'").replace(/"/g,"&quot;")}')" style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:12px 14px;color:#fff;font-size:13px;font-weight:600;margin-bottom:8px;text-align:left;cursor:pointer;">${o}</button>`).join('');
+  }
+  window.trivAns=function(btn,chosen,correct){
+    if(answered)return;answered=true;
+    if(chosen===correct)score++;
+    document.querySelectorAll('#gtriv button[data-opt]').forEach(b=>{
+      const t=b.dataset.opt;
+      if(t===correct){b.style.background='#166534';b.style.borderColor='#22c55e';}
+      else if(t===chosen&&chosen!==correct){b.style.background='#7f1d1d';b.style.borderColor='#ef4444';}
+      b.style.pointerEvents='none';
+    });
+    setTimeout(()=>{qIdx++;answered=false;render();},1100);
+  };
+  render();
+  _gameInstances['trivia']={restart:()=>{qIdx=0;score=0;answered=false;render();}};
+}
+
+// ── WORD SCRAMBLE ─────────────────────────────────────────────────────────
+function initWordScramble(){
+  const words=[
+    {word:'ELEPHANT',hint:'Large grey animal with a trunk'},
+    {word:'GUITAR',hint:'Musical instrument with 6 strings'},
+    {word:'MOUNTAIN',hint:'Very tall landform'},
+    {word:'BUTTERFLY',hint:'Colorful flying insect'},
+    {word:'CHOCOLATE',hint:'Sweet brown treat'},
+    {word:'COMPUTER',hint:'Electronic device you type on'},
+    {word:'DIAMOND',hint:'Precious gemstone, hardest natural'},
+    {word:'PENGUIN',hint:'Black and white bird that cannot fly'},
+    {word:'VOLCANO',hint:'Mountain that erupts lava'},
+    {word:'UMBRELLA',hint:'Keeps you dry in the rain'},
+    {word:'RAINBOW',hint:'Colorful arc after rain'},
+    {word:'LIBRARY',hint:'Place where you borrow books'},
+    {word:'DOLPHIN',hint:'Smart ocean mammal'},
+    {word:'PYRAMID',hint:'Ancient Egyptian structure'},
+    {word:'THUNDER',hint:'Loud sound during a storm'},
+    {word:'GIRAFFE',hint:'Tallest land animal'},
+    {word:'BLANKET',hint:'Keeps you warm in bed'},
+    {word:'KITCHEN',hint:'Room where you cook food'},
+    {word:'CAPTAIN',hint:'Leader of a ship or team'},
+    {word:'PHOENIX',hint:'Mythical bird that rises from ashes'},
+  ];
+  let idx=0,score=0,timerInt,timeLeft,curWord;
+  const shuffled=[...words].sort(()=>Math.random()-.5);
+  function scramble(w){let a=w.split('');do{a.sort(()=>Math.random()-.5);}while(a.join('')===w);return a.join('');}
+  function startTimer(){
+    clearInterval(timerInt);timeLeft=30;
+    timerInt=setInterval(()=>{
+      timeLeft--;
+      const t=document.getElementById('ws-timer');if(t)t.textContent=timeLeft+'s';
+      if(t)t.style.color=timeLeft<=10?'#ef4444':'#f59e0b';
+      if(timeLeft<=0){clearInterval(timerInt);nextWord(false);}
+    },1000);
+  }
+  function nextWord(correct){
+    if(correct)score++;idx++;
+    if(idx>=shuffled.length){
+      clearInterval(timerInt);
+      const el=document.getElementById('gword');if(!el)return;
+      el.innerHTML=`<div style="text-align:center;padding:30px 0;"><div style="font-size:52px;margin-bottom:12px;">🏆</div><div style="font-size:20px;font-weight:800;margin-bottom:6px;">Done!</div><div style="font-size:17px;color:#a855f7;font-weight:700;margin-bottom:20px;">${score}/${shuffled.length} correct</div><button onclick="initWordScramble()" style="background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px 28px;color:#fff;font-size:15px;font-weight:800;">Play Again</button></div>`;
+      return;
+    }
+    render();
+  }
+  function render(){
+    curWord=shuffled[idx];
+    const sc=scramble(curWord.word);
+    const el=document.getElementById('gword');if(!el)return;
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:14px;"><span style="font-weight:700;color:#a855f7;font-size:13px;">Word ${idx+1}/${shuffled.length}</span><span style="font-weight:700;color:#22c55e;font-size:13px;">Score: ${score}</span><span id="ws-timer" style="font-weight:800;color:#f59e0b;font-size:14px;">30s</span></div>`+
+    `<div style="text-align:center;margin-bottom:20px;background:#1a1a2e;border-radius:12px;padding:16px;"><div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px;">Hint: ${curWord.hint}</div><div style="font-size:30px;font-weight:800;letter-spacing:6px;color:#a855f7;">${sc}</div></div>`+
+    `<input id="ws-inp" placeholder="Type your answer..." style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:13px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px;" onkeydown="if(event.key==='Enter')wsCheck()"/>`+
+    `<div style="display:flex;gap:8px;"><button onclick="wsCheck()" style="flex:1;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px;color:#fff;font-weight:800;font-size:14px;">Submit</button><button onclick="nextWord(false)" style="background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:13px 16px;color:#888;font-weight:700;font-size:13px;">Skip ›</button></div>`;
+    startTimer();
+    setTimeout(()=>document.getElementById('ws-inp')?.focus(),100);
+  }
+  window.wsCheck=function(){
+    const inp=document.getElementById('ws-inp');if(!inp)return;
+    const val=inp.value.trim().toUpperCase();
+    if(val===curWord.word){
+      clearInterval(timerInt);
+      inp.style.borderColor='#22c55e';inp.style.background='rgba(34,197,94,.15)';
+      inp.value='✓ Correct!';inp.disabled=true;
+      setTimeout(()=>nextWord(true),700);
+    } else {
+      inp.style.borderColor='#ef4444';inp.style.background='rgba(239,68,68,.1)';
+      setTimeout(()=>{inp.style.borderColor='#2a2a3e';inp.style.background='#1a1a2e';inp.disabled=false;inp.value='';},500);
+    }
+  };
+  render();
+  _gameInstances['word']={restart:()=>{clearInterval(timerInt);idx=0;score=0;render();}};
+}
+
+// ── TIC TAC TOE ───────────────────────────────────────────────────────────
+function initTicTacToe(){
+  let board=Array(9).fill(''),turn='X',over=false;
+  const LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  function winLine(b,p){return LINES.find(l=>l.every(i=>b[i]===p));}
+  function render(hl=[]){
+    const el=document.getElementById('gttt');if(!el)return;
+    const msg=over?'Game over':(turn==='X'?'Your turn':'AI thinking...');
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:16px;font-weight:800;">Tic Tac Toe</span><span style="font-size:12px;color:var(--g);">${msg}</span></div>`+
+    `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:260px;margin:0 auto 16px;">`+
+    board.map((v,i)=>`<div onclick="tttClick(${i})" style="aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900;cursor:${!v&&!over&&turn==='X'?'pointer':'default'};background:${hl.includes(i)?'rgba(168,85,247,.25)':'#1a1a2e'};border:2px solid ${hl.includes(i)?'#a855f7':'#2a2a3e'};transition:.2s;color:${v==='X'?'#a855f7':'#f59e0b'};">${v}</div>`).join('')+
+    '</div>'+
+    `<button onclick="initTicTacToe()" style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:11px;color:#888;font-weight:700;font-size:13px;">New Game</button>`;
+  }
+  window.tttClick=function(i){
+    if(board[i]||turn!=='X'||over)return;
+    board[i]='X';
+    const wl=winLine(board,'X');
+    if(wl){over=true;render(wl);setTimeout(()=>toast('You win! 🎉'),200);return;}
+    if(board.every(v=>v)){over=true;render();setTimeout(()=>toast("It's a draw!"),200);return;}
+    turn='O';render();
+    setTimeout(()=>{
+      // AI: win > block > center > corner > random
+      let ai=-1;
+      for(const p of['O','X']){
+        for(let j=0;j<9;j++){if(!board[j]){board[j]=p;if(winLine(board,p)){if(p==='O'){ai=j;}board[j]='';break;}board[j]='';}}
+        if(ai>=0)break;
+      }
+      if(ai<0&&!board[4])ai=4;
+      if(ai<0){const c=[0,2,6,8].filter(j=>!board[j]);if(c.length)ai=c[Math.floor(Math.random()*c.length)];}
+      if(ai<0){const e=board.map((v,j)=>v?-1:j).filter(j=>j>=0);if(e.length)ai=e[Math.floor(Math.random()*e.length)];}
+      if(ai<0)return;
+      board[ai]='O';
+      const wl2=winLine(board,'O');
+      if(wl2){over=true;render(wl2);setTimeout(()=>toast('AI wins! 🤖'),200);return;}
+      if(board.every(v=>v)){over=true;render();setTimeout(()=>toast("It's a draw!"),200);return;}
+      turn='X';render();
+    },500);
+  };
+  render();
+  _gameInstances['tictactoe']={restart:initTicTacToe};
+}
+
+function restartGame(){
+  if(_activeGame && _gameInstances[_activeGame]){
+    _gameInstances[_activeGame].restart();
+  } else if(_activeGame){
+    buildGame(_activeGame);
+  }
+}
 
 // ── LIVE ──────────────────────────────────────────────────────────────────
 let _liveFrameTimer = null;
