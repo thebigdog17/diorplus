@@ -3281,40 +3281,211 @@ function initTrivia(){
   _gameInstances['trivia']={restart:()=>{qIdx=0;score=0;answered=false;render();}};
 }
 
-// ── WORD SCRAMBLE ─────────────────────────────────────────────────────────
+// ── WORD SCRAMBLE (200+ words) ───────────────────────────────────────────
 function initWordScramble(){
   const words=[
-    {word:'ELEPHANT',hint:'Large grey animal with a trunk'},
-    {word:'GUITAR',hint:'Musical instrument with 6 strings'},
-    {word:'MOUNTAIN',hint:'Very tall landform'},
-    {word:'BUTTERFLY',hint:'Colorful flying insect'},
-    {word:'CHOCOLATE',hint:'Sweet brown treat'},
-    {word:'COMPUTER',hint:'Electronic device you type on'},
-    {word:'DIAMOND',hint:'Precious gemstone, hardest natural'},
+    // Animals
+    {word:'ELEPHANT',hint:'Largest land animal with a trunk'},
+    {word:'BUTTERFLY',hint:'Colorful flying insect from a caterpillar'},
     {word:'PENGUIN',hint:'Black and white bird that cannot fly'},
-    {word:'VOLCANO',hint:'Mountain that erupts lava'},
-    {word:'UMBRELLA',hint:'Keeps you dry in the rain'},
-    {word:'RAINBOW',hint:'Colorful arc after rain'},
-    {word:'LIBRARY',hint:'Place where you borrow books'},
-    {word:'DOLPHIN',hint:'Smart ocean mammal'},
-    {word:'PYRAMID',hint:'Ancient Egyptian structure'},
-    {word:'THUNDER',hint:'Loud sound during a storm'},
-    {word:'GIRAFFE',hint:'Tallest land animal'},
-    {word:'BLANKET',hint:'Keeps you warm in bed'},
-    {word:'KITCHEN',hint:'Room where you cook food'},
-    {word:'CAPTAIN',hint:'Leader of a ship or team'},
-    {word:'PHOENIX',hint:'Mythical bird that rises from ashes'},
+    {word:'DOLPHIN',hint:'Smart ocean mammal that loves to jump'},
+    {word:'GIRAFFE',hint:'Tallest land animal with a long neck'},
+    {word:'CHEETAH',hint:'Fastest land animal on Earth'},
+    {word:'GORILLA',hint:'Large powerful ape from Africa'},
+    {word:'CROCODILE',hint:'Large reptile with powerful jaws'},
+    {word:'FLAMINGO',hint:'Pink bird that stands on one leg'},
+    {word:'KANGAROO',hint:'Australian animal with a pouch'},
+    {word:'PORCUPINE',hint:'Small animal covered in sharp quills'},
+    {word:'CHAMELEON',hint:'Lizard that changes color'},
+    {word:'WOLVERINE',hint:'Fierce small mammal known for toughness'},
+    {word:'PLATYPUS',hint:'Mammal that lays eggs and has a bill'},
+    {word:'ARMADILLO',hint:'Animal with a hard bony shell'},
+    {word:'NARWHAL',hint:'Arctic whale with a spiral horn'},
+    {word:'MONGOOSE',hint:'Animal famous for fighting cobras'},
+    {word:'PANGOLIN',hint:'Scaly anteater-like mammal'},
+    {word:'CAPYBARA',hint:'Worlds largest rodent'},
+    {word:'AXOLOTL',hint:'Mexican walking fish that regrows limbs'},
+    // Food
+    {word:'CHOCOLATE',hint:'Sweet brown treat made from cacao'},
+    {word:'AVOCADO',hint:'Green fruit used in guacamole'},
+    {word:'PINEAPPLE',hint:'Tropical fruit with spiky skin'},
+    {word:'BLUEBERRY',hint:'Small dark blue fruit, great antioxidant'},
+    {word:'STRAWBERRY',hint:'Red heart-shaped summer fruit'},
+    {word:'CAULIFLOWER',hint:'White vegetable related to broccoli'},
+    {word:'CINNAMON',hint:'Brown spice from tree bark'},
+    {word:'MOZZARELLA',hint:'White Italian cheese used on pizza'},
+    {word:'CROISSANT',hint:'Buttery flaky French pastry'},
+    {word:'DUMPLINGS',hint:'Stuffed dough pockets, popular in Asia'},
+    {word:'TIRAMISU',hint:'Italian coffee-flavoured dessert'},
+    {word:'KOMBUCHA',hint:'Fermented tea health drink'},
+    {word:'BRUSCHETTA',hint:'Toasted Italian bread with tomatoes'},
+    {word:'QUESADILLA',hint:'Cheese-filled grilled tortilla'},
+    {word:'MARMALADE',hint:'Jam made from citrus peel'},
+    // Science & Nature
+    {word:'VOLCANO',hint:'Mountain that erupts molten lava'},
+    {word:'RAINBOW',hint:'Colorful arc after rain and sunshine'},
+    {word:'THUNDER',hint:'Loud sound that follows lightning'},
+    {word:'GLACIER',hint:'Slow-moving river of ice'},
+    {word:'TORNADO',hint:'Violent rotating column of air'},
+    {word:'TSUNAMI',hint:'Giant ocean wave from earthquake'},
+    {word:'ECLIPSE',hint:'When one celestial body blocks another'},
+    {word:'GRAVITY',hint:'Force that pulls objects downward'},
+    {word:'MOLECULE',hint:'Smallest unit of a chemical compound'},
+    {word:'NITROGEN',hint:'Most abundant gas in Earths atmosphere'},
+    {word:'HYDROGEN',hint:'Lightest and most abundant element'},
+    {word:'PHOTON',hint:'Particle of light with no mass'},
+    {word:'NEUTRON',hint:'Neutral particle in an atoms nucleus'},
+    {word:'PROTON',hint:'Positively charged atomic particle'},
+    {word:'OSMOSIS',hint:'Water movement through a membrane'},
+    {word:'ENTROPY',hint:'Tendency toward disorder in a system'},
+    {word:'CATALYST',hint:'Substance that speeds up a reaction'},
+    {word:'CHLOROPHYLL',hint:'Green pigment in plants for photosynthesis'},
+    {word:'CHROMOSOME',hint:'DNA-carrying structure in cell nucleus'},
+    {word:'METAMORPHOSIS',hint:'Complete transformation of an organism'},
+    // Geography
+    {word:'MOUNTAIN',hint:'Very tall rocky landform'},
+    {word:'CONTINENT',hint:'One of Earths 7 large landmasses'},
+    {word:'PENINSULA',hint:'Land surrounded by water on three sides'},
+    {word:'ARCHIPELAGO',hint:'Group or chain of islands'},
+    {word:'EQUATOR',hint:'Imaginary line around Earths middle'},
+    {word:'MERIDIAN',hint:'Imaginary line from pole to pole'},
+    {word:'PLATEAU',hint:'Flat-topped elevated landform'},
+    {word:'SAVANNA',hint:'Tropical grassland with scattered trees'},
+    {word:'TUNDRA',hint:'Cold treeless Arctic landscape'},
+    {word:'MANGROVE',hint:'Coastal tree that grows in saltwater'},
+    {word:'LAGOON',hint:'Shallow body of water near the sea'},
+    {word:'CANYON',hint:'Deep gorge carved by a river'},
+    {word:'FJORD',hint:'Narrow sea inlet between steep cliffs'},
+    // Technology
+    {word:'COMPUTER',hint:'Electronic device you type on'},
+    {word:'ALGORITHM',hint:'Step-by-step problem solving instructions'},
+    {word:'DATABASE',hint:'Organized collection of stored data'},
+    {word:'ENCRYPTION',hint:'Converting data into a secret code'},
+    {word:'BANDWIDTH',hint:'Maximum data transfer rate'},
+    {word:'BLUETOOTH',hint:'Short-range wireless technology'},
+    {word:'PROCESSOR',hint:'Brain of a computer chip'},
+    {word:'JAVASCRIPT',hint:'Programming language of the web'},
+    {word:'CRYPTOCURRENCY',hint:'Digital decentralized currency'},
+    {word:'ARTIFICIAL',hint:'Made by humans, not nature'},
+    {word:'SATELLITE',hint:'Object orbiting Earth in space'},
+    {word:'MICROCHIP',hint:'Tiny electronic circuit on silicon'},
+    {word:'FIREWALL',hint:'Network security barrier against hackers'},
+    {word:'PROTOCOL',hint:'Rules for data communication'},
+    {word:'INTERFACE',hint:'Point where two systems meet and interact'},
+    // History & Culture
+    {word:'PYRAMID',hint:'Ancient Egyptian triangular stone structure'},
+    {word:'GLADIATOR',hint:'Roman fighter in the arena'},
+    {word:'PHARAOH',hint:'Ancient Egyptian ruler and king'},
+    {word:'SAMURAI',hint:'Japanese feudal warrior class'},
+    {word:'MEDIEVAL',hint:'Relating to the Middle Ages'},
+    {word:'RENAISSANCE',hint:'European cultural rebirth from 14th century'},
+    {word:'DEMOCRACY',hint:'System where people vote for leaders'},
+    {word:'REVOLUTION',hint:'Dramatic overthrow of a government'},
+    {word:'COLONIALISM',hint:'Domination of one country over another'},
+    {word:'MYTHOLOGY',hint:'Collection of traditional stories and legends'},
+    {word:'PHILOSOPHY',hint:'Study of fundamental questions of existence'},
+    {word:'CATHEDRAL',hint:'Large important Christian church'},
+    {word:'HIEROGLYPH',hint:'Ancient Egyptian picture writing'},
+    // Sports
+    {word:'MARATHON',hint:'26.2 mile running race'},
+    {word:'GYMNASTICS',hint:'Sport involving balance and agility on apparatus'},
+    {word:'VOLLEYBALL',hint:'Sport where teams hit ball over a net'},
+    {word:'BADMINTON',hint:'Sport played with rackets and a shuttlecock'},
+    {word:'WRESTLING',hint:'Combat sport involving grappling'},
+    {word:'SKATEBOARD',hint:'Flat board on wheels you ride standing'},
+    {word:'TRIATHLON',hint:'Race combining swimming, cycling and running'},
+    {word:'ARCHERY',hint:'Sport of shooting arrows at targets'},
+    {word:'FENCING',hint:'Sport of sword fighting with foils'},
+    {word:'SNOWBOARD',hint:'Wide board used to descend snowy slopes'},
+    // Space
+    {word:'ASTEROID',hint:'Rocky body orbiting the sun'},
+    {word:'SUPERNOVA',hint:'Massive stellar explosion'},
+    {word:'NEBULA',hint:'Cloud of gas and dust in space'},
+    {word:'GALAXY',hint:'System of millions of stars'},
+    {word:'WORMHOLE',hint:'Theoretical tunnel through spacetime'},
+    {word:'BLACKHOLE',hint:'Region where gravity prevents light from escaping'},
+    {word:'ATMOSPHERE',hint:'Layer of gases surrounding a planet'},
+    {word:'COMET',hint:'Icy body that develops a tail near the sun'},
+    {word:'QUASAR',hint:'Extremely luminous galactic nucleus'},
+    {word:'SOLSTICE',hint:'Longest or shortest day of the year'},
+    // Music & Arts
+    {word:'SYMPHONY',hint:'Long musical composition for orchestra'},
+    {word:'SAXOPHONE',hint:'Wind instrument invented by Adolphe Sax'},
+    {word:'HARMONICA',hint:'Small handheld wind instrument'},
+    {word:'PERCUSSION',hint:'Musical instruments played by hitting'},
+    {word:'CHOREOGRAPHY',hint:'Art of designing dance sequences'},
+    {word:'SCULPTURE',hint:'Three-dimensional art carved or modeled'},
+    {word:'WATERCOLOR',hint:'Painting technique using water-soluble pigments'},
+    {word:'CALLIGRAPHY',hint:'Beautiful decorative handwriting art'},
+    {word:'PROTAGONIST',hint:'Main character in a story'},
+    {word:'METAPHOR',hint:'Figure of speech comparing two unlike things'},
+    // Medicine & Body
+    {word:'SKELETON',hint:'Framework of bones in the body'},
+    {word:'ADRENALINE',hint:'Hormone released during stress or excitement'},
+    {word:'VACCINE',hint:'Substance to stimulate immunity to disease'},
+    {word:'ANTIBODY',hint:'Protein that fights off infection'},
+    {word:'PANCREAS',hint:'Organ that produces insulin'},
+    {word:'LIGAMENT',hint:'Tissue connecting bone to bone'},
+    {word:'CARTILAGE',hint:'Flexible tissue in ears and joints'},
+    {word:'CEREBRUM',hint:'Largest part of the human brain'},
+    {word:'CAPILLARY',hint:'Smallest type of blood vessel'},
+    {word:'HEMOGLOBIN',hint:'Protein in red blood cells carrying oxygen'},
+    // Random hard words
+    {word:'PHENOMENON',hint:'Remarkable fact or event'},
+    {word:'AMBIGUOUS',hint:'Having more than one possible meaning'},
+    {word:'LABYRINTH',hint:'Complex maze or confusing network'},
+    {word:'ELOQUENT',hint:'Fluent and persuasive in speech'},
+    {word:'WHIRLPOOL',hint:'Rapidly rotating body of water'},
+    {word:'FLAMBOYANT',hint:'Strikingly bold and showy'},
+    {word:'QUARANTINE',hint:'Isolation to prevent spread of disease'},
+    {word:'SILHOUETTE',hint:'Dark outline against a lighter background'},
+    {word:'CAMOUFLAGE',hint:'Disguise blending into surroundings'},
+    {word:'CATASTROPHE',hint:'Sudden great disaster or misfortune'},
+    {word:'CONSEQUENCE',hint:'Result or effect of an action'},
+    {word:'SURVEILLANCE',hint:'Close observation especially by authorities'},
+    {word:'PERPENDICULAR',hint:'At right angle to a surface or line'},
+    {word:'EXAGGERATE',hint:'Make something seem larger than it is'},
+    {word:'DETERIORATE',hint:'Become progressively worse'},
+    {word:'INCONVENIENT',hint:'Causing trouble or difficulty'},
+    {word:'TRANSPARENT',hint:'Allowing light to pass through clearly'},
+    {word:'CIRCUMSTANCES',hint:'Facts or conditions of a situation'},
+    {word:'APPROXIMATELY',hint:'Close to actual but not perfectly exact'},
+    {word:'MISCHIEVOUS',hint:'Causing minor trouble playfully'},
+    {word:'RHYTHM',hint:'Strong regular repeated pattern of sound'},
+    {word:'QUEUE',hint:'Line of people waiting their turn'},
+    {word:'FJORD',hint:'Narrow sea inlet between mountains'},
+    {word:'BAROQUE',hint:'17th century ornate art style'},
+    {word:'PARADOX',hint:'Statement that contradicts itself yet may be true'},
+    {word:'QUORUM',hint:'Minimum members needed for a valid meeting'},
+    {word:'ZENITH',hint:'Highest point in the sky above observer'},
+    {word:'EPIPHANY',hint:'Sudden brilliant insight or realization'},
+    {word:'NOSTALGIA',hint:'Sentimental longing for the past'},
+    {word:'SERENDIPITY',hint:'Luck finding something good unexpectedly'},
   ];
   let idx=0,score=0,timerInt,timeLeft,curWord;
   const shuffled=[...words].sort(()=>Math.random()-.5);
-  function scramble(w){let a=w.split('');do{a.sort(()=>Math.random()-.5);}while(a.join('')===w);return a.join('');}
+  function scramble(w){
+    let a=w.split(''),attempts=0;
+    do{a.sort(()=>Math.random()-.5);attempts++;}while(a.join('')===w && attempts<20);
+    // Extra shuffle pass for longer words
+    if(w.length>7){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+    return a.join('');
+  }
   function startTimer(){
-    clearInterval(timerInt);timeLeft=30;
+    clearInterval(timerInt);
+    // Longer words get more time
+    timeLeft = curWord.word.length > 9 ? 45 : curWord.word.length > 7 ? 35 : 30;
+    const t=document.getElementById('ws-timer');
+    if(t)t.textContent=timeLeft+'s';
     timerInt=setInterval(()=>{
       timeLeft--;
       const t=document.getElementById('ws-timer');if(t)t.textContent=timeLeft+'s';
-      if(t)t.style.color=timeLeft<=10?'#ef4444':'#f59e0b';
-      if(timeLeft<=0){clearInterval(timerInt);nextWord(false);}
+      if(t)t.style.color=timeLeft<=10?'#ef4444':timeLeft<=20?'#f59e0b':'#22c55e';
+      if(timeLeft<=0){clearInterval(timerInt);
+        const inp=document.getElementById('ws-inp');
+        if(inp){inp.value='Answer: '+curWord.word;inp.style.borderColor='#f59e0b';inp.disabled=true;}
+        setTimeout(()=>nextWord(false),900);
+      }
     },1000);
   }
   function nextWord(correct){
@@ -3322,7 +3493,9 @@ function initWordScramble(){
     if(idx>=shuffled.length){
       clearInterval(timerInt);
       const el=document.getElementById('gword');if(!el)return;
-      el.innerHTML=`<div style="text-align:center;padding:30px 0;"><div style="font-size:52px;margin-bottom:12px;">🏆</div><div style="font-size:20px;font-weight:800;margin-bottom:6px;">Done!</div><div style="font-size:17px;color:#a855f7;font-weight:700;margin-bottom:20px;">${score}/${shuffled.length} correct</div><button onclick="initWordScramble()" style="background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px 28px;color:#fff;font-size:15px;font-weight:800;">Play Again</button></div>`;
+      const pct=Math.round((score/shuffled.length)*100);
+      const grade=pct>=90?'🏆 Excellent!':pct>=70?'🥈 Great!':pct>=50?'🥉 Good!':'💪 Keep practicing!';
+      el.innerHTML=`<div style="text-align:center;padding:30px 0;"><div style="font-size:52px;margin-bottom:12px;">${pct>=70?'🏆':'💪'}</div><div style="font-size:20px;font-weight:800;margin-bottom:6px;">${grade}</div><div style="font-size:17px;color:#a855f7;font-weight:700;margin-bottom:4px;">${score}/${shuffled.length} correct</div><div style="font-size:13px;color:var(--g);margin-bottom:20px;">${pct}% accuracy</div><button onclick="initWordScramble()" style="background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px 28px;color:#fff;font-size:15px;font-weight:800;">Play Again</button></div>`;
       return;
     }
     render();
@@ -3331,72 +3504,138 @@ function initWordScramble(){
     curWord=shuffled[idx];
     const sc=scramble(curWord.word);
     const el=document.getElementById('gword');if(!el)return;
-    el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:14px;"><span style="font-weight:700;color:#a855f7;font-size:13px;">Word ${idx+1}/${shuffled.length}</span><span style="font-weight:700;color:#22c55e;font-size:13px;">Score: ${score}</span><span id="ws-timer" style="font-weight:800;color:#f59e0b;font-size:14px;">30s</span></div>`+
-    `<div style="text-align:center;margin-bottom:20px;background:#1a1a2e;border-radius:12px;padding:16px;"><div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px;">Hint: ${curWord.hint}</div><div style="font-size:30px;font-weight:800;letter-spacing:6px;color:#a855f7;">${sc}</div></div>`+
-    `<input id="ws-inp" placeholder="Type your answer..." style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:13px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px;" onkeydown="if(event.key==='Enter')wsCheck()"/>`+
-    `<div style="display:flex;gap:8px;"><button onclick="wsCheck()" style="flex:1;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px;color:#fff;font-weight:800;font-size:14px;">Submit</button><button onclick="nextWord(false)" style="background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:13px 16px;color:#888;font-weight:700;font-size:13px;">Skip ›</button></div>`;
+    const timeAllowed=curWord.word.length>9?45:curWord.word.length>7?35:30;
+    const difficulty=curWord.word.length>10?'🔴 Hard':curWord.word.length>7?'🟡 Medium':'🟢 Easy';
+    el.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;align-items:center;"><span style="font-weight:700;color:#a855f7;font-size:13px;">Word ${idx+1}/${shuffled.length}</span><span style="font-size:11px;">${difficulty}</span><span style="font-weight:700;color:#22c55e;font-size:13px;">Score: ${score}</span></div>`+
+    `<div style="text-align:center;margin-bottom:16px;background:#1a1a2e;border-radius:12px;padding:16px;">`+
+    `<div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px;">Hint: ${curWord.hint}</div>`+
+    `<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:8px;">`+
+    sc.split('').map(ch=>`<div style="width:32px;height:38px;background:rgba(168,85,247,.15);border:2px solid rgba(168,85,247,.4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#a855f7;">${ch}</div>`).join('')+
+    `</div>`+
+    `<div style="font-size:11px;color:rgba(255,255,255,.3);">${curWord.word.length} letters · <span id="ws-timer" style="color:#22c55e;font-weight:700;">${timeAllowed}s</span></div>`+
+    `</div>`+
+    `<input id="ws-inp" placeholder="Type the word..." style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:13px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px;text-transform:uppercase;letter-spacing:2px;" onkeydown="if(event.key==='Enter')wsCheck()"/>`+
+    `<div style="display:flex;gap:8px;"><button onclick="wsCheck()" style="flex:1;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:12px;padding:13px;color:#fff;font-weight:800;font-size:14px;">Submit ✓</button><button onclick="nextWord(false)" style="background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:13px 16px;color:#888;font-weight:700;font-size:13px;">Skip ›</button></div>`;
     startTimer();
-    setTimeout(()=>document.getElementById('ws-inp')?.focus(),100);
+    setTimeout(()=>{const i=document.getElementById('ws-inp');if(i)i.focus();},100);
   }
   window.wsCheck=function(){
-    const inp=document.getElementById('ws-inp');if(!inp)return;
-    const val=inp.value.trim().toUpperCase();
+    const inp=document.getElementById('ws-inp');if(!inp||inp.disabled)return;
+    const val=inp.value.trim().toUpperCase().replace(/\s/g,'');
     if(val===curWord.word){
       clearInterval(timerInt);
       inp.style.borderColor='#22c55e';inp.style.background='rgba(34,197,94,.15)';
-      inp.value='✓ Correct!';inp.disabled=true;
+      inp.value='✓ '+curWord.word;inp.disabled=true;
       setTimeout(()=>nextWord(true),700);
-    } else {
-      inp.style.borderColor='#ef4444';inp.style.background='rgba(239,68,68,.1)';
-      setTimeout(()=>{inp.style.borderColor='#2a2a3e';inp.style.background='#1a1a2e';inp.disabled=false;inp.value='';},500);
+    } else if(val.length>0){
+      inp.style.borderColor='#ef4444';inp.style.background='rgba(239,68,68,.08)';
+      setTimeout(()=>{inp.style.borderColor='#2a2a3e';inp.style.background='#1a1a2e';inp.value='';},500);
     }
   };
   render();
   _gameInstances['word']={restart:()=>{clearInterval(timerInt);idx=0;score=0;render();}};
 }
 
-// ── TIC TAC TOE ───────────────────────────────────────────────────────────
+// ── TIC TAC TOE (Minimax AI with difficulty) ──────────────────────────────
 function initTicTacToe(){
-  let board=Array(9).fill(''),turn='X',over=false;
+  let board=Array(9).fill(''),turn='X',over=false,difficulty='hard';
   const LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
   function winLine(b,p){return LINES.find(l=>l.every(i=>b[i]===p));}
+
+  // Minimax algorithm — unbeatable on hard
+  function minimax(b,isMax,depth,alpha,beta){
+    if(winLine(b,'O'))return 10-depth;
+    if(winLine(b,'X'))return depth-10;
+    const empty=b.map((v,i)=>v?-1:i).filter(i=>i>=0);
+    if(!empty.length)return 0;
+    if(isMax){
+      let best=-Infinity;
+      for(const i of empty){
+        b[i]='O';const score=minimax(b,false,depth+1,alpha,beta);b[i]='';
+        best=Math.max(best,score);alpha=Math.max(alpha,score);
+        if(beta<=alpha)break;
+      }
+      return best;
+    } else {
+      let best=Infinity;
+      for(const i of empty){
+        b[i]='X';const score=minimax(b,true,depth+1,alpha,beta);b[i]='';
+        best=Math.min(best,score);beta=Math.min(beta,score);
+        if(beta<=alpha)break;
+      }
+      return best;
+    }
+  }
+
+  function bestMove(b){
+    let best=-Infinity,move=-1;
+    const empty=b.map((v,i)=>v?-1:i).filter(i=>i>=0);
+    for(const i of empty){
+      b[i]='O';const score=minimax(b,false,0,-Infinity,Infinity);b[i]='';
+      if(score>best){best=score;move=i;}
+    }
+    return move;
+  }
+
+  function easyMove(b){
+    // 30% chance of random mistake
+    const empty=b.map((v,i)=>v?-1:i).filter(i=>i>=0);
+    if(Math.random()<0.55)return empty[Math.floor(Math.random()*empty.length)];
+    return bestMove(b);
+  }
+
+  function mediumMove(b){
+    // Try to win, try to block, else 40% random
+    for(const p of['O','X']){
+      for(let i=0;i<9;i++){if(!b[i]){b[i]=p;if(winLine(b,p)){b[i]='';return i;}b[i]='';}}
+    }
+    if(Math.random()<0.4){const e=b.map((v,i)=>v?-1:i).filter(i=>i>=0);return e[Math.floor(Math.random()*e.length)];}
+    return bestMove(b);
+  }
+
+  function renderDiff(){
+    return `<div style="display:flex;gap:6px;margin-bottom:14px;">
+      ${['easy','medium','hard'].map(d=>`<button onclick="tttSetDiff('${d}')" style="flex:1;padding:7px 4px;border-radius:10px;border:2px solid ${difficulty===d?'#a855f7':'#2a2a3e'};background:${difficulty===d?'rgba(168,85,247,.2)':'#1a1a2e'};color:${difficulty===d?'#a855f7':'#888'};font-weight:700;font-size:12px;cursor:pointer;">${d==='easy'?'😊 Easy':d==='medium'?'😤 Medium':'😈 Hard'}</button>`).join('')}
+    </div>`;
+  }
+
   function render(hl=[]){
     const el=document.getElementById('gttt');if(!el)return;
-    const msg=over?'Game over':(turn==='X'?'Your turn':'AI thinking...');
-    el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><span style="font-size:16px;font-weight:800;">Tic Tac Toe</span><span style="font-size:12px;color:var(--g);">${msg}</span></div>`+
-    `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:260px;margin:0 auto 16px;">`+
-    board.map((v,i)=>`<div onclick="tttClick(${i})" style="aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900;cursor:${!v&&!over&&turn==='X'?'pointer':'default'};background:${hl.includes(i)?'rgba(168,85,247,.25)':'#1a1a2e'};border:2px solid ${hl.includes(i)?'#a855f7':'#2a2a3e'};transition:.2s;color:${v==='X'?'#a855f7':'#f59e0b'};">${v}</div>`).join('')+
-    '</div>'+
-    `<button onclick="initTicTacToe()" style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:11px;color:#888;font-weight:700;font-size:13px;">New Game</button>`;
+    const statusColor=over?'#ef4444':turn==='X'?'#a855f7':'#f59e0b';
+    const statusMsg=over?'Game over':(turn==='X'?'Your turn (X)':'AI thinking...');
+    el.innerHTML=
+      `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span style="font-size:16px;font-weight:800;">Tic Tac Toe</span><span style="font-size:12px;color:${statusColor};font-weight:700;">${statusMsg}</span></div>`+
+      renderDiff()+
+      `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:0 auto 14px;">`+
+      board.map((v,i)=>`<div onclick="tttClick(${i})" style="aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;cursor:${!v&&!over&&turn==='X'?'pointer':'default'};background:${hl.includes(i)?'rgba(168,85,247,.3)':'#1a1a2e'};border:2px solid ${hl.includes(i)?'#a855f7':v?'rgba(168,85,247,.2)':'#2a2a3e'};transition:.15s;color:${v==='X'?'#a855f7':'#f59e0b'};transform:${hl.includes(i)?'scale(1.05)':'scale(1)'};">${v}</div>`).join('')+
+      '</div>'+
+      `<button onclick="initTicTacToe()" style="width:100%;background:#1a1a2e;border:2px solid #2a2a3e;border-radius:12px;padding:11px;color:#888;font-weight:700;font-size:13px;">New Game</button>`;
   }
+
+  window.tttSetDiff=function(d){difficulty=d;board=Array(9).fill('');turn='X';over=false;render();};
+
   window.tttClick=function(i){
     if(board[i]||turn!=='X'||over)return;
     board[i]='X';
     const wl=winLine(board,'X');
-    if(wl){over=true;render(wl);setTimeout(()=>toast('You win! 🎉'),200);return;}
+    if(wl){over=true;render(wl);setTimeout(()=>toast('🎉 You win!'),200);return;}
     if(board.every(v=>v)){over=true;render();setTimeout(()=>toast("It's a draw!"),200);return;}
     turn='O';render();
     setTimeout(()=>{
-      // AI: win > block > center > corner > random
-      let ai=-1;
-      for(const p of['O','X']){
-        for(let j=0;j<9;j++){if(!board[j]){board[j]=p;if(winLine(board,p)){if(p==='O'){ai=j;}board[j]='';break;}board[j]='';}}
-        if(ai>=0)break;
-      }
-      if(ai<0&&!board[4])ai=4;
-      if(ai<0){const c=[0,2,6,8].filter(j=>!board[j]);if(c.length)ai=c[Math.floor(Math.random()*c.length)];}
-      if(ai<0){const e=board.map((v,j)=>v?-1:j).filter(j=>j>=0);if(e.length)ai=e[Math.floor(Math.random()*e.length)];}
-      if(ai<0)return;
+      const ai=difficulty==='easy'?easyMove(board):difficulty==='medium'?mediumMove(board):bestMove(board);
+      if(ai===undefined||ai<0)return;
       board[ai]='O';
       const wl2=winLine(board,'O');
-      if(wl2){over=true;render(wl2);setTimeout(()=>toast('AI wins! 🤖'),200);return;}
+      if(wl2){over=true;render(wl2);setTimeout(()=>toast('🤖 AI wins!'),200);return;}
       if(board.every(v=>v)){over=true;render();setTimeout(()=>toast("It's a draw!"),200);return;}
       turn='X';render();
-    },500);
+    },difficulty==='hard'?400:300);
   };
   render();
-  _gameInstances['tictactoe']={restart:initTicTacToe};
+  _gameInstances['tictactoe']={restart:()=>{board=Array(9).fill('');turn='X';over=false;render();}};
 }
+
 
 function restartGame(){
   if(_activeGame && _gameInstances[_activeGame]){
@@ -3941,7 +4180,7 @@ function openAIChat(){
   renderAIHistory();
   // Welcome message if first time
   if(!aiHistory.length){
-    appendAIMsg('ai', "Hey! I'm DIOR+ AI, powered by Claude. Ask me anything — questions, advice, help with captions, creative ideas, or just chat! 👋");
+    appendAIMsg('ai', "Hey! Im DIOR+ AI, powered by Claude. Ask me anything — questions, advice, help with captions, creative ideas, or just chat! 👋");
   }
 }
 
@@ -4009,7 +4248,7 @@ async function sendAIMsg(){
       role: m.role === 'ai' ? 'assistant' : 'user',
       content: m.content
     }));
-    // Make sure last message is the user's (it's already in aiHistory from appendAIMsg above)
+    // Make sure last message is the user's (its already in aiHistory from appendAIMsg above)
     const r = await fetch(API+'/api/ai/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -4020,11 +4259,11 @@ async function sendAIMsg(){
     });
     const d = await r.json();
     typing.remove();
-    const reply = d.content?.[0]?.text || "Sorry, I couldn't get a response right now. Try again!";
+    const reply = d.content?.[0]?.text || "Sorry, I couldnt get a response right now. Try again!";
     appendAIMsg('ai', reply);
   } catch(e) {
     typing.remove();
-    appendAIMsg('ai', "I'm having trouble connecting right now. Please try again in a moment.");
+    appendAIMsg('ai', "Im having trouble connecting right now. Please try again in a moment.");
   }
   inp.disabled = false;
   inp.focus();
