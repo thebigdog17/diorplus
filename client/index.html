@@ -581,12 +581,11 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
           <div id="np-title" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
           <div id="np-artist" style="font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
         </div>
+        <button id="np-play-btn" onclick="toggleMusicPlay()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:16px;cursor:pointer;">▶</button>
         <button onclick="getLyrics()" style="background:rgba(255,255,255,.1);border:none;border-radius:8px;padding:6px 10px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">🎤 Lyrics</button>
         <button onclick="closeMusic()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;">✕</button>
       </div>
     </div>
-    <!-- SoundCloud Player (hidden iframe) -->
-    <iframe id="sc-player" style="display:none;" allow="autoplay"></iframe>
     <!-- Lyrics sheet -->
     <div class="sheet" id="lyrics-sheet" style="max-height:80vh;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
@@ -2891,23 +2890,39 @@ function renderSoundCloudSearch(query, container){
     });
 }
 
+let _musicAudio = null;
+let _musicPlaying = false;
+
 function playTrack(track){
   _currentTrack = track;
   $('np-title').textContent = track.title;
-  $('np-artist').textContent = track.artist;
-  const bar = $('now-playing-bar');
-  bar.style.display = 'flex';
-  // Load SoundCloud embed
-  const sc = $('sc-player');
-  sc.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(track.url)}&color=%23a855f7&auto_play=true&buying=false&liking=false&download=false&sharing=false&show_artwork=false&show_comments=false&show_playcount=false&show_user=false`;
-  sc.style.display = 'none'; // hidden but plays audio
-  toast('▶ Now playing: '+track.title);
+  $('np-artist').textContent = track.artist || track.album || '';
+  $('now-playing-bar').style.display = 'flex';
+  // Stop previous
+  if(_musicAudio){ _musicAudio.pause(); _musicAudio = null; }
+  if(track.preview){
+    _musicAudio = new Audio(track.preview);
+    _musicAudio.volume = 1.0;
+    _musicAudio.play().catch(()=>{});
+    _musicAudio.onended = ()=>{ $('np-play-btn').textContent='▶'; _musicPlaying=false; };
+    _musicPlaying = true;
+    $('np-play-btn').textContent = '⏸';
+    toast('▶ '+track.title+' — '+track.artist);
+  } else {
+    toast('No preview available for this track');
+  }
+}
+
+function toggleMusicPlay(){
+  if(!_musicAudio) return;
+  if(_musicPlaying){ _musicAudio.pause(); $('np-play-btn').textContent='▶'; _musicPlaying=false; }
+  else { _musicAudio.play(); $('np-play-btn').textContent='⏸'; _musicPlaying=true; }
 }
 
 function closeMusic(){
+  if(_musicAudio){ _musicAudio.pause(); _musicAudio=null; }
   $('now-playing-bar').style.display = 'none';
-  $('sc-player').src = '';
-  _currentTrack = null;
+  _currentTrack = null; _musicPlaying = false;
 }
 
 async function getLyrics(){

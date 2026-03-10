@@ -599,20 +599,22 @@ app.post('/api/ai/chat', async (req, res) => {
 // ── MUSIC: SoundCloud search proxy ────────────────────────────────────────
 app.get('/api/music/search', async (req, res) => {
   try {
-    const q = req.query.q || 'trending';
-    // SoundCloud public search via their resolve API (no key needed for public tracks)
-    const url = `https://api-v2.soundcloud.com/search/tracks?q=${encodeURIComponent(q)}&limit=20&client_id=iZIs9mchVcX5lhVRyQGGAYlNPVldzAoX`;
+    const q = req.query.q || 'trending music';
+    // Use iTunes Search API — completely free, no key needed, has real popular music
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=25&sort=recent`;
     const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-    if(!r.ok) throw new Error('SC error '+r.status);
+    if(!r.ok) throw new Error('iTunes error '+r.status);
     const data = await r.json();
-    const tracks = (data.collection||[]).map(t => ({
-      id: t.id,
-      title: t.title || 'Unknown',
-      artist: t.user?.username || 'Unknown',
-      art: t.artwork_url ? t.artwork_url.replace('large','t300x300') : '',
-      url: t.permalink_url || '',
-      duration: t.duration ? Math.floor(t.duration/60000)+':'+(Math.floor((t.duration%60000)/1000)).toString().padStart(2,'0') : ''
-    }));
+    const tracks = (data.results||[]).map(t => ({
+      id: t.trackId,
+      title: t.trackName || 'Unknown',
+      artist: t.artistName || 'Unknown',
+      album: t.collectionName || '',
+      art: t.artworkUrl100 ? t.artworkUrl100.replace('100x100','300x300') : '',
+      preview: t.previewUrl || '',
+      url: t.trackViewUrl || '',
+      duration: t.trackTimeMillis ? Math.floor(t.trackTimeMillis/60000)+':'+(Math.floor((t.trackTimeMillis%60000)/1000)).toString().padStart(2,'0') : ''
+    })).filter(t => t.preview);
     res.json({ tracks });
   } catch(e) {
     console.error('Music search error:', e.message);
