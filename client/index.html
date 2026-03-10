@@ -727,10 +727,8 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;color:var(--g);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
     </label>
     <input class="ch-inp" id="ch-inp" placeholder="Message..." onkeydown="if(event.key==='Enter')sendMsg()" oninput="onTyping();toggleSendVoice()"/>
-    <div style="position:relative;width:38px;height:38px;flex-shrink:0;">
-      <button class="ch-send" id="ch-send-btn" onclick="sendMsg()" style="display:none;position:absolute;inset:0;"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-      <button id="ch-voice-btn" onclick="startVoiceNote()" style="display:flex;position:absolute;inset:0;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:50%;width:38px;height:38px;color:#fff;font-size:16px;cursor:pointer;align-items:center;justify-content:center;">🎤</button>
-    </div>
+    <button class="ch-send" id="ch-send-btn" onclick="sendMsg()" style="display:none;"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    <button id="ch-voice-btn" onclick="startVoiceNote()" style="display:flex;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:50%;width:38px;height:38px;color:#fff;font-size:16px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">🎤</button>
   </div>
   <!-- Message context menu -->
   <div id="ch-ctx-menu" style="display:none;position:fixed;background:var(--s1);border:1px solid var(--s2);border-radius:14px;padding:6px;z-index:9999;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);" onclick="event.stopPropagation()">
@@ -1269,6 +1267,7 @@ let gcSelected = [];
 let menuPostId = null;
 let viewingUserId = null;
 let viewingUser = null;
+const _userReg = {}; // registry: userId -> user object
 let darkMode = true;
 let avatarState = {skin:'👤',hair:'🧑',eyes:'😊',acc:'none',bg:'#1a1a2e'};
 let otpCode = '', otpCallback = null;
@@ -1991,8 +1990,10 @@ async function searchUsers(q){
   const users=await api('/api/users/search?q='+encodeURIComponent(q));
   if(!Array.isArray(users)){ $('conv-list').innerHTML=''; return; }
   const filtered = users.filter(u=>u.id!==ME.id);
+  // Store in registry so openChat can look up by id safely
+  filtered.forEach(u=>{ _userReg[u.id]=u; });
   $('conv-list').innerHTML = filtered.map(u=>`
-    <div class="ms-item" onclick="openChat('${u.id}',{id:'${u.id}',name:${JSON.stringify(u.name||'')},username:${JSON.stringify(u.username||'')},photoUrl:${JSON.stringify(u.photoUrl||'')},verified:${!!u.verified},verifyTier:${JSON.stringify(u.verifyTier||'')}})">
+    <div class="ms-item" onclick="openChat('${u.id}')">
       <div class="ms-av">${avatarEl(u,50)}</div>
       <div class="ms-info"><div class="ms-name">${u.name} ${badge(u)}</div><div class="ms-last">@${u.username}</div></div>
     </div>`).join('');
@@ -3081,11 +3082,12 @@ async function toggleFollow(){
 }
 function openChatWith(){
   if(!viewingUserId) return;
+  if(viewingUser) _userReg[viewingUserId]=viewingUser;
   closeUProfile();
   _switchingTab = true;
   switchTab('messages');
   _switchingTab = false;
-  openChat(viewingUserId, viewingUser||null);
+  openChat(viewingUserId);
 }
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────────────────
@@ -4151,7 +4153,7 @@ async function loadConversations(){
 }
 
 // ── OPEN CHAT
-async function openChat(userId, userObj){
+async function openChat(userId){
   activeConv=userId;
   convUser=null;
   _msgMap={};_replyTo=null;
@@ -4165,32 +4167,29 @@ async function openChat(userId, userObj){
   $('ch-body').innerHTML='';
   $('chat').style.display='flex';
   toggleSendVoice();
-  // 1. Use passed-in userObj if available (from search results, profile, etc.)
-  if(userObj && userObj.name){
-    convUser = userObj;
+  // Priority: registry (from search/explore) → conv cache → API fetch
+  const regUser = _userReg[userId];
+  const cachedConv = Array.isArray(window._convCache) ? window._convCache.find(c=>c.userId===userId) : null;
+  if(regUser && regUser.name){
+    convUser = regUser;
+  } else if(cachedConv && cachedConv.name){
+    convUser = {id:userId,name:cachedConv.name,username:cachedConv.username,photoUrl:cachedConv.photoUrl,verified:cachedConv.verified,verifyTier:cachedConv.verifyTier};
   } else {
-    // 2. Try conversation list cache
-    const cachedConv = Array.isArray(window._convCache) ? window._convCache.find(c=>c.userId===userId) : null;
-    if(cachedConv){
-      convUser={id:userId,name:cachedConv.name,username:cachedConv.username,photoUrl:cachedConv.photoUrl,verified:cachedConv.verified,verifyTier:cachedConv.verifyTier};
-    }
-  }
-  // 3. If still no name, fetch now and wait
-  if(!convUser || !convUser.name){
+    // Must fetch — wait for it
     const r = await api('/api/users/'+userId);
-    convUser = r?.user || _userCache?.find(u=>u.id===userId) || {id:userId,name:'User',username:''};
-  } else {
-    // Refresh full profile silently in background
-    api('/api/users/'+userId).then(r=>{
-      if(r?.user?.name && activeConv===userId){
-        convUser=r.user;
-        const cs2=chatSettings[userId]||{};
-        const si=$('ch-name'); if(si) si.innerHTML=(cs2.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(userId);
-        const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
-        $('ch-av').innerHTML=avatarEl(convUser,36);
-      }
-    });
+    convUser = r?.user || {id:userId,name:'',username:''};
   }
+  // Always refresh full profile silently in background
+  api('/api/users/'+userId).then(r=>{
+    if(r?.user?.name && activeConv===userId){
+      convUser=r.user;
+      _userReg[userId]=r.user;
+      const cs2=chatSettings[userId]||{};
+      const si=$('ch-name'); if(si) si.innerHTML=(cs2.nickname||convUser.name)+' '+badge(convUser)+' '+streakBadge(userId);
+      const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
+      $('ch-av').innerHTML=avatarEl(convUser,36);
+    }
+  });
   const cs=chatSettings[userId]||{};
   const displayName=cs.nickname||(convUser?.name)||convUser?.username||'User';
   const si=$('ch-name'); if(si) si.innerHTML=displayName+' '+badge(convUser)+' '+streakBadge(userId);
