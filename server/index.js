@@ -596,6 +596,56 @@ app.post('/api/ai/chat', async (req, res) => {
   } catch(e) { res.json({ content:[{text:'AI error: '+e.message}] }); }
 });
 
+// ── MUSIC: SoundCloud search proxy ────────────────────────────────────────
+app.get('/api/music/search', async (req, res) => {
+  try {
+    const q = req.query.q || 'trending';
+    // SoundCloud public search via their resolve API (no key needed for public tracks)
+    const url = `https://api-v2.soundcloud.com/search/tracks?q=${encodeURIComponent(q)}&limit=20&client_id=iZIs9mchVcX5lhVRyQGGAYlNPVldzAoX`;
+    const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if(!r.ok) throw new Error('SC error '+r.status);
+    const data = await r.json();
+    const tracks = (data.collection||[]).map(t => ({
+      id: t.id,
+      title: t.title || 'Unknown',
+      artist: t.user?.username || 'Unknown',
+      art: t.artwork_url ? t.artwork_url.replace('large','t300x300') : '',
+      url: t.permalink_url || '',
+      duration: t.duration ? Math.floor(t.duration/60000)+':'+(Math.floor((t.duration%60000)/1000)).toString().padStart(2,'0') : ''
+    }));
+    res.json({ tracks });
+  } catch(e) {
+    console.error('Music search error:', e.message);
+    res.json({ tracks: [] });
+  }
+});
+
+// ── MUSIC: Genius lyrics proxy ─────────────────────────────────────────────
+app.get('/api/music/lyrics', async (req, res) => {
+  try {
+    const { title, artist } = req.query;
+    const GENIUS_KEY = process.env.GENIUS_API_KEY || 'NNTS_YJ0HhnT1B-OFeIYKRqgRT6PryvLh9jLdmYeyJYblYRSdlezfD-TGTy0tHJR';
+    const q = encodeURIComponent((artist||'')+' '+(title||''));
+    // Search Genius for the song
+    const searchUrl = `https://api.genius.com/search?q=${q}`;
+    const searchRes = await fetch(searchUrl, { headers: { 'Authorization': 'Bearer '+GENIUS_KEY } });
+    const searchData = await searchRes.json();
+    const hit = searchData.response?.hits?.[0]?.result;
+    if(!hit) return res.json({ lyrics: 'Lyrics not found for this song.' });
+    // Scrape lyrics page
+    const pageRes = await fetch(hit.url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const html = await pageRes.text();
+    // Extract lyrics from Genius HTML
+    const match = html.match(/data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g);
+    if(!match) return res.json({ lyrics: 'Could not extract lyrics. Visit: '+hit.url });
+    const lyrics = match.map(m => m.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>')).join('\n').trim();
+    res.json({ lyrics: lyrics || 'Lyrics not found.' });
+  } catch(e) {
+    console.error('Lyrics error:', e.message);
+    res.json({ lyrics: 'Could not load lyrics. Try again.' });
+  }
+});
+
 app.post('/api/reports', async (req, res) => {
   try {
     const report = { id: uuidv4(), ...req.body, status: 'pending', createdAt: Date.now() };

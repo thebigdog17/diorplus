@@ -553,16 +553,49 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       <div id="ex-grid" class="ex-grid"></div>
     </div>
     <!-- STUDIO -->
-    <div class="screen" id="s-studio">
-      <div class="st-hdr"><h2>Creator Studio</h2><p>Your performance overview</p></div>
-      <div class="st-grid" id="st-grid"></div>
-      <div style="font-size:12px;font-weight:800;color:var(--g2);padding:8px 16px;">QUICK ACTIONS</div>
-      <div class="st-qa">
-        <div class="st-qab" onclick="openCreate()"><div class="st-qab-ico">📸</div><div class="st-qab-lbl">New Post</div></div>
-        <div class="st-qab" onclick="startLive()"><div class="st-qab-ico">🔴</div><div class="st-qab-lbl">Go Live</div></div>
-        <div class="st-qab" onclick="openStoryCreate()"><div class="st-qab-ico">◎</div><div class="st-qab-lbl">Story</div></div>
-        <div class="st-qab" onclick="switchTab('reels')"><div class="st-qab-ico">🎬</div><div class="st-qab-lbl">Watch</div></div>
+    <div class="screen" id="s-studio" style="overflow-y:auto;padding-bottom:80px;">
+      <!-- Music Header -->
+      <div style="padding:16px 16px 8px;display:flex;align-items:center;justify-content:space-between;">
+        <h2 style="font-size:20px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎵 Music</h2>
       </div>
+      <!-- Search bar -->
+      <div style="padding:0 16px 12px;display:flex;gap:8px;">
+        <input id="music-search-inp" placeholder="Search songs, artists..." style="flex:1;background:var(--s2);border:none;border-radius:20px;padding:11px 16px;color:var(--w);font-size:14px;outline:none;" oninput="musicSearchDebounce(this.value)" onkeydown="if(event.key==='Enter')musicSearch(this.value)"/>
+        <button onclick="musicSearch($('music-search-inp').value)" style="background:var(--grad);border:none;border-radius:20px;padding:11px 18px;color:#fff;font-weight:700;cursor:pointer;">Go</button>
+      </div>
+      <!-- Genre tabs -->
+      <div style="display:flex;gap:8px;padding:0 16px 14px;overflow-x:auto;scrollbar-width:none;">
+        <button class="watch-tab-btn active" onclick="loadMusicGenre('trending',this)">🔥 Trending</button>
+        <button class="watch-tab-btn" onclick="loadMusicGenre('hiphop',this)">🎤 Hip Hop</button>
+        <button class="watch-tab-btn" onclick="loadMusicGenre('afrobeats',this)">🌍 Afrobeats</button>
+        <button class="watch-tab-btn" onclick="loadMusicGenre('rnb',this)">💜 R&B</button>
+        <button class="watch-tab-btn" onclick="loadMusicGenre('pop',this)">⭐ Pop</button>
+        <button class="watch-tab-btn" onclick="loadMusicGenre('amapiano',this)">🎹 Amapiano</button>
+      </div>
+      <!-- Music content -->
+      <div id="music-content"></div>
+      <!-- Now playing bar -->
+      <div id="now-playing-bar" style="display:none;position:fixed;bottom:60px;left:0;right:0;max-width:480px;margin:0 auto;background:linear-gradient(135deg,#1a1a2e,#16213e);border-top:1px solid rgba(255,255,255,.1);padding:10px 16px;z-index:100;display:none;align-items:center;gap:10px;">
+        <div id="np-art" style="width:40px;height:40px;border-radius:8px;background:var(--grad);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;">🎵</div>
+        <div style="flex:1;min-width:0;">
+          <div id="np-title" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+          <div id="np-artist" style="font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        </div>
+        <button onclick="getLyrics()" style="background:rgba(255,255,255,.1);border:none;border-radius:8px;padding:6px 10px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">🎤 Lyrics</button>
+        <button onclick="closeMusic()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;">✕</button>
+      </div>
+    </div>
+    <!-- SoundCloud Player (hidden iframe) -->
+    <iframe id="sc-player" style="display:none;" allow="autoplay"></iframe>
+    <!-- Lyrics sheet -->
+    <div class="sheet" id="lyrics-sheet" style="max-height:80vh;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:800;color:var(--w);">🎤 Lyrics</div>
+        <button onclick="$('lyrics-sheet').classList.remove('show')" style="background:none;border:none;color:var(--g);font-size:20px;cursor:pointer;">✕</button>
+      </div>
+      <div id="lyrics-title" style="font-size:14px;font-weight:700;color:var(--w);margin-bottom:4px;"></div>
+      <div id="lyrics-artist" style="font-size:12px;color:var(--g);margin-bottom:16px;"></div>
+      <div id="lyrics-body" style="font-size:14px;color:var(--w);line-height:1.8;overflow-y:auto;max-height:55vh;white-space:pre-wrap;"></div>
     </div>
     <!-- PROFILE -->
     <div class="screen" id="s-profile">
@@ -607,7 +640,7 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <button class="tab" id="tab-messages" onclick="switchTab('messages')" style="position:relative;"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span><span class="unread-badge" id="msg-badge"></span></button>
     <button class="tab" id="tab-reels" onclick="switchTab('reels')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg><span>Watch</span></button>
     <button class="tab" id="tab-explore" onclick="switchTab('explore')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Explore</span></button>
-    <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Studio</span></button>
+    <button class="tab" id="tab-studio" onclick="switchTab('studio')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></button>
     <button class="tab" id="tab-profile" onclick="switchTab('profile')"><div class="tab-av" id="tab-av">?</div><span>Profile</span></button>
   </div>
 </div>
@@ -2784,15 +2817,113 @@ function renderNotifs(){
 }
 
 // ── STUDIO ────────────────────────────────────────────────────────────────
+// ── MUSIC TAB ─────────────────────────────────────────────────────────────
+let _currentTrack = null;
+let _musicSearchTimer = null;
+
 async function loadStudio(){
-  const posts=await api('/api/posts');
-  const myPosts=Array.isArray(posts)?posts.filter(p=>p.userId===ME.id):[];
-  const totalLikes=myPosts.reduce((a,p)=>a+(p.likes?.length||0),0);
-  $('st-grid').innerHTML=`
-    <div class="st-card"><div class="st-card-n">${myPosts.length}</div><div class="st-card-l">Posts</div></div>
-    <div class="st-card"><div class="st-card-n">${ME.followers?.length||0}</div><div class="st-card-l">Followers</div></div>
-    <div class="st-card"><div class="st-card-n">${totalLikes}</div><div class="st-card-l">Total Likes</div></div>
-    <div class="st-card"><div class="st-card-n">${ME.following?.length||0}</div><div class="st-card-l">Following</div></div>`;
+  await loadMusicGenre('trending', document.querySelector('.watch-tab-btn'));
+}
+
+async function loadMusicGenre(genre, btn){
+  document.querySelectorAll('#s-studio .watch-tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const c = $('music-content'); if(!c) return;
+  c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Loading...</div>';
+  const queries = {
+    trending: 'trending music 2024',
+    hiphop: 'hip hop rap 2024',
+    afrobeats: 'afrobeats 2024',
+    rnb: 'rnb soul 2024',
+    pop: 'pop hits 2024',
+    amapiano: 'amapiano 2024'
+  };
+  const q = queries[genre] || 'trending music';
+  renderSoundCloudSearch(q, c);
+}
+
+function musicSearchDebounce(v){
+  clearTimeout(_musicSearchTimer);
+  if(!v.trim()) return;
+  _musicSearchTimer = setTimeout(()=>musicSearch(v), 600);
+}
+
+function musicSearch(q){
+  if(!q.trim()) return;
+  const c = $('music-content'); if(!c) return;
+  c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Searching...</div>';
+  renderSoundCloudSearch(q, c);
+}
+
+function renderSoundCloudSearch(query, container){
+  // Use SoundCloud widget embed with search
+  const encodedQ = encodeURIComponent(query);
+  const src = `https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks&q=${encodedQ}&auto_play=false&buying=false&liking=false&download=false&sharing=false&show_artwork=true&show_comments=false&show_playcount=false&show_user=true&hide_related=false&visual=false&color=%23a855f7`;
+  
+  // Instead build track cards using oEmbed approach via our server proxy
+  container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">Loading tracks...</div>';
+  fetch('/api/music/search?q='+encodedQ)
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data.tracks||!data.tracks.length){
+        container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">No tracks found. Try another search.</div>';
+        return;
+      }
+      container.innerHTML = data.tracks.map(t => `
+        <div onclick="playTrack(${JSON.stringify(t).replace(/"/g,'&quot;')})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);transition:.2s;" onmousedown="this.style.background='rgba(255,255,255,.05)'" onmouseup="this.style.background=''" ontouchstart="this.style.background='rgba(255,255,255,.05)'" ontouchend="this.style.background=''">
+          <img src="${t.art||'https://i1.sndcdn.com/artworks-000000000000-000000-t120x120.jpg'}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;" onerror="this.style.background='var(--grad)';this.removeAttribute('src')"/>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:var(--w);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div>
+            <div style="font-size:12px;color:var(--g);margin-top:2px;">${t.artist}</div>
+            <div style="font-size:11px;color:var(--g2);margin-top:2px;">${t.duration}</div>
+          </div>
+          <div style="color:var(--accent);font-size:22px;">▶</div>
+        </div>`).join('');
+    })
+    .catch(()=>{
+      // Fallback: embed SoundCloud widget directly
+      container.innerHTML = `<div style="padding:16px;">
+        <iframe width="100%" height="450" scrolling="no" frameborder="no" allow="autoplay"
+          src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/search%3Fq%3D${encodedQ}&color=%23a855f7&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=false">
+        </iframe>
+        <p style="text-align:center;color:var(--g);font-size:12px;margin-top:8px;">Powered by SoundCloud</p>
+      </div>`;
+    });
+}
+
+function playTrack(track){
+  _currentTrack = track;
+  $('np-title').textContent = track.title;
+  $('np-artist').textContent = track.artist;
+  const bar = $('now-playing-bar');
+  bar.style.display = 'flex';
+  // Load SoundCloud embed
+  const sc = $('sc-player');
+  sc.src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(track.url)}&color=%23a855f7&auto_play=true&buying=false&liking=false&download=false&sharing=false&show_artwork=false&show_comments=false&show_playcount=false&show_user=false`;
+  sc.style.display = 'none'; // hidden but plays audio
+  toast('▶ Now playing: '+track.title);
+}
+
+function closeMusic(){
+  $('now-playing-bar').style.display = 'none';
+  $('sc-player').src = '';
+  _currentTrack = null;
+}
+
+async function getLyrics(){
+  if(!_currentTrack){ toast('Play a song first'); return; }
+  const sheet = $('lyrics-sheet');
+  $('lyrics-title').textContent = _currentTrack.title;
+  $('lyrics-artist').textContent = _currentTrack.artist;
+  $('lyrics-body').textContent = 'Searching for lyrics...';
+  sheet.classList.add('show');
+  try {
+    const r = await fetch('/api/music/lyrics?title='+encodeURIComponent(_currentTrack.title)+'&artist='+encodeURIComponent(_currentTrack.artist));
+    const d = await r.json();
+    $('lyrics-body').textContent = d.lyrics || 'Lyrics not found for this song.';
+  } catch(e){
+    $('lyrics-body').textContent = 'Could not load lyrics. Try again.';
+  }
 }
 
 // ── LIVE ──────────────────────────────────────────────────────────────────
