@@ -4142,7 +4142,7 @@ async function loadConversations(){
   if(Array.isArray(convs)) window._convCache=convs;
   $('conv-list').innerHTML=aiEntry+(Array.isArray(convs)&&convs.length?convs.map(c=>{
     const cs=chatSettings[c.userId]||{};
-    const nick=cs.nickname||c.name;
+    const nick=cs.nickname||c.name||c.username||'User';
     const sb=streakBadge(c.userId);
     // Use local unread state (persistent) rather than server count which may be stale
     const localUnread = unreadCounts[c.userId]||0;
@@ -4191,7 +4191,7 @@ async function openChat(userId){
     }
   });
   const cs=chatSettings[userId]||{};
-  const displayName=cs.nickname||(convUser?.name)||convUser?.username||'User';
+  const displayName=cs.nickname||convUser?.name||convUser?.username||'Unknown';
   const si=$('ch-name'); if(si) si.innerHTML=displayName+' '+badge(convUser)+' '+streakBadge(userId);
   const st=$('ch-status'); if(st) st.textContent=convUser.username?('@'+convUser.username):'';
   $('ch-av').innerHTML=avatarEl(convUser,36);
