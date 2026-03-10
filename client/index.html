@@ -314,6 +314,20 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .watch-play-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--grad);border:none;border-radius:14px;padding:14px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;width:100%;margin-bottom:10px;}
 .watch-detail-actions{display:flex;gap:10px;margin-bottom:20px;}
 .watch-detail-action{flex:1;background:var(--s2);border:none;border-radius:12px;padding:12px 8px;color:var(--w);font-size:12px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;}
+/* Seasons/Episodes */
+.wd-seasons-bar{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 0 12px;}
+.wd-seasons-bar::-webkit-scrollbar{display:none;}
+.wd-season-btn{background:var(--s2);border:none;border-radius:20px;padding:7px 16px;color:var(--g);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.2s;flex-shrink:0;}
+.wd-season-btn.active{background:var(--grad);color:#fff;}
+.wd-episode-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.wd-ep-card{display:flex;align-items:center;gap:12px;background:var(--s2);border-radius:12px;padding:10px 12px;cursor:pointer;transition:.2s;}
+.wd-ep-card:active{transform:scale(.98);}
+.wd-ep-thumb{width:80px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#222;}
+.wd-ep-info{flex:1;min-width:0;}
+.wd-ep-num{font-size:11px;color:var(--g);margin-bottom:2px;}
+.wd-ep-title{font-size:13px;font-weight:700;color:var(--w);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wd-ep-overview{font-size:11px;color:var(--g);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.wd-ep-play{color:var(--accent);font-size:20px;flex-shrink:0;}
 /* Player overlay */
 #watch-player{position:fixed;inset:0;background:#000;z-index:300;display:none;flex-direction:column;}
 #watch-iframe{width:100%;flex:1;border:none;pointer-events:none;}
@@ -497,11 +511,17 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
     <div class="watch-detail-title" id="wd-title"></div>
     <div class="watch-detail-meta" id="wd-meta"></div>
     <div class="watch-detail-overview" id="wd-overview"></div>
-    <button class="watch-play-btn" onclick="playCurrentMovie()">▶ Watch Now</button>
+    <button class="watch-play-btn" id="wd-play-btn" onclick="playCurrentMovie()">▶ Watch Now</button>
     <div class="watch-detail-actions">
       <button class="watch-detail-action" onclick="shareWatchToFeed()">📤<span>Share</span></button>
       <button class="watch-detail-action" onclick="toggleWatchlist()">🔖<span>Watchlist</span></button>
       <button class="watch-detail-action" onclick="shareWatchToStory()">📖<span>Story</span></button>
+    </div>
+    <!-- TV Seasons & Episodes (shown only for TV shows) -->
+    <div id="wd-seasons-section" style="display:none;">
+      <div class="watch-section-title">Episodes</div>
+      <div class="wd-seasons-bar" id="wd-seasons-bar"></div>
+      <div class="wd-episode-list" id="wd-episode-list"></div>
     </div>
     <div class="watch-section-title">More Like This</div>
     <div class="watch-row" id="wd-similar"></div>
@@ -574,27 +594,68 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
       </div>
       <!-- Music content -->
       <div id="music-content"></div>
-      <!-- Now playing bar -->
-      <div id="now-playing-bar" style="display:none;position:fixed;bottom:60px;left:0;right:0;max-width:480px;margin:0 auto;background:linear-gradient(135deg,#1a1a2e,#16213e);border-top:1px solid rgba(255,255,255,.1);padding:10px 16px;z-index:100;display:none;align-items:center;gap:10px;">
-        <div id="np-art" style="width:40px;height:40px;border-radius:8px;background:var(--grad);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;">🎵</div>
+      <!-- Mini now-playing bar (tap to open fullscreen) -->
+      <div id="now-playing-bar" onclick="openMusicFullscreen()" style="display:none;position:fixed;bottom:60px;left:0;right:0;max-width:480px;margin:0 auto;background:linear-gradient(135deg,#1a1a2e,#16213e);border-top:1px solid rgba(255,255,255,.15);padding:10px 16px;z-index:100;align-items:center;gap:10px;cursor:pointer;">
+        <img id="np-art-mini" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--grad);" src="" onerror="this.style.background='var(--grad)';this.removeAttribute('src')"/>
         <div style="flex:1;min-width:0;">
           <div id="np-title" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
           <div id="np-artist" style="font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
         </div>
-        <button id="np-play-btn" onclick="toggleMusicPlay()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:16px;cursor:pointer;">▶</button>
-        <button onclick="getLyrics()" style="background:rgba(255,255,255,.1);border:none;border-radius:8px;padding:6px 10px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">🎤 Lyrics</button>
-        <button onclick="closeMusic()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;">✕</button>
+        <button id="np-play-btn" onclick="event.stopPropagation();toggleMusicPlay()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;">▶</button>
+        <button onclick="event.stopPropagation();closeMusic()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:20px;cursor:pointer;flex-shrink:0;">✕</button>
       </div>
     </div>
-    <!-- Lyrics sheet -->
-    <div class="sheet" id="lyrics-sheet" style="max-height:80vh;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <div style="font-size:16px;font-weight:800;color:var(--w);">🎤 Lyrics</div>
-        <button onclick="$('lyrics-sheet').classList.remove('show')" style="background:none;border:none;color:var(--g);font-size:20px;cursor:pointer;">✕</button>
+
+    <!-- Fullscreen Music Player (Apple Music style) -->
+    <div id="music-fullscreen" style="display:none;position:fixed;inset:0;z-index:250;flex-direction:column;overflow:hidden;">
+      <!-- Blurred background -->
+      <div id="mfs-bg" style="position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(40px) brightness(.4);transform:scale(1.1);"></div>
+      <div style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;padding:0 24px 32px;">
+        <!-- Top bar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:52px 0 16px;">
+          <button onclick="closeMusicFullscreen()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:20px;cursor:pointer;">‹</button>
+          <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:1px;">NOW PLAYING</div>
+          <div style="width:36px;"></div>
+        </div>
+        <!-- Artwork -->
+        <div style="display:flex;justify-content:center;padding:16px 0 28px;">
+          <img id="mfs-art" style="width:240px;height:240px;border-radius:20px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,.6);" src="" onerror="this.style.background='linear-gradient(135deg,#a855f7,#ec4899)';this.removeAttribute('src')"/>
+        </div>
+        <!-- Title + artist -->
+        <div style="display:flex;align-items:center;margin-bottom:20px;">
+          <div style="flex:1;">
+            <div id="mfs-title" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:4px;"></div>
+            <div id="mfs-artist" style="font-size:15px;color:rgba(255,255,255,.7);"></div>
+          </div>
+          <button onclick="toggleMusicLike()" id="mfs-like-btn" style="background:none;border:none;font-size:26px;cursor:pointer;">🤍</button>
+        </div>
+        <!-- Progress bar -->
+        <div style="margin-bottom:8px;">
+          <input id="mfs-progress" type="range" min="0" max="100" value="0" oninput="seekMusic(this.value)" style="width:100%;accent-color:#a855f7;height:4px;cursor:pointer;"/>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span id="mfs-current" style="font-size:12px;color:rgba(255,255,255,.5);">0:00</span>
+            <span id="mfs-duration" style="font-size:12px;color:rgba(255,255,255,.5);">0:30</span>
+          </div>
+        </div>
+        <!-- Controls -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 20px;">
+          <button onclick="prevTrack()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:28px;cursor:pointer;">⏮</button>
+          <button id="mfs-play-btn" onclick="toggleMusicPlay()" style="background:#fff;border:none;border-radius:50%;width:64px;height:64px;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;">▶</button>
+          <button onclick="nextTrack()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:28px;cursor:pointer;">⏭</button>
+        </div>
+        <!-- Volume -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+          <span style="font-size:16px;">🔈</span>
+          <input id="mfs-volume" type="range" min="0" max="100" value="100" oninput="setMusicVolume(this.value)" style="flex:1;accent-color:#a855f7;height:4px;cursor:pointer;"/>
+          <span style="font-size:16px;">🔊</span>
+        </div>
+        <!-- Lyrics toggle -->
+        <button onclick="toggleLyricsView()" id="mfs-lyrics-btn" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;width:100%;">🎤 Show Lyrics</button>
+        <!-- Lyrics view (hidden by default) -->
+        <div id="mfs-lyrics-view" style="display:none;flex:1;overflow-y:auto;margin-top:16px;scrollbar-width:none;">
+          <div id="mfs-lyrics-content" style="font-size:15px;color:rgba(255,255,255,.85);line-height:2;white-space:pre-wrap;text-align:center;padding-bottom:20px;">Loading lyrics...</div>
+        </div>
       </div>
-      <div id="lyrics-title" style="font-size:14px;font-weight:700;color:var(--w);margin-bottom:4px;"></div>
-      <div id="lyrics-artist" style="font-size:12px;color:var(--g);margin-bottom:16px;"></div>
-      <div id="lyrics-body" style="font-size:14px;color:var(--w);line-height:1.8;overflow-y:auto;max-height:55vh;white-space:pre-wrap;"></div>
     </div>
     <!-- PROFILE -->
     <div class="screen" id="s-profile">
@@ -2362,7 +2423,7 @@ async function openWatchDetail(id, type){
     _currentWatchType = type;
     const name = data.title||data.name||'';
     const year = (data.release_date||data.first_air_date||'').split('-')[0];
-    const runtime = data.runtime ? data.runtime+'min' : (data.episode_run_time?.[0]+'min/ep')||'';
+    const runtime = data.runtime ? data.runtime+'min' : (data.episode_run_time?.[0] ? data.episode_run_time[0]+'min/ep' : '');
     const genres = (data.genres||[]).map(g=>g.name).join(', ');
     $('wd-title').textContent = name;
     $('wd-meta').innerHTML = `<span class="watch-detail-rating">⭐ ${data.vote_average?.toFixed(1)||'N/A'}</span> · ${year} · ${runtime} · ${genres}`;
@@ -2380,9 +2441,70 @@ async function openWatchDetail(id, type){
     // Watchlist btn
     const inWl = _watchList.some(w=>w.id===id);
     $('wd-wl-btn').textContent = inWl ? '✅' : '🔖';
+    // TV Show — show seasons section, hide plain Watch Now btn
+    if(type === 'tv' && data.seasons?.length){
+      $('wd-seasons-section').style.display = 'block';
+      $('wd-play-btn').style.display = 'none';
+      buildSeasonsBar(data.seasons.filter(s=>s.season_number > 0), id);
+    } else {
+      $('wd-seasons-section').style.display = 'none';
+      $('wd-play-btn').style.display = 'flex';
+    }
     $('watch-detail').style.display='flex';
     pushNav(closeWatchDetail);
   } catch(e){ toast('Could not load details'); }
+}
+
+function buildSeasonsBar(seasons, showId){
+  const bar = $('wd-seasons-bar');
+  bar.innerHTML = seasons.map((s,i) =>
+    `<button class="wd-season-btn${i===0?' active':''}" onclick="loadSeasonEpisodes(${showId},${s.season_number},this)">
+      Season ${s.season_number}
+    </button>`
+  ).join('');
+  // Auto load first season
+  if(seasons.length) loadSeasonEpisodes(showId, seasons[0].season_number, bar.firstChild);
+}
+
+async function loadSeasonEpisodes(showId, seasonNum, btn){
+  // Update active button
+  document.querySelectorAll('.wd-season-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const list = $('wd-episode-list');
+  list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--g);">Loading episodes...</div>';
+  try {
+    const data = await tmdbFetch('/tv/'+showId+'/season/'+seasonNum);
+    const episodes = data.episodes || [];
+    if(!episodes.length){ list.innerHTML='<div style="padding:20px;text-align:center;color:var(--g);">No episodes found.</div>'; return; }
+    list.innerHTML = episodes.map(ep => {
+      const thumb = ep.still_path ? 'https://image.tmdb.org/t/p/w300'+ep.still_path : '';
+      return `<div class="wd-ep-card" onclick="playEpisode(${showId},${seasonNum},${ep.episode_number},'${(ep.name||'').replace(/'/g,"\'")}')">
+        <img class="wd-ep-thumb" src="${thumb}" onerror="this.style.background='#333';this.removeAttribute('src')" loading="lazy"/>
+        <div class="wd-ep-info">
+          <div class="wd-ep-num">S${String(seasonNum).padStart(2,'0')} E${String(ep.episode_number).padStart(2,'0')}</div>
+          <div class="wd-ep-title">${ep.name||'Episode '+ep.episode_number}</div>
+          <div class="wd-ep-overview">${ep.overview||''}</div>
+        </div>
+        <div class="wd-ep-play">▶</div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--g);">Could not load episodes.</div>';
+  }
+}
+
+function playEpisode(showId, season, episode, epName){
+  const showName = _currentWatchItem?.name || 'TV Show';
+  $('wp-title').textContent = `${showName} · S${String(season).padStart(2,'0')}E${String(episode).padStart(2,'0')} · ${epName}`;
+  // Store season/episode for server switching
+  _currentWatchItem._playingSeason = season;
+  _currentWatchItem._playingEpisode = episode;
+  _currentWatchType = 'tv';
+  _watchServer = _watchServer || 'vidsrc';
+  loadWatchSrc();
+  $('watch-player').style.display = 'flex';
+  applyTapShield(true);
+  pushNav(closeWatchPlayer);
 }
 
 function closeWatchDetail(){ $('watch-detail').style.display='none'; }
@@ -2407,15 +2529,16 @@ function loadWatchSrc(){
   const id = _currentWatchItem.id;
   const type = _currentWatchType;
   const isTV = type==='tv';
+  const s = isTV ? (_currentWatchItem._playingSeason || 1) : null;
+  const e = isTV ? (_currentWatchItem._playingEpisode || 1) : null;
   let src = '';
   if(_watchServer==='vidsrc'){
-    src = isTV ? `https://vidsrc.me/embed/tv?tmdb=${id}` : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+    src = isTV ? `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}` : `https://vidsrc.me/embed/movie?tmdb=${id}`;
   } else if(_watchServer==='vidsrc2'){
-    src = isTV ? `https://vidsrc.to/embed/tv/${id}` : `https://vidsrc.to/embed/movie/${id}`;
+    src = isTV ? `https://vidsrc.to/embed/tv/${id}/${s}/${e}` : `https://vidsrc.to/embed/movie/${id}`;
   } else if(_watchServer==='superembed'){
-    src = isTV ? `https://multiembed.mov/?tmdb=1&video_id=${id}&s=1&e=1` : `https://multiembed.mov/?tmdb=1&video_id=${id}`;
+    src = isTV ? `https://multiembed.mov/?tmdb=1&video_id=${id}&s=${s}&e=${e}` : `https://multiembed.mov/?tmdb=1&video_id=${id}`;
   }
-  // Append quality hint if supported
   src += (src.includes('?')?'&':'?') + 'quality=' + _watchQuality;
   $('watch-iframe').src = src;
 }
@@ -2868,13 +2991,14 @@ function renderSoundCloudSearch(query, container){
         container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--g);">No tracks found. Try another search.</div>';
         return;
       }
-      container.innerHTML = data.tracks.map(t => `
-        <div onclick="playTrack(${JSON.stringify(t).replace(/"/g,'&quot;')})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);transition:.2s;" onmousedown="this.style.background='rgba(255,255,255,.05)'" onmouseup="this.style.background=''" ontouchstart="this.style.background='rgba(255,255,255,.05)'" ontouchend="this.style.background=''">
-          <img src="${t.art||'https://i1.sndcdn.com/artworks-000000000000-000000-t120x120.jpg'}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;" onerror="this.style.background='var(--grad)';this.removeAttribute('src')"/>
+      _allTracks = data.tracks;
+      container.innerHTML = data.tracks.map((t,i) => `
+        <div onclick="playTrack(_allTracks[${i}],${i})" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);transition:.2s;" onmousedown="this.style.background='rgba(255,255,255,.05)'" onmouseup="this.style.background=''" ontouchstart="this.style.background='rgba(255,255,255,.05)'" ontouchend="this.style.background=''">
+          <img src="${t.art||''}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--s2);" onerror="this.style.background='var(--grad)';this.removeAttribute('src')" loading="lazy"/>
           <div style="flex:1;min-width:0;">
             <div style="font-size:14px;font-weight:700;color:var(--w);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div>
             <div style="font-size:12px;color:var(--g);margin-top:2px;">${t.artist}</div>
-            <div style="font-size:11px;color:var(--g2);margin-top:2px;">${t.duration}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:2px;">${t.duration} · ${t.album||''}</div>
           </div>
           <div style="color:var(--accent);font-size:22px;">▶</div>
         </div>`).join('');
@@ -2892,54 +3016,151 @@ function renderSoundCloudSearch(query, container){
 
 let _musicAudio = null;
 let _musicPlaying = false;
+let _musicLiked = false;
+let _musicProgressTimer = null;
+let _allTracks = [];
+let _currentTrackIdx = 0;
+let _lyricsLoaded = false;
 
-function playTrack(track){
+function playTrack(track, idx){
   _currentTrack = track;
+  if(idx !== undefined) _currentTrackIdx = idx;
+  // Update mini bar
   $('np-title').textContent = track.title;
   $('np-artist').textContent = track.artist || track.album || '';
+  if($('np-art-mini')) $('np-art-mini').src = track.art || '';
   $('now-playing-bar').style.display = 'flex';
+  // Update fullscreen if open
+  updateFullscreenUI();
   // Stop previous
   if(_musicAudio){ _musicAudio.pause(); _musicAudio = null; }
+  clearInterval(_musicProgressTimer);
   if(track.preview){
     _musicAudio = new Audio(track.preview);
     _musicAudio.volume = 1.0;
     _musicAudio.play().catch(()=>{});
-    _musicAudio.onended = ()=>{ $('np-play-btn').textContent='▶'; _musicPlaying=false; };
+    _musicAudio.onended = ()=>{ setPlayBtns('▶'); _musicPlaying=false; nextTrack(); };
     _musicPlaying = true;
-    $('np-play-btn').textContent = '⏸';
-    toast('▶ '+track.title+' — '+track.artist);
+    setPlayBtns('⏸');
+    _lyricsLoaded = false;
+    // Progress updates
+    _musicProgressTimer = setInterval(()=>{
+      if(!_musicAudio) return;
+      const pct = (_musicAudio.currentTime / (_musicAudio.duration||30)) * 100;
+      const prog = $('mfs-progress'); if(prog) prog.value = pct;
+      const cur = $('mfs-current'); if(cur) cur.textContent = fmtTime(_musicAudio.currentTime);
+      const dur = $('mfs-duration'); if(dur) dur.textContent = fmtTime(_musicAudio.duration||30);
+    }, 500);
   } else {
-    toast('No preview available for this track');
+    toast('No preview available');
   }
+}
+
+function fmtTime(s){ s=Math.floor(s||0); return Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0'); }
+
+function setPlayBtns(icon){
+  const b1=$('np-play-btn'); if(b1) b1.textContent=icon;
+  const b2=$('mfs-play-btn'); if(b2) b2.textContent=icon;
+}
+
+function updateFullscreenUI(){
+  if(!_currentTrack) return;
+  const t = _currentTrack;
+  const mfsEl = $('music-fullscreen');
+  if(!mfsEl || mfsEl.style.display==='none') return;
+  if($('mfs-title')) $('mfs-title').textContent = t.title;
+  if($('mfs-artist')) $('mfs-artist').textContent = t.artist||t.album||'';
+  if($('mfs-art')) $('mfs-art').src = t.art||'';
+  if($('mfs-bg')) $('mfs-bg').style.backgroundImage = t.art ? `url(${t.art})` : '';
+}
+
+function openMusicFullscreen(){
+  if(!_currentTrack) return;
+  const t = _currentTrack;
+  $('mfs-title').textContent = t.title;
+  $('mfs-artist').textContent = t.artist||t.album||'';
+  $('mfs-art').src = t.art||'';
+  $('mfs-bg').style.backgroundImage = t.art ? `url(${t.art})` : 'linear-gradient(135deg,#1a1a2e,#a855f7)';
+  $('mfs-like-btn').textContent = _musicLiked ? '❤️' : '🤍';
+  setPlayBtns(_musicPlaying ? '⏸' : '▶');
+  // Reset lyrics view
+  $('mfs-lyrics-view').style.display='none';
+  $('mfs-lyrics-btn').textContent='🎤 Show Lyrics';
+  $('music-fullscreen').style.display='flex';
+  pushNav(closeMusicFullscreen);
+}
+
+function closeMusicFullscreen(){
+  $('music-fullscreen').style.display='none';
 }
 
 function toggleMusicPlay(){
   if(!_musicAudio) return;
-  if(_musicPlaying){ _musicAudio.pause(); $('np-play-btn').textContent='▶'; _musicPlaying=false; }
-  else { _musicAudio.play(); $('np-play-btn').textContent='⏸'; _musicPlaying=true; }
+  if(_musicPlaying){ _musicAudio.pause(); setPlayBtns('▶'); _musicPlaying=false; }
+  else { _musicAudio.play(); setPlayBtns('⏸'); _musicPlaying=true; }
+}
+
+function seekMusic(val){
+  if(!_musicAudio) return;
+  _musicAudio.currentTime = (val/100)*(_musicAudio.duration||30);
+}
+
+function setMusicVolume(val){
+  if(_musicAudio) _musicAudio.volume = val/100;
+}
+
+function toggleMusicLike(){
+  _musicLiked = !_musicLiked;
+  $('mfs-like-btn').textContent = _musicLiked ? '❤️' : '🤍';
+  toast(_musicLiked ? '❤️ Liked!' : 'Removed from likes');
+}
+
+function nextTrack(){
+  if(!_allTracks.length) return;
+  _currentTrackIdx = (_currentTrackIdx+1) % _allTracks.length;
+  playTrack(_allTracks[_currentTrackIdx], _currentTrackIdx);
+  updateFullscreenUI();
+}
+
+function prevTrack(){
+  if(!_allTracks.length) return;
+  _currentTrackIdx = (_currentTrackIdx-1+_allTracks.length) % _allTracks.length;
+  playTrack(_allTracks[_currentTrackIdx], _currentTrackIdx);
+  updateFullscreenUI();
 }
 
 function closeMusic(){
   if(_musicAudio){ _musicAudio.pause(); _musicAudio=null; }
+  clearInterval(_musicProgressTimer);
   $('now-playing-bar').style.display = 'none';
+  $('music-fullscreen').style.display = 'none';
   _currentTrack = null; _musicPlaying = false;
 }
 
-async function getLyrics(){
-  if(!_currentTrack){ toast('Play a song first'); return; }
-  const sheet = $('lyrics-sheet');
-  $('lyrics-title').textContent = _currentTrack.title;
-  $('lyrics-artist').textContent = _currentTrack.artist;
-  $('lyrics-body').textContent = 'Searching for lyrics...';
-  sheet.classList.add('show');
+async function toggleLyricsView(){
+  const view = $('mfs-lyrics-view');
+  const btn = $('mfs-lyrics-btn');
+  if(view.style.display !== 'none'){
+    view.style.display='none';
+    btn.textContent='🎤 Show Lyrics';
+    return;
+  }
+  view.style.display='block';
+  btn.textContent='🎵 Hide Lyrics';
+  if(_lyricsLoaded) return;
+  $('mfs-lyrics-content').textContent='Searching for lyrics...';
   try {
-    const r = await fetch('/api/music/lyrics?title='+encodeURIComponent(_currentTrack.title)+'&artist='+encodeURIComponent(_currentTrack.artist));
+    const r = await fetch('/api/music/lyrics?title='+encodeURIComponent(_currentTrack.title)+'&artist='+encodeURIComponent(_currentTrack.artist||''));
     const d = await r.json();
-    $('lyrics-body').textContent = d.lyrics || 'Lyrics not found for this song.';
+    _lyricsLoaded = true;
+    $('mfs-lyrics-content').textContent = d.lyrics || 'Lyrics not found for this song.';
   } catch(e){
-    $('lyrics-body').textContent = 'Could not load lyrics. Try again.';
+    $('mfs-lyrics-content').textContent = 'Could not load lyrics. Try again.';
   }
 }
+
+// Keep getLyrics for backward compat
+async function getLyrics(){ toggleLyricsView(); }
 
 // ── LIVE ──────────────────────────────────────────────────────────────────
 let _liveFrameTimer = null;

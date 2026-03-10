@@ -627,21 +627,45 @@ app.get('/api/music/lyrics', async (req, res) => {
   try {
     const { title, artist } = req.query;
     const GENIUS_KEY = process.env.GENIUS_API_KEY || 'NNTS_YJ0HhnT1B-OFeIYKRqgRT6PryvLh9jLdmYeyJYblYRSdlezfD-TGTy0tHJR';
-    const q = encodeURIComponent((artist||'')+' '+(title||''));
-    // Search Genius for the song
-    const searchUrl = `https://api.genius.com/search?q=${q}`;
-    const searchRes = await fetch(searchUrl, { headers: { 'Authorization': 'Bearer '+GENIUS_KEY } });
+    const q = encodeURIComponent((title||'')+' '+(artist||''));
+    // Search Genius API
+    const searchRes = await fetch('https://api.genius.com/search?q='+q, {
+      headers: { 'Authorization': 'Bearer '+GENIUS_KEY, 'User-Agent': 'Mozilla/5.0' }
+    });
     const searchData = await searchRes.json();
     const hit = searchData.response?.hits?.[0]?.result;
-    if(!hit) return res.json({ lyrics: 'Lyrics not found for this song.' });
-    // Scrape lyrics page
-    const pageRes = await fetch(hit.url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if(!hit) return res.json({ lyrics: 'Lyrics not found for: '+title });
+    // Fetch lyrics page with better headers
+    const pageRes = await fetch(hit.url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 Chrome/91.0.4472.120 Mobile Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5'
+      }
+    });
     const html = await pageRes.text();
-    // Extract lyrics from Genius HTML
-    const match = html.match(/data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g);
-    if(!match) return res.json({ lyrics: 'Could not extract lyrics. Visit: '+hit.url });
-    const lyrics = match.map(m => m.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>')).join('\n').trim();
-    res.json({ lyrics: lyrics || 'Lyrics not found.' });
+    // Try multiple extraction patterns
+    let lyrics = '';
+    // Pattern 1: data-lyrics-container
+    const containers = html.match(/data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g);
+    if(containers && containers.length){
+      lyrics = containers.map(c => c.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x27;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#x2F;/g,'/')).join('\n').trim();
+    }
+    // Pattern 2: __NEXT_DATA__ JSON
+    if(!lyrics){
+      const nextData = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
+      if(nextData){
+        try {
+          const json = JSON.parse(nextData[1]);
+          const lyricsHtml = json?.props?.pageProps?.songPage?.lyricsData?.body?.html || '';
+          if(lyricsHtml){
+            lyrics = lyricsHtml.replace(/<br[^>]*>/gi,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').trim();
+          }
+        } catch(e2){}
+      }
+    }
+    if(!lyrics) return res.json({ lyrics: 'Lyrics found but could not be extracted. Try: '+hit.url });
+    res.json({ lyrics, title: hit.title, artist: hit.primary_artist?.name });
   } catch(e) {
     console.error('Lyrics error:', e.message);
     res.json({ lyrics: 'Could not load lyrics. Try again.' });
