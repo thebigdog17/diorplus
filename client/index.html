@@ -731,12 +731,12 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
     <button id="ch-voice-btn" onclick="startVoiceNote()" style="display:none;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0;">🎤</button>
   </div>
   <!-- Message context menu -->
-  <div id="ch-ctx-menu" style="display:none;position:fixed;background:var(--s1);border:1px solid var(--s2);border-radius:14px;padding:6px;z-index:9999;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);">
-    <div class="ctx-item" onclick="replyToMsg()">↩ Reply</div>
-    <div class="ctx-item" onclick="reactToMsg()">😀 React</div>
-    <div class="ctx-item" onclick="copyMsg()">📋 Copy</div>
-    <div class="ctx-item" onclick="deleteMsg()" style="color:#ef4444;">🗑 Delete</div>
-    <div class="ctx-item" onclick="closeCtxMenu()">✕ Cancel</div>
+  <div id="ch-ctx-menu" style="display:none;position:fixed;background:var(--s1);border:1px solid var(--s2);border-radius:14px;padding:6px;z-index:9999;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);" onclick="event.stopPropagation()">
+    <div class="ctx-item" ontouchend="replyToMsg()" onclick="replyToMsg()">↩ Reply</div>
+    <div class="ctx-item" ontouchend="reactToMsg()" onclick="reactToMsg()">😀 React</div>
+    <div class="ctx-item" ontouchend="copyMsg()" onclick="copyMsg()">📋 Copy</div>
+    <div class="ctx-item" ontouchend="deleteMsg()" onclick="deleteMsg()" style="color:#ef4444;">🗑 Delete</div>
+    <div class="ctx-item" ontouchend="closeCtxMenu()" onclick="closeCtxMenu()">✕ Cancel</div>
   </div>
   <!-- Reaction picker -->
   <div id="ch-react-picker" style="display:none;position:fixed;background:var(--s1);border:1px solid var(--s2);border-radius:30px;padding:8px 12px;z-index:10000;box-shadow:0 8px 32px rgba(0,0,0,.5);">
@@ -776,7 +776,16 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
     <div style="font-size:11px;font-weight:800;color:var(--g);letter-spacing:1px;margin-bottom:10px;">CHAT EMOJI</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
       <span id="cust-emoji-cur" style="font-size:28px;padding:4px;">❤️</span>
-      ${['❤️','🔥','💜','⭐','😂','👑','💫','🌹','🤝','💎'].map(e=>`<span onclick="setChatEmoji('${e}')" style="font-size:24px;cursor:pointer;padding:4px;">${e}</span>`).join('')}
+      <span ontouchend="setChatEmoji('❤️')" onclick="setChatEmoji('❤️')" style="font-size:24px;cursor:pointer;padding:4px;">❤️</span>
+      <span ontouchend="setChatEmoji('🔥')" onclick="setChatEmoji('🔥')" style="font-size:24px;cursor:pointer;padding:4px;">🔥</span>
+      <span ontouchend="setChatEmoji('💜')" onclick="setChatEmoji('💜')" style="font-size:24px;cursor:pointer;padding:4px;">💜</span>
+      <span ontouchend="setChatEmoji('⭐')" onclick="setChatEmoji('⭐')" style="font-size:24px;cursor:pointer;padding:4px;">⭐</span>
+      <span ontouchend="setChatEmoji('😂')" onclick="setChatEmoji('😂')" style="font-size:24px;cursor:pointer;padding:4px;">😂</span>
+      <span ontouchend="setChatEmoji('👑')" onclick="setChatEmoji('👑')" style="font-size:24px;cursor:pointer;padding:4px;">👑</span>
+      <span ontouchend="setChatEmoji('💫')" onclick="setChatEmoji('💫')" style="font-size:24px;cursor:pointer;padding:4px;">💫</span>
+      <span ontouchend="setChatEmoji('🌹')" onclick="setChatEmoji('🌹')" style="font-size:24px;cursor:pointer;padding:4px;">🌹</span>
+      <span ontouchend="setChatEmoji('🤝')" onclick="setChatEmoji('🤝')" style="font-size:24px;cursor:pointer;padding:4px;">🤝</span>
+      <span ontouchend="setChatEmoji('💎')" onclick="setChatEmoji('💎')" style="font-size:24px;cursor:pointer;padding:4px;">💎</span>
     </div>
     <!-- Save -->
     <button onclick="saveChatCustomize()" style="width:100%;background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:14px;padding:14px;color:#fff;font-weight:800;font-size:15px;cursor:pointer;">Save Changes</button>
@@ -4159,7 +4168,6 @@ async function openChat(userId){
     const wp=CHAT_WALLPAPERS.find(w=>w.id===cs.wallpaper);
     if(wp){body.style.backgroundImage=wp.css||'none';body.style.backgroundColor=wp.bg||'transparent';body.style.backgroundSize=wp.size||'auto';}
   }
-  toggleSendVoice();
   const msgs=await api('/api/messages/'+ME.id+'/'+userId);
   if(Array.isArray(msgs)){
     let lastDate='';
@@ -4186,7 +4194,6 @@ async function sendMsg(){
   const text=inp.value.trim();
   if(!text || !activeConv) return;
   inp.value=''; stopTyping();
-  toggleSendVoice();
   const payload={fromId:ME.id, toId:activeConv, text, type:'text'};
   if(_replyTo){ payload.replyTo=_replyTo; cancelReply(); }
   // Optimistic append (instant feel)
@@ -4224,12 +4231,12 @@ async function sendMediaMsg(input){
 }
 
 function toggleSendVoice(){
+  // Send btn always visible. Mic only when input truly empty.
   const inp=$('ch-inp');
   const hasText=(inp?.value||'').trim().length>0;
-  const sb=$('ch-send-btn');
   const vb=$('ch-voice-btn');
-  if(sb) sb.style.display=hasText?'flex':'none';
   if(vb) vb.style.display=hasText?'none':'flex';
+  // Send button always stays visible - never hide it
 }
 
 // ── VOICE NOTES ───────────────────────────────────────────────────────────
@@ -4294,8 +4301,6 @@ function playVoiceMsg(btn, src){
 // ── CONTEXT MENU / REPLY / REACT ─────────────────────────────────────────
 function showCtxMenu(m, el, x, y){
   _ctxMsgId=m.id; _ctxMsgEl=el; _ctxMsg=m;
-  // Close menu when tapping outside
-  setTimeout(()=>{ document.addEventListener('touchstart', closeCtxMenuOnce, {once:true}); }, 100);
   const menu=$('ch-ctx-menu');
   menu.style.display='block';
   // Position within viewport
@@ -4402,11 +4407,11 @@ function closeChatCustomize(){ $('chat-customize-overlay').style.display='none';
 
 function previewTheme(id){
   const t=CHAT_THEMES.find(x=>x.id===id);if(!t)return;
-  // Apply bubble color preview
   document.querySelectorAll('.ch-bubble.mine').forEach(b=>b.style.background=t.grad);
   $('cust-themes').querySelectorAll('div').forEach((d,i)=>{d.style.borderColor=CHAT_THEMES[i].id===id?'#fff':'transparent';});
   if(!chatSettings[activeConv])chatSettings[activeConv]={};
   chatSettings[activeConv].theme=id;
+  localStorage.setItem('dp_chat_settings',JSON.stringify(chatSettings));
 }
 function previewWallpaper(id){
   const w=CHAT_WALLPAPERS.find(x=>x.id===id);if(!w)return;
@@ -4416,17 +4421,22 @@ function previewWallpaper(id){
   $('cust-wallpapers').querySelectorAll('div').forEach((d,i)=>{d.style.borderColor=CHAT_WALLPAPERS[i].id===id?'#a855f7':'rgba(255,255,255,.1)';});
   if(!chatSettings[activeConv])chatSettings[activeConv]={};
   chatSettings[activeConv].wallpaper=id;
+  chatSettings[activeConv].wallpaperCustom=undefined;
+  localStorage.setItem('dp_chat_settings',JSON.stringify(chatSettings));
 }
 function setCustomWallpaper(input){
   if(!input.files[0])return;
   const reader=new FileReader();
   reader.onload=e=>{
-    $('ch-body').style.backgroundImage=`url(${e.target.result})`;
+    $('ch-body').style.backgroundImage='url('+e.target.result+')';
     $('ch-body').style.backgroundSize='cover';
     $('ch-body').style.backgroundPosition='center';
     if(!chatSettings[activeConv])chatSettings[activeConv]={};
     chatSettings[activeConv].wallpaperCustom=e.target.result;
     chatSettings[activeConv].wallpaper='custom';
+    // Save immediately so it persists
+    localStorage.setItem('dp_chat_settings',JSON.stringify(chatSettings));
+    toast('Wallpaper saved ✓');
   };
   reader.readAsDataURL(input.files[0]);
 }
@@ -4439,7 +4449,7 @@ function saveChatCustomize(){
   if(!activeConv)return;
   if(!chatSettings[activeConv])chatSettings[activeConv]={};
   chatSettings[activeConv].nickname=$('cust-nickname').value.trim()||undefined;
-  localStorage.setItem('chat_settings_'+ME?.id, JSON.stringify(chatSettings));
+  localStorage.setItem('dp_chat_settings', JSON.stringify(chatSettings));
   closeChatCustomize();
   // Re-apply header name
   const cs=chatSettings[activeConv];
@@ -4449,7 +4459,7 @@ function saveChatCustomize(){
 function resetChatCustomize(){
   if(!activeConv)return;
   delete chatSettings[activeConv];
-  localStorage.setItem('chat_settings_'+ME?.id, JSON.stringify(chatSettings));
+  localStorage.setItem('dp_chat_settings', JSON.stringify(chatSettings));
   $('ch-body').style.background='';
   document.querySelectorAll('.ch-bubble.mine').forEach(b=>b.style.background='');
   closeChatCustomize();
