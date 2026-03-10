@@ -316,9 +316,20 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
 .watch-detail-action{flex:1;background:var(--s2);border:none;border-radius:12px;padding:12px 8px;color:var(--w);font-size:12px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;}
 /* Player overlay */
 #watch-player{position:fixed;inset:0;background:#000;z-index:300;display:none;flex-direction:column;}
-#watch-iframe{width:100%;flex:1;border:none;}
-.watch-player-bar{background:#111;padding:12px 16px;display:flex;align-items:center;gap:12px;}
+#watch-iframe{width:100%;flex:1;border:none;pointer-events:none;}
+#watch-iframe-wrap{position:relative;flex:1;overflow:hidden;}
+#watch-tap-shield{position:absolute;inset:0;z-index:2;background:transparent;}
+.watch-player-bar{background:#111;padding:10px 16px;display:flex;align-items:center;gap:12px;}
 .watch-player-title{flex:1;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.watch-quality-bar{background:#1a1a1a;padding:8px 16px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.watch-quality-bar::-webkit-scrollbar{display:none;}
+.wq-label{font-size:12px;color:#888;margin-right:4px;white-space:nowrap;}
+.wq-btn{background:#333;border:none;border-radius:8px;padding:6px 12px;color:#ccc;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.2s;}
+.wq-btn.active{background:var(--grad);color:#fff;}
+.watch-src-bar{background:#111;padding:6px 16px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.watch-src-bar::-webkit-scrollbar{display:none;}
+.ws-btn{background:#222;border:1px solid #333;border-radius:8px;padding:5px 12px;color:#aaa;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.2s;}
+.ws-btn.active{border-color:var(--accent);color:var(--accent);}
 
 /* ── STUDIO ── */
 .st-hdr{padding:16px;text-align:center;}
@@ -501,8 +512,26 @@ body{background:var(--bg);color:var(--w);font-family:-apple-system,BlinkMacSyste
   <div class="watch-player-bar">
     <button onclick="closeWatchPlayer()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">✕</button>
     <div class="watch-player-title" id="wp-title"></div>
+    <button onclick="toggleTapShield()" id="wp-shield-btn" style="background:#333;border:none;border-radius:8px;padding:5px 10px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">🔒 Lock</button>
   </div>
-  <iframe id="watch-iframe" allowfullscreen allow="autoplay; fullscreen" src=""></iframe>
+  <div class="watch-quality-bar">
+    <span class="wq-label">Quality:</span>
+    <button class="wq-btn" onclick="setWatchQuality('360')">360p</button>
+    <button class="wq-btn" onclick="setWatchQuality('480')">480p</button>
+    <button class="wq-btn active" onclick="setWatchQuality('720')">720p</button>
+    <button class="wq-btn" onclick="setWatchQuality('1080')">1080p</button>
+    <button class="wq-btn" onclick="setWatchQuality('4k')">4K</button>
+  </div>
+  <div class="watch-src-bar">
+    <span class="wq-label">Server:</span>
+    <button class="ws-btn active" onclick="setWatchServer('vidsrc',this)">Server 1</button>
+    <button class="ws-btn" onclick="setWatchServer('vidsrc2',this)">Server 2</button>
+    <button class="ws-btn" onclick="setWatchServer('superembed',this)">Server 3</button>
+  </div>
+  <div id="watch-iframe-wrap">
+    <div id="watch-tap-shield"></div>
+    <iframe id="watch-iframe" allowfullscreen allow="autoplay; fullscreen; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" src=""></iframe>
+  </div>
 </div>
     <!-- MESSAGES -->
     <div class="screen" id="s-messages">
@@ -2326,24 +2355,78 @@ async function openWatchDetail(id, type){
 
 function closeWatchDetail(){ $('watch-detail').style.display='none'; }
 
+let _watchQuality = '720';
+let _watchServer = 'vidsrc';
+let _tapShieldOn = true;
+
 function playCurrentMovie(){
+  if(!_currentWatchItem) return;
+  const name = _currentWatchItem.title||_currentWatchItem.name||'';
+  $('wp-title').textContent = name;
+  loadWatchSrc();
+  $('watch-player').style.display='flex';
+  // Apply tap shield by default (blocks redirects)
+  applyTapShield(true);
+  pushNav(closeWatchPlayer);
+}
+
+function loadWatchSrc(){
   if(!_currentWatchItem) return;
   const id = _currentWatchItem.id;
   const type = _currentWatchType;
-  const name = _currentWatchItem.title||_currentWatchItem.name||'';
-  $('wp-title').textContent = name;
-  // Use vidsrc.me embed — free, no signup needed
-  const src = type==='tv'
-    ? `https://vidsrc.me/embed/tv?tmdb=${id}`
-    : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+  const isTV = type==='tv';
+  let src = '';
+  if(_watchServer==='vidsrc'){
+    src = isTV ? `https://vidsrc.me/embed/tv?tmdb=${id}` : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+  } else if(_watchServer==='vidsrc2'){
+    src = isTV ? `https://vidsrc.to/embed/tv/${id}` : `https://vidsrc.to/embed/movie/${id}`;
+  } else if(_watchServer==='superembed'){
+    src = isTV ? `https://multiembed.mov/?tmdb=1&video_id=${id}&s=1&e=1` : `https://multiembed.mov/?tmdb=1&video_id=${id}`;
+  }
+  // Append quality hint if supported
+  src += (src.includes('?')?'&':'?') + 'quality=' + _watchQuality;
   $('watch-iframe').src = src;
-  $('watch-player').style.display='flex';
-  pushNav(closeWatchPlayer);
+}
+
+function setWatchQuality(q){
+  _watchQuality = q;
+  document.querySelectorAll('.wq-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  // Reload with new quality
+  loadWatchSrc();
+  toast('Quality set to '+q+'p');
+}
+
+function setWatchServer(srv, btn){
+  _watchServer = srv;
+  document.querySelectorAll('.ws-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadWatchSrc();
+  toast('Switched to '+btn.textContent);
+}
+
+function applyTapShield(on){
+  _tapShieldOn = on;
+  const shield = $('watch-tap-shield');
+  const iframe = $('watch-iframe');
+  if(shield){
+    shield.style.display = on ? 'block' : 'none';
+  }
+  // When shield is OFF, allow iframe pointer events so user can interact
+  if(iframe) iframe.style.pointerEvents = on ? 'none' : 'auto';
+  const btn = $('wp-shield-btn');
+  if(btn){ btn.textContent = on ? '🔒 Lock' : '🔓 Unlock'; btn.style.background = on ? '#c0392b' : '#27ae60'; }
+}
+
+function toggleTapShield(){
+  applyTapShield(!_tapShieldOn);
+  toast(_tapShieldOn ? '🔒 Redirect protection ON' : '🔓 Unlocked — interact freely');
 }
 
 function closeWatchPlayer(){
   $('watch-player').style.display='none';
   $('watch-iframe').src='';
+  applyTapShield(true);
 }
 
 function toggleWatchlist(){
