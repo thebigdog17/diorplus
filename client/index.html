@@ -4211,6 +4211,8 @@ async function ctxBlock(){
 // ── STREAK + FOLLOWERS IN CONV LIST (patch loadConversations) ─────────────
 async function loadConversations(){
   const convs=await api('/api/conversations/'+ME.id);
+  console.log('[loadConversations] result:', JSON.stringify(convs));
+  toast('DMs loaded: '+(Array.isArray(convs)?convs.length+' convs':'error: '+JSON.stringify(convs)));
   // AI Chat pinned at top
   const aiEntry = `<div class="ms-item" onclick="openAIChat()" style="border-left:3px solid var(--purple);">
     <div class="ms-av" style="background:linear-gradient(135deg,#a855f7,#6366f1);font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✦</div>
