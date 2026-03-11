@@ -4220,6 +4220,9 @@ async function loadConversations(){
     </div>
   </div>`;
   if(Array.isArray(convs)) window._convCache=convs;
+  // Don't overwrite if user is actively searching
+  const msInpVal = ($('ms-inp')?.value||'').trim();
+  if(msInpVal) return;
   $('conv-list').innerHTML=aiEntry+(Array.isArray(convs)&&convs.length?convs.map(c=>{
     const cs=chatSettings[c.userId]||{};
     const nick=cs.nickname||c.name||c.username||'User';
@@ -4316,13 +4319,22 @@ async function sendMsg(){
   updateStreak(activeConv);
   // Send to server
   const saved = await api('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  // Update temp msg id
-  if(saved?.id && _msgMap[tempId]){
-    _msgMap[saved.id]=_msgMap[tempId];
-    _msgMap[tempId].dataset.msgId=saved.id;
-    delete _msgMap[tempId];
+  if(saved?.id){
+    // Success - update temp bubble with real id
+    if(_msgMap[tempId]){
+      _msgMap[saved.id]=_msgMap[tempId];
+      _msgMap[tempId].dataset.msgId=saved.id;
+      delete _msgMap[tempId];
+    }
+    loadConversations();
+    // Also reload after short delay to make sure it appears
+    setTimeout(loadConversations, 1500);
+  } else {
+    // Failed - show error on the bubble
+    const bubble = _msgMap[tempId]?.querySelector('.ch-bubble');
+    if(bubble) bubble.style.opacity='0.4';
+    toast('Message failed - check your connection');
   }
-  loadConversations();
 }
 
 async function sendMediaMsg(input){
