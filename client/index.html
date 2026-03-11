@@ -917,7 +917,7 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
 </div>
 
 <!-- FORGOT PASSWORD -->
-<div class="overlay" id="forgot-overlay">
+<div class="overlay" id="forgot-overlay" class="overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column;max-width:480px;margin:0 auto;">
   <div class="ov-hdr"><button class="ov-close" onclick="closeForgotPw()">&#x2715;</button><h2>Reset Password</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;padding:24px 16px;">
     <div style="font-size:40px;text-align:center;margin-bottom:16px;">&#x1F511;</div>
@@ -4221,7 +4221,8 @@ async function openChat(userId){
 async function sendMsg(){
   const inp=$('ch-inp');
   const text=inp.value.trim();
-  if(!text || !activeConv) return;
+  if(!text){ toast('Type a message first'); return; }
+  if(!activeConv){ toast('Error: no active chat - go back and tap the person again'); return; }
   inp.value=''; stopTyping();
   const payload={fromId:ME.id, toId:activeConv, text, type:'text'};
   if(_replyTo){ payload.replyTo=_replyTo; cancelReply(); }
