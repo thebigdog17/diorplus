@@ -917,7 +917,7 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
 </div>
 
 <!-- FORGOT PASSWORD -->
-<div class="overlay" id="forgot-overlay" class="overlay" style="position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column;max-width:480px;margin:0 auto;">
+<div class="overlay" id="forgot-overlay" class="overlay" style="position:fixed;inset:0;background:var(--bg);z-index:9100;flex-direction:column;max-width:480px;margin:0 auto;">
   <div class="ov-hdr"><button class="ov-close" onclick="closeForgotPw()">&#x2715;</button><h2>Reset Password</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;padding:24px 16px;">
     <!-- Step 1: Enter email/username -->
@@ -1418,7 +1418,7 @@ async function doSignup(){
 }
 
 // FORGOT PASSWORD
-function openForgotPw(){ $('forgot-overlay').classList.add('show'); $('fp-err').textContent=''; $('fp-step2').style.display='none'; }
+function openForgotPw(){ $('forgot-overlay').classList.add('show'); $('fp-err').textContent=''; $('fp-step1').style.display='block'; $('fp-step2').style.display='none'; }
 async function fpOtpNext(i){
   const cur=$('fp-otp'+i);
   if(cur.value.length===1 && i<5) $('fp-otp'+(i+1)).focus();
