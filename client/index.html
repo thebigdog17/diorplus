@@ -917,14 +917,36 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
 </div>
 
 <!-- FORGOT PASSWORD -->
-<div class="overlay" id="forgot-overlay" class="overlay" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column;max-width:480px;margin:0 auto;">
+<div class="overlay" id="forgot-overlay" class="overlay" style="position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column;max-width:480px;margin:0 auto;">
   <div class="ov-hdr"><button class="ov-close" onclick="closeForgotPw()">&#x2715;</button><h2>Reset Password</h2><div style="width:36px;"></div></div>
   <div style="flex:1;overflow-y:auto;padding:24px 16px;">
-    <div style="font-size:40px;text-align:center;margin-bottom:16px;">&#x1F511;</div>
-    <p style="color:var(--g1);font-size:14px;text-align:center;margin-bottom:24px;line-height:1.6;">Enter your email or username and we'll send a reset code.</p>
-    <input class="auth-inp" id="fp-input" placeholder="Email or Username"/>
-    <div class="auth-err" id="fp-err"></div>
-    <button class="auth-btn" onclick="sendResetCode()">Send Reset Code</button>
+    <!-- Step 1: Enter email/username -->
+    <div id="fp-step1">
+      <div style="font-size:40px;text-align:center;margin-bottom:16px;">&#x1F511;</div>
+      <p style="color:var(--g1);font-size:14px;text-align:center;margin-bottom:24px;line-height:1.6;">Enter your email address or username to receive a reset code.</p>
+      <input class="auth-inp" id="fp-input" placeholder="Email or Username"/>
+      <div class="auth-err" id="fp-err"></div>
+      <button class="auth-btn" onclick="sendResetCode()" style="margin-top:8px;">Send Reset Code</button>
+    </div>
+    <!-- Step 2: Enter code + new password -->
+    <div id="fp-step2" style="display:none;">
+      <div style="font-size:40px;text-align:center;margin-bottom:12px;">&#x1F4E7;</div>
+      <p id="fp-sent-msg" style="color:var(--g1);font-size:14px;text-align:center;margin-bottom:20px;line-height:1.6;"></p>
+      <p style="font-size:13px;font-weight:700;margin-bottom:8px;">Enter 6-digit code</p>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
+        <input class="otp-inp" maxlength="1" id="fp-otp0" oninput="fpOtpNext(0)" style="width:40px;height:48px;text-align:center;font-size:20px;font-weight:700;background:var(--s2);border:2px solid var(--s2);border-radius:10px;color:var(--w);outline:none;"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp1" oninput="fpOtpNext(1)" style="width:40px;height:48px;text-align:center;font-size:20px;font-weight:700;background:var(--s2);border:2px solid var(--s2);border-radius:10px;color:var(--w);outline:none;"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp2" oninput="fpOtpNext(2)" style="width:40px;height:48px;text-align:center;font-size:20px;font-weight:700;background:var(--s2);border:2px solid var(--s2);border-radius:10px;color:var(--w);outline:none;"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp3" oninput="fpOtpNext(3)" style="width:40px;height:48px;text-align:center;font-size:20px;font-weight:700;background:var(--s2);border:2px solid var(--s2);border-radius:10px;color:var(--w);outline:none;"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp4" oninput="fpOtpNext(4)" style="width:40px;height:48px;text-align:center;font-size:20px;font-weight:700;background:var(--s2);border:2px solid var(--s2);border-radius:10px;color:var(--w);outline:none;"/>
+        <input class="otp-inp" maxlength="1" id="fp-otp5" oninput="fpOtpNext(5)" style="width:40px;height:48px;text-align:center;font-size:20px;font-weight:700;background:var(--s2);border:2px solid var(--s2);border-radius:10px;color:var(--w);outline:none;"/>
+      </div>
+      <input class="auth-inp" id="fp-newpw-inp" type="password" placeholder="New Password"/>
+      <input class="auth-inp" id="fp-confirmpw" type="password" placeholder="Confirm New Password" style="margin-top:10px;"/>
+      <div class="auth-err" id="fp-err2"></div>
+      <button class="auth-btn" onclick="confirmResetCode()" style="margin-top:12px;">Set New Password</button>
+      <button class="auth-link" onclick="$('fp-step2').style.display='none';$('fp-step1').style.display='block';">&#x2190; Back</button>
+    </div>
     <div id="fp-step2" style="display:none;margin-top:20px;">
       <p style="color:var(--g1);font-size:13px;text-align:center;margin-bottom:16px;">Enter the 6-digit code</p>
       <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
@@ -1174,7 +1196,14 @@ audio.ch-audio{max-width:200px;height:36px;border-radius:20px;outline:none;}
 const API = window.location.origin;
 let socket = null;
 let ME = null;
-let activeConv = null, convUser = null;
+let _activeConvInternal = null, convUser = null;
+Object.defineProperty(window, 'activeConv', {
+  get(){ return _activeConvInternal; },
+  set(v){ 
+    console.log('[activeConv] SET to:', v, '| stack:', new Error().stack.split('\n')[2]?.trim());
+    _activeConvInternal = v; 
+  }
+});
 let currentGC = null;
 let svGroups = [], svGroupIdx = 0, svIdx = 0, svTimer = null;
 let pickedFiles = [], storyFile = null, reelFile = null;
@@ -1390,16 +1419,64 @@ async function doSignup(){
 
 // FORGOT PASSWORD
 function openForgotPw(){ $('forgot-overlay').classList.add('show'); $('fp-err').textContent=''; $('fp-step2').style.display='none'; }
+async function fpOtpNext(i){
+  const cur=$('fp-otp'+i);
+  if(cur.value.length===1 && i<5) $('fp-otp'+(i+1)).focus();
+}
+async function confirmResetCode(){
+  const code=[0,1,2,3,4,5].map(i=>($('fp-otp'+i)?.value||'')).join('');
+  if(code.length<6){ $('fp-err2').textContent='Enter the full 6-digit code'; return; }
+  const newpw=$('fp-newpw-inp').value;
+  const confirmpw=$('fp-confirmpw').value;
+  if(!newpw||newpw.length<6){ $('fp-err2').textContent='Password must be at least 6 characters'; return; }
+  if(newpw!==confirmpw){ $('fp-err2').textContent='Passwords do not match'; return; }
+  $('fp-err2').textContent='';
+  const btn=document.querySelector('#fp-step2 .auth-btn');
+  btn.textContent='Saving...'; btn.disabled=true;
+  const r=await api('/api/auth/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:window._fpUserId,code,newPassword:newpw})});
+  btn.textContent='Set New Password'; btn.disabled=false;
+  if(r.error){ $('fp-err2').textContent=r.error; return; }
+  toast('Password reset! Please log in.');
+  closeForgotPw();
+  window._fpUserId=null; window._fpDirectCode=null;
+  [0,1,2,3,4,5].forEach(i=>{ const el=$('fp-otp'+i); if(el) el.value=''; });
+  $('fp-input').value=''; $('fp-newpw-inp').value=''; $('fp-confirmpw').value='';
+  $('fp-step2').style.display='none'; $('fp-step1').style.display='block';
+}
+async function doResetPassword(){
+  const username = $('fp-input').value.trim();
+  const newpass = $('fp-newpass').value;
+  const confirm = $('fp-confirm').value;
+  if(!username || !newpass){ $('fp-err').textContent='Fill all fields'; return; }
+  if(newpass.length < 6){ $('fp-err').textContent='Password must be at least 6 characters'; return; }
+  if(newpass !== confirm){ $('fp-err').textContent='Passwords do not match'; return; }
+  $('fp-err').textContent='';
+  const r = await api('/api/auth/reset-by-username',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,newPassword:newpass})});
+  if(r.error){ $('fp-err').textContent=r.error; return; }
+  toast('Password reset! Please log in.');
+  closeForgotPw();
+  $('fp-input').value=''; $('fp-newpass').value=''; $('fp-confirm').value='';
+}
 function closeForgotPw(){ $('forgot-overlay').classList.remove('show'); }
 async function sendResetCode(){
   const val=$('fp-input').value.trim();
-  if(!val){ $('fp-err').textContent='Enter email or username'; return; }
+  if(!val){ $('fp-err').textContent='Enter your email or username'; return; }
+  $('fp-err').textContent='';
+  const btn=document.querySelector('#fp-step1 .auth-btn');
+  btn.textContent='Sending...'; btn.disabled=true;
   const r=await api('/api/auth/forgot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:val})});
+  btn.textContent='Send Reset Code'; btn.disabled=false;
   if(r.error){ $('fp-err').textContent=r.error; return; }
-  fpResetCode=r.code||(Math.floor(100000+Math.random()*900000).toString());
-  fpTargetUser=r.userId;
-  $('fp-step2').style.display='block'; $('fp-err').textContent='';
-  toast("Demo reset code: "+fpResetCode, 8000);
+  window._fpUserId=r.userId;
+  window._fpDirectCode=r.method==='direct'?r.code:null;
+  $('fp-step1').style.display='none';
+  $('fp-step2').style.display='block';
+  if(r.method==='email'){
+    $('fp-sent-msg').textContent='A 6-digit code was sent to '+r.masked+'. Check your inbox (and spam folder).';
+  } else {
+    $('fp-sent-msg').textContent='Your account has no email. Your code is: '+r.code;
+  }
+  $('fp-otp0').focus();
 }
 function fpOtpNext(idx){ const v=document.getElementById("fp-otp"+idx).value; if(v&&idx<5) document.getElementById("fp-otp"+(idx+1)).focus(); }
 async function confirmReset(){
@@ -4163,6 +4240,7 @@ async function openChat(userId){
   pushNav(closeChat);
   $('ch-body').innerHTML='';
   $('chat').style.display='flex';
+  $('chat').dataset.activeUserId = userId;
   // Always fetch real profile — update header when it arrives
   api('/api/users/'+userId).then(r=>{
     const u = r?.user;
@@ -4221,8 +4299,10 @@ async function openChat(userId){
 async function sendMsg(){
   const inp=$('ch-inp');
   const text=inp.value.trim();
-  if(!text){ toast('Type a message first'); return; }
-  if(!activeConv){ toast('Error: no active chat - go back and tap the person again'); return; }
+  if(!text) return;
+  // Recover activeConv from DOM if state was lost
+  if(!activeConv) activeConv = $('chat')?.dataset?.activeUserId || null;
+  if(!activeConv) return;
   inp.value=''; stopTyping();
   const payload={fromId:ME.id, toId:activeConv, text, type:'text'};
   if(_replyTo){ payload.replyTo=_replyTo; cancelReply(); }

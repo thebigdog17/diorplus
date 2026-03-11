@@ -1,5 +1,6 @@
 const https = require('https');
 const express = require('express');
+
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
@@ -87,12 +88,18 @@ function cleanNoPass(doc) {
 // ── AUTH ───────────────────────────────────────────────────────────────────
 app.post('/api/register', async (req, res) => {
   try {
-    const { name, username, password } = req.body;
+    const { name, username, email, phone, password } = req.body;
     if (!name || !username || !password) return res.json({ error: 'Fill all fields' });
     const exists = await db.collection('users').findOne({ username: username.toLowerCase() });
     if (exists) return res.json({ error: 'Username taken' });
+    if (email) {
+      const emailExists = await db.collection('users').findOne({ email: email.toLowerCase() });
+      if (emailExists) return res.json({ error: 'Email already registered' });
+    }
     const user = {
       id: uuidv4(), name, username: username.toLowerCase(),
+      email: email ? email.toLowerCase() : '',
+      phone: phone || '',
       password, bio: '', photoUrl: '', link: '',
       followers: [], following: [], posts: [],
       verified: false, verifyTier: null,
@@ -542,6 +549,22 @@ app.post('/api/reels/:id/like', async (req, res) => {
 
 // ── FORGOT PASSWORD ────────────────────────────────────────────────────────
 const resetCodes = new Map(); // temporary in-memory store
+
+// ── EMAIL via Resend (free 100/day, no Gmail needed) ─────────────────────
+async function sendEmail(to, subject, html) {
+  const RESEND_KEY = process.env.RESEND_API_KEY || '';
+  if (!RESEND_KEY) {
+    console.log('[Email skipped - no RESEND_API_KEY] Would send to:', to, '|', subject);
+    return;
+  }
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer '+RESEND_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: 'DIOR+ <onboarding@resend.dev>', to, subject, html })
+  });
+  const data = await res.json();
+  if (data.error) console.error('Resend error:', data.error);
+}
 app.post('/api/messages/clear', async (req, res) => {
   try {
     const { userId, otherId } = req.body;
@@ -563,23 +586,53 @@ app.post('/api/users/:id/block', async (req, res) => {
 app.post('/api/auth/forgot', async (req, res) => {
   try {
     const { value } = req.body;
+    if (!value) return res.json({ error: 'Enter your email or username' });
     const user = await db.collection('users').findOne({
-      $or: [{ username: value?.toLowerCase() }, { email: value?.toLowerCase() }]
+      $or: [{ username: value.toLowerCase() }, { email: value.toLowerCase() }]
     });
-    if (!user) return res.json({ error: 'No account found with that username or email' });
+    if (!user) return res.json({ error: 'No account found with that email or username' });
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    resetCodes.set(user.id, { code, expires: Date.now() + 600000 }); // 10 min
-    console.log(`Reset code for ${user.username}: ${code}`);
-    res.json({ code, userId: user.id }); // In production send via email; here we return it
-  } catch(e) { res.json({ error: 'Server error' }); }
+    resetCodes.set(user.id, { code, expires: Date.now() + 600000 });
+    // Send email if user has one
+    if (user.email) {
+      await sendEmail(user.email, 'DIOR+ Password Reset Code',
+        `<div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:24px;">
+          <h2 style="color:#a855f7;">DIOR+</h2>
+          <p>Your password reset code is:</p>
+          <div style="font-size:36px;font-weight:900;letter-spacing:8px;color:#a855f7;padding:16px 0;">${code}</div>
+          <p style="color:#888;font-size:13px;">This code expires in 10 minutes. If you didn't request this, ignore this email.</p>
+        </div>`
+      );
+      const masked = user.email.replace(/(.{2}).*(@.*)/, '$1***$2');
+      res.json({ ok: true, userId: user.id, masked, method: 'email' });
+    } else {
+      // No email — return code directly so user can still reset
+      res.json({ ok: true, userId: user.id, code, method: 'direct' });
+    }
+  } catch(e) { console.error(e); res.json({ error: 'Server error' }); }
 });
 app.post('/api/auth/reset', async (req, res) => {
   try {
-    const { userId, newPassword } = req.body;
+    const { userId, code, newPassword } = req.body;
+    if (!userId || !code || !newPassword) return res.json({ error: 'Missing fields' });
     const entry = resetCodes.get(userId);
-    if (!entry || Date.now() > entry.expires) return res.json({ error: 'Code expired' });
+    if (!entry) return res.json({ error: 'No reset request found. Please start again.' });
+    if (Date.now() > entry.expires) { resetCodes.delete(userId); return res.json({ error: 'Code expired. Please start again.' }); }
+    if (entry.code !== code) return res.json({ error: 'Incorrect code' });
+    if (newPassword.length < 6) return res.json({ error: 'Password must be at least 6 characters' });
     await db.collection('users').updateOne({ id: userId }, { $set: { password: newPassword } });
     resetCodes.delete(userId);
+    res.json({ ok: true });
+  } catch(e) { res.json({ error: 'Server error' }); }
+});
+app.post('/api/auth/reset-by-username', async (req, res) => {
+  try {
+    const { username, newPassword } = req.body;
+    if (!username || !newPassword) return res.json({ error: 'Fill all fields' });
+    if (newPassword.length < 6) return res.json({ error: 'Password must be at least 6 characters' });
+    const user = await db.collection('users').findOne({ username: username.toLowerCase() });
+    if (!user) return res.json({ error: 'No account found with that username' });
+    await db.collection('users').updateOne({ id: user.id }, { $set: { password: newPassword } });
     res.json({ ok: true });
   } catch(e) { res.json({ error: 'Server error' }); }
 });
