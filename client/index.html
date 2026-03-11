@@ -2091,6 +2091,9 @@ function closeChat(){
   _msgMap={};
   $('emoji-tray').style.display='none';
   const _rb=$('ch-reply-bar');if(_rb)_rb.style.display='none';
+  // Clear search so conversations show (not stale search results)
+  const msInp=$('ms-inp'); if(msInp) msInp.value='';
+  loadConversations();
 }
 // ── CHAT STATE ───────────────────────────────────────────────────────────
 let _replyTo = null;
